@@ -1,0 +1,19 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    restart: unless-stopped
+    volumes:
+      - $data/adguard/work:/opt/adguardhome/work
+      - $data/adguard/conf:/opt/adguardhome/conf
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 3000:3000/tcp
+  adguardhome-sync:
+    image: ghcr.io/bakito/adguardhome-sync
+    container_name: adguardhome-sync
+    restart: unless-stopped
+    command: run --config /config/adguardhome-sync.yaml
+    volumes:
+      - $data/adguard/adguardhome-sync.yaml:/config/adguardhome-sync.yaml
