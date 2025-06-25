@@ -1,6 +1,6 @@
 services:
   whoami:
     image: "traefik/whoami"
-    container_name: "simple-service-smol"
+    container_name: "${container_name:-whoami}"
     ports:
       - 8796:80/tcp
