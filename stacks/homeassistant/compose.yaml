@@ -1,0 +1,24 @@
+networks:
+  proxy:
+    external: true
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true
+    networks:
+      proxy: null
+    volumes:
+      - $data/homeassistant:/config # Local storage
+      - /etc/localtime:/etc/localtime:ro # Timezone synchronization
+      - /run/dbus:/run/dbus:ro # Bluetooth connection
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0 # Zigbee radio controller
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.homeassistant.entryPoints: 'https'
+      traefik.http.routers.homeassistant.middlewares: 'localonly@file'
+      traefik.http.routers.homeassistant.rule: 'Host(`ha.${domain}`) || Host(`ha.${local_domain}`)'
+      traefik.http.routers.homeassistant.tls.certresolver: 'cloudflare'
+      traefik.http.services.homeassistant.loadbalancer.server.url: 'http://homeassistant:8123'
