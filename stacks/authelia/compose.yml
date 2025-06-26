@@ -1,0 +1,51 @@
+networks:
+  proxy:
+    external: true
+services:
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    restart: unless-stopped
+    depends_on:
+      - lldap
+    networks:
+      proxy:
+    volumes:
+      - $data/authelia/config:/config
+    environment:
+      - TZ=${TZ:-UTC}
+      - X_AUTHELIA_CONFIG_FILTERS=template
+      - X_AUTHELIA_CONFIG=/config/configuration.yml
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.authelia.rule: 'Host(`auth.${domain}`)'
+      traefik.http.routers.authelia.entryPoints: 'https'
+      traefik.http.routers.authelia.tls: 'true'
+      traefik.http.middlewares.authelia.forwardAuth.address: 'http://authelia:9091/api/authz/forward-auth'
+      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: 'true'
+      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Email,Remote-Name'
+    expose:
+      - 9091
+    healthcheck:
+      disable: true
+  lldap:
+    image: lldap/lldap:stable
+    container_name: "lldap"
+    networks:
+      proxy:
+    volumes:
+      - $data/lldap:/data
+    environment:
+      - UID=${UID:-1000}
+      - GID=${UID:-100}
+      - TZ=${TZ:-UTC}
+      - LLDAP_JWT_SECRET=${LLDAP_JWT_SECRET}
+      - LLDAP_KEY_SEED=${LLDAP_KEY_SEED}
+      - LLDAP_LDAP_BASE_DN=dc=${domain_name},dc=${tld}
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.lldap.rule: 'Host(`lldap.${domain}`)'
+      traefik.http.routers.lldap.middlewares: localonly@file
+      traefik.http.routers.lldap.entryPoints: 'https'
+      traefik.http.routers.lldap.tls: 'true'
+      traefik.http.services.lldap.loadbalancer.server.port: 17170
