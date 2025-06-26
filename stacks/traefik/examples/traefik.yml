@@ -1,0 +1,64 @@
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  metrics:
+    address: :8082
+  https:
+    address: ":443"
+    http3: {}
+    forwardedHeaders:
+      insecure: false
+    proxyProtocol:
+      trustedIPs:
+        - "172.16.0.0/12" # This subnet will include addresses of 
+                          # containers on a default docker network.
+                          # IPV6 enabled networks should have their subnet
+                          # included here as well.
+      insecure: false
+    http:
+      middlewares:
+        - crowdsec-bouncer@file
+
+serversTransport:
+  insecureSkipVerify: true
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    filename: /dynamic.yml
+    watch: true
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: youremail@example.com
+      storage: /acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory 
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addServicesLabels: true
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+    entryPoint: metrics
+
+log:
+  level: "INFO"
+  maxAge: 7
+  compress: true
+  filePath: "/var/log/traefik/traefik.log"
+accessLog:
+  filePath: "/var/log/traefik/access.log"
