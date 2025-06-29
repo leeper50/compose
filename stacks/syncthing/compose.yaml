@@ -6,7 +6,7 @@ services:
     image: lscr.io/linuxserver/syncthing
     container_name: syncthing
     restart: always
-    network:
+    networks:
       proxy:
     environment:
       PUID: $UID
