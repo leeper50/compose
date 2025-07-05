@@ -4,47 +4,6 @@ networks:
   proxy:
     external: true
 services:
-  # Metrics service
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    restart: always
-    depends_on:
-      - prometheus
-    user: ${UID}
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      proxy: null
-    environment:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
-    volumes:
-      - $data/grafana:/var/lib/grafana
-      - /etc/timezone:/etc/timezone:ro
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.grafana.entryPoints: 'https'
-      traefik.http.routers.grafana.middlewares: 'localonly@file'
-      traefik.http.routers.grafana.rule: 'Host(`gf.${local_domain}`)'
-      traefik.http.routers.grafana.tls.certresolver: 'cloudflare'
-      traefik.http.services.grafana.loadbalancer.server.url: 'http://grafana:3000'
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: always
-    networks:
-      proxy: null
-    volumes:
-      - $data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - /etc/timezone:/etc/timezone:ro
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.prometheus.entryPoints: 'https'
-      traefik.http.routers.prometheus.middlewares: 'localonly@file'
-      traefik.http.routers.prometheus.rule: 'Host(`pm.${local_domain}`)'
-      traefik.http.routers.prometheus.tls.certresolver: 'cloudflare'
-      traefik.http.services.prometheus.loadbalancer.server.url: 'http://prometheus:9090'
-
   # Picsur service
   picsur:
     image: ghcr.io/caramelfur/picsur:latest
