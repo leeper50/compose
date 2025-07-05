@@ -1,0 +1,76 @@
+networks:
+  proxy:
+    external: true
+services:
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: always
+    networks:
+      proxy: null
+    environment:
+      TZ: ${TZ}
+      PUID: ${UID}
+      PGID: ${GID}
+      UMASK: ${UMASK}
+      JELLYFIN_PublishedServerUrl: jf.${domain}
+      DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
+    volumes:
+      - $data/jellyfin:/config:rw
+      - $media/TV:/data/tvshows:rw
+      - $media/Movies:/data/movies:rw
+      - $media/Music:/data/music:rw
+    devices:
+      - /dev/dri
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.jellyfin.entryPoints: 'https'
+      traefik.http.routers.jellyfin.middlewares: 'goodbois@file'
+      traefik.http.routers.jellyfin.rule: 'Host(`jf.${domain}`)'
+      traefik.http.routers.jellyfin.tls.certresolver: 'cloudflare'
+      traefik.http.services.jellyfin.loadbalancer.server.url: 'http://jellyfin:8096'
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    restart: always
+    networks:
+      proxy: null
+    dns:
+      - 9.9.9.9
+    depends_on:
+      - jellyfin
+    environment:
+      TZ: ${TZ}
+      PUID: ${UID}
+      PGID: ${GID}
+      UMASK: ${UMASK}
+      LOG_LEVEL: info
+    volumes:
+      - $data/jellyseerr:/app/config/:rw
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.jellyseerr.entryPoints: 'https'
+      traefik.http.routers.jellyseerr.middlewares: 'goodbois@file'
+      traefik.http.routers.jellyseerr.rule: 'Host(`seer.${domain}`)'
+      traefik.http.routers.jellyseerr.tls.certresolver: 'cloudflare'
+      traefik.http.services.jellyseerr.loadbalancer.server.url: 'http://jellyseerr:5055'
+  calibre:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre
+    restart: always
+    networks:
+      proxy: null
+    environment:
+      TZ: ${TZ}
+      PUID: ${UID}
+      PGID: ${GID}
+    volumes:
+      - $data/calibre:/config
+      - $media/Books:/books
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.calibre.entryPoints: 'https'
+      traefik.http.routers.calibre.middlewares: 'goodbois@file'
+      traefik.http.routers.calibre.rule: 'Host(`books.${domain}`)'
+      traefik.http.routers.calibre.tls.certresolver: 'cloudflare'
+      traefik.http.services.calibre.loadbalancer.server.url: 'http://calibre:8083'
