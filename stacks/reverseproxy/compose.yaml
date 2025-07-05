@@ -98,7 +98,7 @@ services:
       TZ: ${TZ:-UTC}
       LLDAP_JWT_SECRET: '${LLDAP_JWT_SECRET}'
       LLDAP_KEY_SEED: '${LLDAP_KEY_SEED}'
-      LLDAP_LDAP_BASE_DN: 'dc=${domain_name},dc=${tld}'
+      LLDAP_LDAP_BASE_DN: 'dc=${domain_without_tld},dc=${tld}'
     volumes:
       - $data/lldap:/data
     labels:
