@@ -1,0 +1,63 @@
+networks: 
+  default:
+    driver: bridge
+    enable_ipv6: true
+services:
+  gluetun-protonvpn-1:
+    image: qmcgaw/gluetun:v3.40
+    container_name: gluetun-protonvpn-1
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    environment:
+      TZ: $TZ
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${wgkey}
+      DOT_PROVIDERS: quad9
+      DOT_IPV6: on
+      SERVER_COUNTRIES: Sweden
+      HTTPPROXY: on
+    ports:
+      - 1080:1080/tcp # socks5 proxy
+      - 8888:8888/tcp # http proxy
+    volumes:
+      - $data/gluetun-protonvpn:/gluetun:rw
+  gluetun-protonvpn-2:
+    image: qmcgaw/gluetun:v3.40
+    container_name: gluetun-protonvpn-2
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    environment:
+      TZ: $TZ
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${wgkey}
+      DOT_PROVIDERS: quad9
+      DOT_IPV6: on
+      SERVER_CITIES: Denver
+    ports:
+      - 1081:1080/tcp # socks5 proxy
+    volumes:
+      - $data/gluetun-protonvpn:/gluetun:rw
+  socks5proxy-protonvpn-1:
+    image: serjs/go-socks5-proxy
+    container_name: socks5proxy-protonvpn-1
+    network_mode: service:gluetun-protonvpn-1
+    restart: always
+  socks5proxy-protonvpn-2:
+    image: serjs/go-socks5-proxy
+    container_name: socks5proxy-protonvpn-2
+    network_mode: service:gluetun-protonvpn-2
+    restart: always
+  tor-privoxy:
+    image: dockage/tor-privoxy
+    container_name: tor-privoxy
+    restart: always
+    ports:
+      - 9050:9050
