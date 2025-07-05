@@ -1,0 +1,55 @@
+networks:
+  default: null
+  proxy:
+    external: true
+services:
+  paperlessngx_broker:
+    image: eqalpha/keydb:latest
+    container_name: paperlessngx_broker
+    restart: unless-stopped
+    networks:
+      default: null
+    volumes:
+      - $data/keydb:/data
+  paperlessngx_db:
+    image: docker.io/library/postgres:16
+    container_name: paperlessngx_db
+    restart: unless-stopped
+    networks:
+      default: null
+    volumes:
+      - $data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${db_pass:-paperless}
+  paperlessngx:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperlessngx
+    restart: unless-stopped
+    networks:
+      proxy: null
+      default: null
+    depends_on:
+      - paperlessngx_db
+      - paperlessngx_broker
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.paperlessngx.entryPoints: 'https'
+      traefik.http.routers.paperlessngx.middlewares: 'goodbois@file'
+      traefik.http.routers.paperlessngx.rule: 'Host(`paper.${domain}`)'
+      traefik.http.routers.paperlessngx.tls.certresolver: 'cloudflare'
+      traefik.http.services.paperlessngx.loadbalancer.server.url: 'http://paperlessngx:8000'
+    volumes:
+      - $data/app/data:/usr/src/paperless/data
+      - $data/app/media:/usr/src/paperless/media
+      - $data/app/export:/usr/src/paperless/export
+      - $data/app/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://paperlessngx_broker:6379
+      PAPERLESS_DBHOST: paperlessngx_db
+      USERMAP_UID: ${UID:-1000}
+      USERMAP_GID: ${GID:-1000}
+      PAPERLESS_URL: https://paper.${domain}
+      PAPERLESS_TIME_ZONE: ${TZ:-UTC}
+      PAPERLESS_SECRET_KEY: ${secret_key}
