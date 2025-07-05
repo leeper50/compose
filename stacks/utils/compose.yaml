@@ -1,0 +1,161 @@
+networks:
+  picsur: null
+  send: null
+  proxy:
+    external: true
+services:
+  # Metrics service
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    depends_on:
+      - prometheus
+    user: ${UID}
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      proxy: null
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+    volumes:
+      - $data/grafana:/var/lib/grafana
+      - /etc/timezone:/etc/timezone:ro
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.grafana.entryPoints: 'https'
+      traefik.http.routers.grafana.middlewares: 'localonly@file'
+      traefik.http.routers.grafana.rule: 'Host(`gf.${local_domain}`)'
+      traefik.http.routers.grafana.tls.certresolver: 'cloudflare'
+      traefik.http.services.grafana.loadbalancer.server.url: 'http://grafana:3000'
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    networks:
+      proxy: null
+    volumes:
+      - $data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /etc/timezone:/etc/timezone:ro
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.prometheus.entryPoints: 'https'
+      traefik.http.routers.prometheus.middlewares: 'localonly@file'
+      traefik.http.routers.prometheus.rule: 'Host(`pm.${local_domain}`)'
+      traefik.http.routers.prometheus.tls.certresolver: 'cloudflare'
+      traefik.http.services.prometheus.loadbalancer.server.url: 'http://prometheus:9090'
+
+  # Picsur service
+  picsur:
+    image: ghcr.io/caramelfur/picsur:latest
+    container_name: picsur
+    restart: always
+    depends_on:
+      - picsur_postgres
+    networks:
+      proxy: null
+      picsur: null
+    environment:
+      PICSUR_DB_HOST: picsur_postgres
+      PICSUR_DB_DATABASE: picsur
+      PICSUR_DB_USERNAME: picsur
+      PICSUR_DB_PASSWORD: ${picsur_dbpass}
+      ## The default username is admin, this is not modifiable
+      PICSUR_ADMIN_PASSWORD: ${picsur_adminpass}
+      ## Maximum accepted size for uploads in bytes
+      PICSUR_MAX_FILE_SIZE: 128000000
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.picsur.entryPoints: 'https'
+      traefik.http.routers.picsur.rule: 'Host(`ps.${domain}`)'
+      traefik.http.routers.picsur.tls.certresolver: 'cloudflare'
+      traefik.http.services.picsur.loadbalancer.server.url: 'http://picsur:8080'
+  picsur_postgres:
+    image: postgres:14-alpine
+    container_name: picsur_postgres
+    restart: always
+    networks:
+      picsur: null
+    environment:
+      POSTGRES_DB: picsur
+      POSTGRES_USER: picsur
+      POSTGRES_PASSWORD: ${picsur_dbpass}
+    volumes:
+      - $data/picsur/db:/var/lib/postgresql/data
+
+  # Privatebin service
+  privatebin:
+    image: privatebin/nginx-fpm-alpine
+    container_name: privatebin
+    restart: always
+    read_only: true
+    user: ${UID}:${GID}
+    networks:
+      proxy: null
+    volumes:
+      - $data/privatebin:/srv/data
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.privatebin.entryPoints: 'https'
+      traefik.http.routers.privatebin.middlewares: 'goodbois@file'
+      traefik.http.routers.privatebin.rule: 'Host(`pb.${domain}`)'
+      traefik.http.routers.privatebin.tls.certresolver: 'cloudflare'
+      traefik.http.services.privatebin.loadbalancer.server.url: 'http://privatebin:8080'
+
+  # Send service
+  send:
+    image: registry.gitlab.com/timvisee/send:latest
+    container_name: send
+    restart: always
+    depends_on:
+      - send_redis
+    networks:
+      proxy:
+      send: null
+    environment:
+      NODE_ENV: production
+      BASE_URL: https://send.${domain}
+      REDIS_HOST: send_redis
+      EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
+      DEFAULT_EXPIRE_SECONDS: 3600
+      MAX_EXPIRE_SECONDS: 31536000
+      DOWNLOAD_COUNTS: 1,2,5
+      MAX_DOWNLOADS: 5
+      MAX_FILE_SIZE: 10737418240
+    volumes:
+      - $data/send/app:/uploads
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.send.entryPoints: 'https'
+      traefik.http.routers.send.middlewares: 'goodbois@file'
+      traefik.http.routers.send.rule: 'Host(`send.${domain}`)'
+      traefik.http.routers.send.tls.certresolver: 'cloudflare'
+      traefik.http.services.send.loadbalancer.server.url: 'http://send:1443'
+  send_redis:
+    image: redis:alpine
+    container_name: send_redis
+    restart: always
+    networks:
+      send: null
+    volumes:
+      - $data/send/redis:/data
+
+  # Convertx service
+  convertx:
+    image: ghcr.io/c4illin/convertx
+    container_name: convertx
+    restart: always
+    networks:
+      proxy: null
+    environment:
+      JWT_SECRET: ${convertx_jwt}
+      HIDE_HISTORY: true
+    volumes:
+      - $data/convertx:/app/data
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.convertx.entryPoints: 'https'
+      traefik.http.routers.convertx.middlewares: 'goodbois@file'
+      traefik.http.routers.convertx.rule: 'Host(`cx.${domain}`)'
+      traefik.http.routers.convertx.tls.certresolver: 'cloudflare'
+      traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
