@@ -20,6 +20,13 @@ services:
       - $data/garage.toml:/etc/garage.toml:ro
       - $data/metadata:/var/lib/garage/meta
       - $data/storage:/var/lib/garage/data
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.garage.entryPoints: 'https'
+      traefik.http.routers.garage.middlewares: 'localonly@file'
+      traefik.http.routers.garage.rule: 'Host(`garage.${domain}`)'
+      traefik.http.routers.garage.tls.certresolver: 'cloudflare'
+      traefik.http.services.garage.loadbalancer.server.url: 'http://garage:3900'
 
   webui:
     image: khairul169/garage-webui:latest
@@ -37,8 +44,8 @@ services:
       S3_ENDPOINT_URL: "http://garage:3900"
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.garage.entryPoints: 'https'
-      traefik.http.routers.garage.middlewares: 'localonly@file'
-      traefik.http.routers.garage.rule: 'Host(`garage.${local_domain}`)'
-      traefik.http.routers.garage.tls.certresolver: 'cloudflare'
-      traefik.http.services.garage.loadbalancer.server.url: 'http://garage-webui:3909'
+      traefik.http.routers.garage-webui.entryPoints: 'https'
+      traefik.http.routers.garage-webui.middlewares: 'localonly@file'
+      traefik.http.routers.garage-webui.rule: 'Host(`garage.${local_domain}`)'
+      traefik.http.routers.garage-webui.tls.certresolver: 'cloudflare'
+      traefik.http.services.garage-webui.loadbalancer.server.url: 'http://garage-webui:3909'
