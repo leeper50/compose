@@ -1,0 +1,115 @@
+networks:
+  mywebsite: null
+  freshrss: null
+  proxy:
+    external: true
+services:
+  mywebsite:
+    image: dellhplaptop/newwebsite:latest
+    container_name: mywebsite
+    restart: always
+    networks:
+      proxy:
+    volumes:
+      - $data/newweb/db:/app/db
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.mywebsite.entryPoints: 'https'
+      traefik.http.routers.mywebsite.rule: 'Host(`${domain}`) || Host(`www.${domain}`)'
+      traefik.http.routers.mywebsite.tls.certresolver: 'cloudflare'
+      traefik.http.services.mywebsite.loadbalancer.server.url: 'http://mywebsite:8080'
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: always
+    depends_on:
+      - freshrssdb
+    networks:
+      proxy:
+      freshrss:
+    logging:
+      options:
+        max-size: 10m
+    volumes:
+      - $data/rss/data:/var/www/FreshRSS/data
+      - $data/rss/extensions:/var/www/FreshRSS/extensions
+    environment:
+      TZ: ${TZ}
+      TRUSTED_PROXY: 0
+      LISTEN: 0.0.0.0:80
+      CRON_MIN: '1,31'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.freshrss.entryPoints: 'https'
+      traefik.http.routers.freshrss.rule: 'Host(`rss.${domain}`)'
+      traefik.http.routers.freshrss.tls.certresolver: 'cloudflare'
+      traefik.http.services.freshrss.loadbalancer.server.url: 'http://freshrss:80'
+  freshrssdb:
+    image: postgres:16
+    container_name: freshrssdb
+    restart: always
+    networks:
+      freshrss:
+    volumes:
+      - $data/rss/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: rss
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    networks:
+      proxy:
+    environment:
+      DOMAIN: https://vault.${domain}
+      ADMIN_TOKEN: '${vaultwarden_admin_token}'
+    volumes:
+      - $data/vault/data:/data
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.vaultwarden.entryPoints: 'https'
+      traefik.http.routers.vaultwarden.rule: 'Host(`vault.${domain}`)'
+      traefik.http.routers.vaultwarden.tls.certresolver: 'cloudflare'
+      traefik.http.services.vaultwarden.loadbalancer.server.url: 'http://vaultwarden:80'
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: always
+    networks:
+      proxy:
+    environment:
+      TZ: ${TZ}
+      HOMEPAGE_ALLOWED_HOSTS: home.${domain}
+    volumes:
+      - $data/homepage:/app/config:rw
+      - /var/run/docker.sock:/var/run/docker.sock:r
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.homepage.entryPoints: 'https'
+      traefik.http.routers.homepage.middlewares: 'localonly@file'
+      traefik.http.routers.homepage.rule: 'Host(`home.dellhplaptop.xyz`)'
+      traefik.http.routers.homepage.tls.certresolver: 'cloudflare'
+      traefik.http.services.homepage.loadbalancer.server.url: 'http://homepage:3000'
+  httpserver:
+    image: ghcr.io/patrickdappollonio/docker-http-server:v2
+    container_name: httpserver
+    restart: unless-stopped
+    networks:
+      proxy:
+    volumes:
+      - $data/static:/html:ro
+    environment:
+      - PORT=5000 # Configures the port (the default is 5000)
+      - TITLE=HTTPServer Site # Changes the site name
+      - CORS=true # Enable CORS for testing purposes
+      - FILE_SERVER_PATH=/html
+      - DISABLE_REDIRECTS=true
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.httpserver.entryPoints: 'https'
+      traefik.http.routers.httpserver.middlewares: 'localonly@file'
+      traefik.http.routers.httpserver.rule: 'Host(`static.${domain}`) || Host(`static.${local_domain}`)'
+      traefik.http.routers.httpserver.tls.certresolver: 'cloudflare'
+      traefik.http.services.httpserver.loadbalancer.server.url: 'http://httpserver:5000'
