@@ -34,7 +34,6 @@ services:
     depends_on:
       - garage
     networks:
-      default:
       proxy:
     volumes:
       - $data/garage.toml:/etc/garage.toml:ro
