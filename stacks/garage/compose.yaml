@@ -20,12 +20,6 @@ services:
       - $data/garage.toml:/etc/garage.toml:ro
       - $data/metadata:/var/lib/garage/meta
       - $data/storage:/var/lib/garage/data
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.garage.entryPoints: 'https'
-      traefik.http.routers.garage.rule: 'Host(`s3.${domain}`)'
-      traefik.http.routers.garage.tls.certresolver: 'cloudflare'
-      traefik.http.services.garage.loadbalancer.server.url: 'http://garage:3900'
 
   webui:
     image: khairul169/garage-webui:latest
