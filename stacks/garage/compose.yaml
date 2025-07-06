@@ -4,7 +4,7 @@ networks:
     external: true
 services:
   garage:
-    image: dxflrs/garage:v1.2.0
+    image: dxflrs/garage:v2.0.0
     container_name: garage
     restart: unless-stopped
     networks:
@@ -25,6 +25,8 @@ services:
     image: khairul169/garage-webui:latest
     container_name: garage-webui
     restart: unless-stopped
+    depends_on:
+      - garage
     networks:
       default:
       proxy:
