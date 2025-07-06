@@ -1,0 +1,42 @@
+networks:
+  default:
+  proxy:
+    external: true
+services:
+  garage:
+    image: dxflrs/garage:v1.1.0
+    container_name: garage
+    restart: unless-stopped
+    networks:
+      default:
+    ports:
+     - 3900:3900   ## s3 api
+     - 3901:3901   ## rpc
+    #- 3902:3902   ## s3 web
+    #- 3903:3903   ## admin api and '/metrics' for prometheus
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - $data/garage.toml:/etc/garage.toml:ro
+      - $data/metadata:/var/lib/garage/meta
+      - $data/storage:/var/lib/garage/data
+
+  webui:
+    image: khairul169/garage-webui:latest
+    container_name: garage-webui
+    restart: unless-stopped
+    networks:
+      default:
+      proxy:
+    volumes:
+      - $data/garage.toml:/etc/garage.toml:ro
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.garage.entryPoints: 'https'
+      traefik.http.routers.garage.middlewares: 'localonly@file'
+      traefik.http.routers.garage.rule: 'Host(`garage.${local_domain}`)'
+      traefik.http.routers.garage.tls.certresolver: 'cloudflare'
+      traefik.http.services.garage.loadbalancer.server.url: 'http://garage-webui:3909'
