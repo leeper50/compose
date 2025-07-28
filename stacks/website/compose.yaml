@@ -92,27 +92,6 @@ services:
       traefik.http.routers.homepage.rule: 'Host(`home.dellhplaptop.xyz`)'
       traefik.http.routers.homepage.tls.certresolver: 'cloudflare'
       traefik.http.services.homepage.loadbalancer.server.url: 'http://homepage:3000'
-  httpserver:
-    image: ghcr.io/patrickdappollonio/docker-http-server:v2
-    container_name: httpserver
-    restart: unless-stopped
-    networks:
-      proxy:
-    volumes:
-      - $data/static:/html:ro
-    environment:
-      PORT: 5000 # Configures the port (the default is 5000)
-      TITLE: HTTPServer Site # Changes the site name
-      CORS: true # Enable CORS for testing purposes
-      FILE_SERVER_PATH: /html
-      DISABLE_REDIRECTS: true
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.httpserver.entryPoints: 'https'
-      traefik.http.routers.httpserver.middlewares: 'localonly@file'
-      traefik.http.routers.httpserver.rule: 'Host(`static.${domain}`) || Host(`static.${local_domain}`)'
-      traefik.http.routers.httpserver.tls.certresolver: 'cloudflare'
-      traefik.http.services.httpserver.loadbalancer.server.url: 'http://httpserver:5000'
   copyparty:
     image: copyparty/iv:latest
     container_name: copyparty
@@ -120,16 +99,15 @@ services:
     restart: unless-stopped
     networks:
       proxy:
-    # enabling mimalloc by replacing "NOPE" with "2" will make some stuff twice as fast, but everything will use twice as much ram:
     environment:
-      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.NOPE
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
     volumes:
       - $data/copyparty/conf:/cfg
       - $data/copyparty/files:/w
     labels:
       traefik.enable: 'true'
       traefik.http.routers.copyparty.entryPoints: 'https'
-      traefik.http.routers.copyparty.middlewares: 'localonly@file'
+      traefik.http.routers.copyparty.middlewares: 'goodbois@file'
       traefik.http.routers.copyparty.rule: 'Host(`files.${domain}`) || Host(`files.${local_domain}`)'
       traefik.http.routers.copyparty.tls.certresolver: 'cloudflare'
       traefik.http.services.copyparty.loadbalancer.server.url: 'http://copyparty:3923'
