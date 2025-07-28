@@ -117,6 +117,9 @@ services:
     image: copyparty/iv:latest
     container_name: copyparty
     user: ${UID:-1000}:${GID:-1000}
+    restart: unless-stopped
+    networks:
+      proxy:
     # enabling mimalloc by replacing "NOPE" with "2" will make some stuff twice as fast, but everything will use twice as much ram:
     environment:
       LD_PRELOAD: /usr/lib/libmimalloc-secure.so.NOPE
