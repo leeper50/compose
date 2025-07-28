@@ -101,11 +101,11 @@ services:
     volumes:
       - $data/static:/html:ro
     environment:
-      - PORT=5000 # Configures the port (the default is 5000)
-      - TITLE=HTTPServer Site # Changes the site name
-      - CORS=true # Enable CORS for testing purposes
-      - FILE_SERVER_PATH=/html
-      - DISABLE_REDIRECTS=true
+      PORT: 5000 # Configures the port (the default is 5000)
+      TITLE: HTTPServer Site # Changes the site name
+      CORS: true # Enable CORS for testing purposes
+      FILE_SERVER_PATH: /html
+      DISABLE_REDIRECTS: true
     labels:
       traefik.enable: 'true'
       traefik.http.routers.httpserver.entryPoints: 'https'
@@ -113,3 +113,28 @@ services:
       traefik.http.routers.httpserver.rule: 'Host(`static.${domain}`) || Host(`static.${local_domain}`)'
       traefik.http.routers.httpserver.tls.certresolver: 'cloudflare'
       traefik.http.services.httpserver.loadbalancer.server.url: 'http://httpserver:5000'
+  copyparty:
+    image: copyparty/iv:latest
+    container_name: copyparty
+    user: ${UID:-1000}:${GID:-1000}
+    # enabling mimalloc by replacing "NOPE" with "2" will make some stuff twice as fast, but everything will use twice as much ram:
+    environment:
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.NOPE
+    volumes:
+      - $data/copyparty/conf:/cfg
+      - $data/copyparty/files:/w
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.copyparty.entryPoints: 'https'
+      traefik.http.routers.copyparty.middlewares: 'localonly@file'
+      traefik.http.routers.copyparty.rule: 'Host(`files.${domain}`) || Host(`files.${local_domain}`)'
+      traefik.http.routers.copyparty.tls.certresolver: 'cloudflare'
+      traefik.http.services.copyparty.loadbalancer.server.url: 'http://copyparty:3923'
+    stop_grace_period: 15s  # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    healthcheck:
+      # hide it from logs with "/._" so it matches the default --lf-url filter 
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
