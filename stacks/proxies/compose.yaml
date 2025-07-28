@@ -1,7 +1,7 @@
 networks: 
   default:
     driver: bridge
-    enable_ipv6: true
+    # enable_ipv6: true
 services:
   gluetun-protonvpn-1:
     image: qmcgaw/gluetun:v3.40
@@ -9,15 +9,15 @@ services:
     restart: always
     cap_add:
       - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+    # sysctls:
+    #   - net.ipv6.conf.all.disable_ipv6=0
     environment:
       TZ: $TZ
       VPN_SERVICE_PROVIDER: protonvpn
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey}
       DOT_PROVIDERS: quad9
-      DOT_IPV6: on
+      # DOT_IPV6: on
       SERVER_COUNTRIES: Sweden
       HTTPPROXY: on
     ports:
@@ -31,15 +31,15 @@ services:
     restart: always
     cap_add:
       - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+    # sysctls:
+    #   - net.ipv6.conf.all.disable_ipv6=0
     environment:
       TZ: $TZ
       VPN_SERVICE_PROVIDER: protonvpn
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey}
       DOT_PROVIDERS: quad9
-      DOT_IPV6: on
+      # DOT_IPV6: on
       SERVER_CITIES: Denver
     ports:
       - 1081:1080/tcp # socks5 proxy
