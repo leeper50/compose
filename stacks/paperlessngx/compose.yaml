@@ -51,5 +51,5 @@ services:
       USERMAP_UID: ${UID:-1000}
       USERMAP_GID: ${GID:-1000}
       PAPERLESS_URL: https://paper.${domain}
-      PAPERLESS_TIME_ZONE: ${TZ:-UTC}
+      PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_SECRET_KEY: ${secret_key}

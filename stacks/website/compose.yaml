@@ -34,7 +34,7 @@ services:
       - $data/rss/data:/var/www/FreshRSS/data
       - $data/rss/extensions:/var/www/FreshRSS/extensions
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       TRUSTED_PROXY: 0
       LISTEN: 0.0.0.0:80
       CRON_MIN: '1,31'
@@ -80,7 +80,7 @@ services:
     networks:
       proxy:
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       HOMEPAGE_ALLOWED_HOSTS: home.${domain}
     volumes:
       - $data/homepage:/app/config:rw

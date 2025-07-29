@@ -9,7 +9,7 @@ services:
     networks:
       proxy: null
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       PUID: ${UID}
       PGID: ${GID}
       UMASK: ${UMASK}
@@ -40,7 +40,7 @@ services:
     depends_on:
       - jellyfin
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       PUID: ${UID}
       PGID: ${GID}
       UMASK: ${UMASK}
@@ -61,7 +61,7 @@ services:
     networks:
       proxy: null
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       PUID: ${UID}
       PGID: ${GID}
     volumes:

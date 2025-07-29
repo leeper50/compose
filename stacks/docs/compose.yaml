@@ -14,7 +14,7 @@ services:
       bookstack: null
       proxy: null
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       PUID: ${UID}
       PGID: ${GID}
       APP_DEBUG: true
@@ -42,7 +42,7 @@ services:
     networks:
       bookstack: null
     environment:
-      TZ: ${TZ}
+      TZ: ${timezone}
       PUID: ${UID}
       PGID: ${GID}
       MYSQL_ROOT_PASSWORD: ${root_pass}

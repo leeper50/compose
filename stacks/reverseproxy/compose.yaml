@@ -76,9 +76,9 @@ services:
     networks:
       proxy:
     environment:
-      - TZ=${TZ:-UTC}
-      - X_AUTHELIA_CONFIG_FILTERS=template
-      - X_AUTHELIA_CONFIG=/config/configuration.yml
+      TZ: ${timezone:-UTC}
+      X_AUTHELIA_CONFIG_FILTERS: template
+      X_AUTHELIA_CONFIG: /config/configuration.yml
     volumes:
       - $data/authelia/config:/config
     labels:
@@ -98,7 +98,7 @@ services:
     environment:
       UID: ${UID:-1000}
       GID: ${GID:-1000}
-      TZ: ${TZ:-UTC}
+      TZ: ${timezone:-UTC}
       LLDAP_JWT_SECRET: '${LLDAP_JWT_SECRET}'
       LLDAP_KEY_SEED: '${LLDAP_KEY_SEED}'
       LLDAP_LDAP_BASE_DN: 'dc=${second_level_domain},dc=${tld}'
