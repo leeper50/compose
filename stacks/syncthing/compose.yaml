@@ -8,9 +8,9 @@ services:
     restart: always
     network_mode: host
     environment:
-      PUID: $uid
-      PGID: $gid
-      UMASK: $UMASK
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
+      UMASK: ${umask:-0220}
     volumes:
       - $syncthingFolder/Syncthing:/data1:rw
       - $data/sync:/config:rw

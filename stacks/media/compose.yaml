@@ -12,7 +12,7 @@ services:
       TZ: ${timezone:-UTC}
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
-      UMASK: ${UMASK}
+      UMASK: ${umask}
       JELLYFIN_PublishedServerUrl: jf.${domain}
       DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
     volumes:
@@ -43,7 +43,7 @@ services:
       TZ: ${timezone:-UTC}
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
-      UMASK: ${UMASK}
+      UMASK: ${umask}
       LOG_LEVEL: info
     volumes:
       - $data/jellyseerr:/app/config/:rw
