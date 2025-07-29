@@ -95,7 +95,7 @@ services:
   copyparty:
     image: copyparty/iv:latest
     container_name: copyparty
-    user: ${UID:-1000}:${GID:-1000}
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     networks:
       proxy:

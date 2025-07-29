@@ -15,8 +15,8 @@ services:
       proxy: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${UID}
-      PGID: ${GID}
+      PUID: ${uid}
+      PGID: ${gid}
       APP_DEBUG: true
       APP_URL: https://wiki.${domain}
       APP_KEY: ${app_key}
@@ -43,8 +43,8 @@ services:
       bookstack: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${UID}
-      PGID: ${GID}
+      PUID: ${uid}
+      PGID: ${gid}
       MYSQL_ROOT_PASSWORD: ${root_pass}
       MYSQL_DATABASE: bookstack
       MYSQL_USER: bookstack
@@ -59,7 +59,7 @@ services:
     restart: always
     depends_on:
       - prometheus
-    user: ${UID}
+    user: ${uid}
     security_opt:
       - no-new-privileges:true
     networks:

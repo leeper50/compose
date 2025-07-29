@@ -48,8 +48,8 @@ services:
     environment:
       PAPERLESS_REDIS: redis://paperlessngx_broker:6379
       PAPERLESS_DBHOST: paperlessngx_db
-      USERMAP_UID: ${UID:-1000}
-      USERMAP_GID: ${GID:-1000}
+      USERMAP_UID: ${uid:-1000}
+      USERMAP_GID: ${gid:-1000}
       PAPERLESS_URL: https://paper.${domain}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_SECRET_KEY: ${secret_key}

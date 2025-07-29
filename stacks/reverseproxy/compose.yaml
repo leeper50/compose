@@ -48,7 +48,7 @@ services:
     networks:
       proxy:
     environment:
-      GID: ${GID:-1000}
+      GID: ${gid:-1000}
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
       - $data/crowdsec/db:/var/lib/crowdsec/data/
@@ -96,8 +96,8 @@ services:
     networks:
       proxy:
     environment:
-      UID: ${UID:-1000}
-      GID: ${GID:-1000}
+      UID: ${uid:-1000}
+      GID: ${gid:-1000}
       TZ: ${timezone:-UTC}
       LLDAP_JWT_SECRET: '${LLDAP_JWT_SECRET}'
       LLDAP_KEY_SEED: '${LLDAP_KEY_SEED}'
