@@ -12,17 +12,17 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
     environment:
-      TZ: $TZ
-      VPN_SERVICE_PROVIDER: $provider
+      TZ: ${timezone:-UTC}
+      VPN_SERVICE_PROVIDER: ${provider}
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey}
       DOT_PROVIDERS: quad9
-      SERVER_CITIES: $cities
+      SERVER_CITIES: ${cities:-Stockholm}
     ports:
       - 1080:1080/tcp # socks5 proxy
       - 8888:8888/tcp # http proxy
     volumes:
-      - $data/gluetun-proxy:/gluetun:rw
+      - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
     image: serjs/go-socks5-proxy
     container_name: socks5proxy
