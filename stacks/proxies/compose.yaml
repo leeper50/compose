@@ -19,8 +19,8 @@ services:
       DOT_PROVIDERS: quad9
       SERVER_CITIES: ${cities:-Stockholm}
     ports:
-      - 1080:1080/tcp # socks5 proxy
-      - 8888:8888/tcp # http proxy
+      - "1080:1080/tcp" # socks5 proxy
+      - "8888:8888/tcp" # http proxy
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
@@ -33,4 +33,4 @@ services:
     container_name: tor-privoxy
     restart: always
     ports:
-      - 9050:9050
+      - "9050:9050/tcp"

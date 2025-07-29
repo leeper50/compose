@@ -3,4 +3,4 @@ services:
     image: "traefik/whoami"
     container_name: "${container_name:-whoami}"
     ports:
-      - 8796:80/tcp
+      - "8796:80/tcp"
