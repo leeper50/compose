@@ -40,7 +40,7 @@ services:
       POSTGRES_USER: picsur
       POSTGRES_PASSWORD: ${picsur_dbpass}
     volumes:
-      - $data/picsur/db:/var/lib/postgresql/data
+      - ${data:-.}/picsur/db:/var/lib/postgresql/data
 
   # Privatebin service
   privatebin:
@@ -52,7 +52,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - $data/privatebin:/srv/data
+      - ${data:-.}/privatebin:/srv/data
     labels:
       traefik.enable: 'true'
       traefik.http.routers.privatebin.entryPoints: 'https'
@@ -82,7 +82,7 @@ services:
       MAX_DOWNLOADS: 5
       MAX_FILE_SIZE: 10737418240
     volumes:
-      - $data/send/app:/uploads
+      - ${data:-.}/send/app:/uploads
     labels:
       traefik.enable: 'true'
       traefik.http.routers.send.entryPoints: 'https'
@@ -97,7 +97,7 @@ services:
     networks:
       send: null
     volumes:
-      - $data/send/redis:/data
+      - ${data:-.}/send/redis:/data
 
   # Convertx service
   convertx:
@@ -110,7 +110,7 @@ services:
       JWT_SECRET: ${convertx_jwt}
       HIDE_HISTORY: true
     volumes:
-      - $data/convertx:/app/data
+      - ${data:-.}/convertx:/app/data
     labels:
       traefik.enable: 'true'
       traefik.http.routers.convertx.entryPoints: 'https'

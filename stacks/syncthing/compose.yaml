@@ -13,7 +13,7 @@ services:
       UMASK: ${umask:-0220}
     volumes:
       - $syncthingFolder/Syncthing:/data1:rw
-      - $data/sync:/config:rw
+      - ${data:-.}/sync:/config:rw
     labels:
       traefik.enable: 'true'
       traefik.http.routers.syncthing.entryPoints: 'https'

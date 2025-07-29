@@ -10,7 +10,7 @@ services:
     networks:
       default: null
     volumes:
-      - $data/keydb:/data
+      - ${data:-.}/keydb:/data
   paperlessngx_db:
     image: docker.io/library/postgres:16
     container_name: paperlessngx_db
@@ -18,7 +18,7 @@ services:
     networks:
       default: null
     volumes:
-      - $data/db:/var/lib/postgresql/data
+      - ${data:-.}/db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
@@ -41,10 +41,10 @@ services:
       traefik.http.routers.paperlessngx.tls.certresolver: 'cloudflare'
       traefik.http.services.paperlessngx.loadbalancer.server.url: 'http://paperlessngx:8000'
     volumes:
-      - $data/app/data:/usr/src/paperless/data
-      - $data/app/media:/usr/src/paperless/media
-      - $data/app/export:/usr/src/paperless/export
-      - $data/app/consume:/usr/src/paperless/consume
+      - ${data:-.}/app/data:/usr/src/paperless/data
+      - ${data:-.}/app/media:/usr/src/paperless/media
+      - ${data:-.}/app/export:/usr/src/paperless/export
+      - ${data:-.}/app/consume:/usr/src/paperless/consume
     environment:
       PAPERLESS_REDIS: redis://paperlessngx_broker:6379
       PAPERLESS_DBHOST: paperlessngx_db

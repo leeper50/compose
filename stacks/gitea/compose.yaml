@@ -8,7 +8,7 @@ services:
     container_name: gitea
     restart: always
     volumes:
-      - $data/server:/data
+      - ${data:-.}/server:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -48,7 +48,7 @@ services:
     networks:
       default: null
     volumes:
-      - $data/db:/var/lib/postgresql/data
+      - ${data:-.}/db:/var/lib/postgresql/data
   runner:
     image: gitea/act_runner:nightly
     container_name: gitea_runner
@@ -63,6 +63,6 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: $token
       GITEA_RUNNER_NAME: runner
     volumes:
-      - $data/runner/config.yaml:/config.yaml
-      - $data/runner/data:/data
+      - ${data:-.}/runner/config.yaml:/config.yaml
+      - ${data:-.}/runner/data:/data
       - /var/run/docker.sock:/var/run/docker.sock

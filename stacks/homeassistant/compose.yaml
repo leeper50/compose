@@ -10,7 +10,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - $data/homeassistant:/config # Local storage
+      - ${data:-.}/homeassistant:/config # Local storage
       - /etc/localtime:/etc/localtime:ro # Timezone synchronization
       - /run/dbus:/run/dbus:ro # Bluetooth connection
     devices:

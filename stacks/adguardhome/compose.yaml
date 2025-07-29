@@ -4,8 +4,8 @@ services:
     container_name: adguardhome
     restart: unless-stopped
     volumes:
-      - $data/adguardhome/work:/opt/adguardhome/work
-      - $data/adguardhome/conf:/opt/adguardhome/conf
+      - ${data:-.}/adguardhome/work:/opt/adguardhome/work
+      - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
     ports:
       - 53:53/tcp
       - 53:53/udp
@@ -16,4 +16,4 @@ services:
     restart: unless-stopped
     command: run --config /config/adguardhome-sync.yaml
     volumes:
-      - $data/adguardhome/adguardhome-sync.yaml:/config/adguardhome-sync.yaml
+      - ${data:-.}/adguardhome/adguardhome-sync.yaml:/config/adguardhome-sync.yaml

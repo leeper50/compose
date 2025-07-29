@@ -16,7 +16,7 @@ services:
       JELLYFIN_PublishedServerUrl: jf.${domain}
       DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
     volumes:
-      - $data/jellyfin:/config:rw
+      - ${data:-.}/jellyfin:/config:rw
       - $media/TV:/data/tvshows:rw
       - $media/Movies:/data/movies:rw
       - $media/Music:/data/music:rw
@@ -46,7 +46,7 @@ services:
       UMASK: ${umask}
       LOG_LEVEL: info
     volumes:
-      - $data/jellyseerr:/app/config/:rw
+      - ${data:-.}/jellyseerr:/app/config/:rw
     labels:
       traefik.enable: 'true'
       traefik.http.routers.jellyseerr.entryPoints: 'https'
@@ -65,7 +65,7 @@ services:
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
     volumes:
-      - $data/calibre:/config
+      - ${data:-.}/calibre:/config
       - $media/Books:/books
     labels:
       traefik.enable: 'true'

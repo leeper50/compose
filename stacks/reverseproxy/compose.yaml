@@ -22,10 +22,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - $data/traefik/traefik.yml:/traefik.yml:ro
-      - $data/traefik/dynamic.yml:/dynamic.yml:ro
-      - $data/traefik/acme.json:/acme.json
-      - $data/logs/traefik:/var/log/traefik:rw
+      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
+      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
+      - ${data:-.}/traefik/acme.json:/acme.json
+      - ${data:-.}/logs/traefik:/var/log/traefik:rw
     labels:
       traefik.enable: 'true'
       traefik.http.routers.traefik.entryPoints: 'https'
@@ -51,9 +51,9 @@ services:
       GID: ${gid:-1000}
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     volumes:
-      - $data/crowdsec/db:/var/lib/crowdsec/data/
-      - $data/crowdsec/config:/etc/crowdsec/
-      - $data/logs/traefik:/var/log/traefik/:ro
+      - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
+      - ${data:-.}/crowdsec/config:/etc/crowdsec/
+      - ${data:-.}/logs/traefik:/var/log/traefik/:ro
   bouncer-traefik:
     image: docker.io/fbonalair/traefik-crowdsec-bouncer
     container_name: bouncer-traefik
@@ -80,7 +80,7 @@ services:
       X_AUTHELIA_CONFIG_FILTERS: template
       X_AUTHELIA_CONFIG: /config/configuration.yml
     volumes:
-      - $data/authelia/config:/config
+      - ${data:-.}/authelia/config:/config
     labels:
       traefik.enable: 'true'
       traefik.http.routers.authelia.rule: 'Host(`auth.${domain}`)'
@@ -103,7 +103,7 @@ services:
       LLDAP_KEY_SEED: '${LLDAP_KEY_SEED}'
       LLDAP_LDAP_BASE_DN: 'dc=${second_level_domain},dc=${tld}'
     volumes:
-      - $data/lldap:/data
+      - ${data:-.}/lldap:/data
     labels:
       traefik.enable: 'true'
       traefik.http.routers.lldap.rule: 'Host(`lldap.${domain}`)'

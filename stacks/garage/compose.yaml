@@ -16,9 +16,9 @@ services:
     environment:
       TZ: ${timezone:-UTC}
     volumes:
-      - $data/garage.toml:/etc/garage.toml:ro
-      - $data/metadata:/var/lib/garage/meta
-      - $data/storage:/var/lib/garage/data
+      - ${data:-.}/garage.toml:/etc/garage.toml:ro
+      - ${data:-.}/metadata:/var/lib/garage/meta
+      - ${data:-.}/storage:/var/lib/garage/data
     labels:
       traefik.enable: 'true'
       traefik.http.routers.garage.entryPoints: 'https'
@@ -36,7 +36,7 @@ services:
     networks:
       proxy:
     volumes:
-      - $data/garage.toml:/etc/garage.toml:ro
+      - ${data:-.}/garage.toml:/etc/garage.toml:ro
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"

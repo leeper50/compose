@@ -27,7 +27,7 @@ services:
       DB_PASSWORD: ${db_pass}
       QUEUE_CONNECTION: null
     volumes:
-      - $data/bookstack/config:/config
+      - ${data:-.}/bookstack/config:/config
     labels:
       traefik.enable: 'true'
       traefik.http.routers.bookstack.entryPoints: 'https'
@@ -50,7 +50,7 @@ services:
       MYSQL_USER: bookstack
       MYSQL_PASSWORD: ${db_pass}
     volumes:
-      - $data/bookstack/db:/config
+      - ${data:-.}/bookstack/db:/config
 
   # Metrics service
   grafana:
@@ -67,7 +67,7 @@ services:
     environment:
       GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
     volumes:
-      - $data/grafana:/var/lib/grafana
+      - ${data:-.}/grafana:/var/lib/grafana
       - /etc/timezone:/etc/timezone:ro
     labels:
       traefik.enable: 'true'
@@ -83,7 +83,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - $data/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /etc/timezone:/etc/timezone:ro
     labels:
       traefik.enable: 'true'
@@ -101,7 +101,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - $data/uptime:/app/data:rw
+      - ${data:-.}/uptime:/app/data:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       traefik.enable: 'true'

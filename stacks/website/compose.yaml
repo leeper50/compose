@@ -11,7 +11,7 @@ services:
     networks:
       proxy:
     volumes:
-      - $data/newweb/db:/app/db
+      - ${data:-.}/newweb/db:/app/db
     labels:
       traefik.enable: 'true'
       traefik.http.routers.mywebsite.entryPoints: 'https'
@@ -31,8 +31,8 @@ services:
       options:
         max-size: 10m
     volumes:
-      - $data/rss/data:/var/www/FreshRSS/data
-      - $data/rss/extensions:/var/www/FreshRSS/extensions
+      - ${data:-.}/rss/data:/var/www/FreshRSS/data
+      - ${data:-.}/rss/extensions:/var/www/FreshRSS/extensions
     environment:
       TZ: ${timezone:-UTC}
       TRUSTED_PROXY: 0
@@ -51,7 +51,7 @@ services:
     networks:
       freshrss:
     volumes:
-      - $data/rss/db:/var/lib/postgresql/data
+      - ${data:-.}/rss/db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: rss
@@ -66,7 +66,7 @@ services:
       DOMAIN: https://vault.${domain}
       ADMIN_TOKEN: '${vaultwarden_admin_token}'
     volumes:
-      - $data/vault/data:/data
+      - ${data:-.}/vault/data:/data
     labels:
       traefik.enable: 'true'
       traefik.http.routers.vaultwarden.entryPoints: 'https'
@@ -83,7 +83,7 @@ services:
       TZ: ${timezone:-UTC}
       HOMEPAGE_ALLOWED_HOSTS: home.${domain}
     volumes:
-      - $data/homepage:/app/config:rw
+      - ${data:-.}/homepage:/app/config:rw
       - /var/run/docker.sock:/var/run/docker.sock:r
     labels:
       traefik.enable: 'true'
@@ -102,8 +102,8 @@ services:
     environment:
       LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
     volumes:
-      - $data/copyparty/conf:/cfg
-      - $data/copyparty/files:/w
+      - ${data:-.}/copyparty/conf:/cfg
+      - ${data:-.}/copyparty/files:/w
     labels:
       traefik.enable: 'true'
       traefik.http.routers.copyparty.entryPoints: 'https'
