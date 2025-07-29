@@ -10,8 +10,8 @@ services:
       proxy: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${uid}
-      PGID: ${gid}
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
       UMASK: ${UMASK}
       JELLYFIN_PublishedServerUrl: jf.${domain}
       DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
@@ -41,8 +41,8 @@ services:
       - jellyfin
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${uid}
-      PGID: ${gid}
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
       UMASK: ${UMASK}
       LOG_LEVEL: info
     volumes:
@@ -62,8 +62,8 @@ services:
       proxy: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${uid}
-      PGID: ${gid}
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
     volumes:
       - $data/calibre:/config
       - $media/Books:/books

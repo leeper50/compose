@@ -48,7 +48,7 @@ services:
     container_name: privatebin
     restart: always
     read_only: true
-    user: ${uid}:${gid}
+    user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
     volumes:
