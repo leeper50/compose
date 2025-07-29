@@ -60,7 +60,7 @@ services:
     environment:
       CONFIG_FILE: /config.yaml
       GITEA_INSTANCE_URL: http://gitea:3000
-      GITEA_RUNNER_REGISTRATION_TOKEN: $token
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
       GITEA_RUNNER_NAME: runner
     volumes:
       - ${data:-.}/runner/config.yaml:/config.yaml

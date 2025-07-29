@@ -12,7 +12,7 @@ services:
       PGID: ${gid:-1000}
       UMASK: ${umask:-0220}
     volumes:
-      - $syncthingFolder/Syncthing:/data1:rw
+      - ${syncthingFolder}/Syncthing:/data1:rw
       - ${data:-.}/sync:/config:rw
     labels:
       traefik.enable: 'true'
