@@ -12,10 +12,11 @@ entryPoints:
       insecure: false
     proxyProtocol:
       trustedIPs:
-        - "172.16.0.0/12" # This subnet will include addresses of 
-                          # containers on a default docker network.
-                          # IPV6 enabled networks should have their subnet
-                          # included here as well.
+        - "172.16.0.0/12"
+          # This subnet will include addresses of
+          # containers on a default docker network.
+          # IPV6 enabled networks should have their subnet
+          # included here as well.
       insecure: false
     http:
       middlewares:
@@ -37,7 +38,7 @@ certificatesResolvers:
     acme:
       email: youremail@example.com
       storage: /acme.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory 
+      caServer: https://acme-v02.api.letsencrypt.org/directory
       dnsChallenge:
         provider: cloudflare
         resolvers:

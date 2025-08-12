@@ -29,12 +29,12 @@ services:
     volumes:
       - ${data:-.}/bookstack/config:/config
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.bookstack.entryPoints: 'https'
-      traefik.http.routers.bookstack.middlewares: 'authelia@docker'
-      traefik.http.routers.bookstack.rule: 'Host(`wiki.${domain}`)'
-      traefik.http.routers.bookstack.tls.certresolver: 'cloudflare'
-      traefik.http.services.bookstack.loadbalancer.server.url: 'http://bookstack:80'
+      traefik.enable: "true"
+      traefik.http.routers.bookstack.entryPoints: "https"
+      traefik.http.routers.bookstack.middlewares: "authelia@docker"
+      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
+      traefik.http.routers.bookstack.tls.certresolver: "cloudflare"
+      traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:80"
   bookstack_db:
     image: lscr.io/linuxserver/mariadb:latest
     container_name: bookstack_db
@@ -70,12 +70,12 @@ services:
       - ${data:-.}/grafana:/var/lib/grafana
       - /etc/timezone:/etc/timezone:ro
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.grafana.entryPoints: 'https'
-      traefik.http.routers.grafana.middlewares: 'localonly@file'
-      traefik.http.routers.grafana.rule: 'Host(`gf.${local_domain}`)'
-      traefik.http.routers.grafana.tls.certresolver: 'cloudflare'
-      traefik.http.services.grafana.loadbalancer.server.url: 'http://grafana:3000'
+      traefik.enable: "true"
+      traefik.http.routers.grafana.entryPoints: "https"
+      traefik.http.routers.grafana.middlewares: "localonly@file"
+      traefik.http.routers.grafana.rule: "Host(`gf.${local_domain}`)"
+      traefik.http.routers.grafana.tls.certresolver: "cloudflare"
+      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -86,12 +86,12 @@ services:
       - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /etc/timezone:/etc/timezone:ro
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.prometheus.entryPoints: 'https'
-      traefik.http.routers.prometheus.middlewares: 'localonly@file'
-      traefik.http.routers.prometheus.rule: 'Host(`pm.${local_domain}`)'
-      traefik.http.routers.prometheus.tls.certresolver: 'cloudflare'
-      traefik.http.services.prometheus.loadbalancer.server.url: 'http://prometheus:9090'
+      traefik.enable: "true"
+      traefik.http.routers.prometheus.entryPoints: "https"
+      traefik.http.routers.prometheus.middlewares: "localonly@file"
+      traefik.http.routers.prometheus.rule: "Host(`pm.${local_domain}`)"
+      traefik.http.routers.prometheus.tls.certresolver: "cloudflare"
+      traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
 
   # Uptime service
   uptimekuma:
@@ -104,9 +104,9 @@ services:
       - ${data:-.}/uptime:/app/data:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.uptimekuma.entryPoints: 'https'
-      traefik.http.routers.uptimekuma.middlewares: 'authelia@docker'
-      traefik.http.routers.uptimekuma.rule: 'Host(`up.${domain}`)'
-      traefik.http.routers.uptimekuma.tls.certresolver: 'cloudflare'
-      traefik.http.services.uptimekuma.loadbalancer.server.url: 'http://uptimekuma:3001'
+      traefik.enable: "true"
+      traefik.http.routers.uptimekuma.entryPoints: "https"
+      traefik.http.routers.uptimekuma.middlewares: "authelia@docker"
+      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain}`)"
+      traefik.http.routers.uptimekuma.tls.certresolver: "cloudflare"
+      traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"

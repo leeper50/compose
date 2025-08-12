@@ -9,8 +9,8 @@ services:
     networks:
       proxy:
     ports:
-     - "3900:3900/tcp"   ## s3 api
-     - "3901:3901/tcp"   ## rpc
+      - "3900:3900/tcp" ## s3 api
+      - "3901:3901/tcp" ## rpc
     #- "3902:3902/tcp"   ## s3 web
     #- "3903:3903/tcp"   ## admin api and '/metrics' for prometheus
     environment:
@@ -20,12 +20,12 @@ services:
       - ${data:-.}/metadata:/var/lib/garage/meta
       - ${data:-.}/storage:/var/lib/garage/data
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.garage.entryPoints: 'https'
-      traefik.http.routers.garage.middlewares: 'goodbois@file'
-      traefik.http.routers.garage.rule: 'Host(`s3.${domain}`)'
-      traefik.http.routers.garage.tls.certresolver: 'cloudflare'
-      traefik.http.services.garage.loadbalancer.server.url: 'http://garage:3900'
+      traefik.enable: "true"
+      traefik.http.routers.garage.entryPoints: "https"
+      traefik.http.routers.garage.middlewares: "goodbois@file"
+      traefik.http.routers.garage.rule: "Host(`s3.${domain}`)"
+      traefik.http.routers.garage.tls.certresolver: "cloudflare"
+      traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
 
   webui:
     image: khairul169/garage-webui:latest
@@ -41,9 +41,9 @@ services:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.garage-webui.entryPoints: 'https'
-      traefik.http.routers.garage-webui.middlewares: 'localonly@file'
-      traefik.http.routers.garage-webui.rule: 'Host(`garage.${local_domain}`)'
-      traefik.http.routers.garage-webui.tls.certresolver: 'cloudflare'
-      traefik.http.services.garage-webui.loadbalancer.server.url: 'http://garage-webui:3909'
+      traefik.enable: "true"
+      traefik.http.routers.garage-webui.entryPoints: "https"
+      traefik.http.routers.garage-webui.middlewares: "localonly@file"
+      traefik.http.routers.garage-webui.rule: "Host(`garage.${local_domain}`)"
+      traefik.http.routers.garage-webui.tls.certresolver: "cloudflare"
+      traefik.http.services.garage-webui.loadbalancer.server.url: "http://garage-webui:3909"

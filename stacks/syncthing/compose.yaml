@@ -1,4 +1,4 @@
-networks: 
+networks:
   proxy:
     external: true
 services:
@@ -15,9 +15,9 @@ services:
       - ${syncthingFolder}/Syncthing:/data1:rw
       - ${data:-.}/sync:/config:rw
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.syncthing.entryPoints: 'https'
-      traefik.http.routers.syncthing.middlewares: 'localonly@file'
-      traefik.http.routers.syncthing.rule: 'Host(`sync.${local_domain}`)'
-      traefik.http.routers.syncthing.tls.certresolver: 'cloudflare'
-      traefik.http.services.syncthing.loadbalancer.server.url: 'http://${host_ip}:8384'
+      traefik.enable: "true"
+      traefik.http.routers.syncthing.entryPoints: "https"
+      traefik.http.routers.syncthing.middlewares: "localonly@file"
+      traefik.http.routers.syncthing.rule: "Host(`sync.${local_domain}`)"
+      traefik.http.routers.syncthing.tls.certresolver: "cloudflare"
+      traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"

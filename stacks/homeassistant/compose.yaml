@@ -16,9 +16,9 @@ services:
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0 # Zigbee radio controller
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.homeassistant.entryPoints: 'https'
-      traefik.http.routers.homeassistant.middlewares: 'localonly@file'
-      traefik.http.routers.homeassistant.rule: 'Host(`ha.${domain}`) || Host(`ha.${local_domain}`)'
-      traefik.http.routers.homeassistant.tls.certresolver: 'cloudflare'
-      traefik.http.services.homeassistant.loadbalancer.server.url: 'http://homeassistant:8123'
+      traefik.enable: "true"
+      traefik.http.routers.homeassistant.entryPoints: "https"
+      traefik.http.routers.homeassistant.middlewares: "localonly@file"
+      traefik.http.routers.homeassistant.rule: "Host(`ha.${domain}`) || Host(`ha.${local_domain}`)"
+      traefik.http.routers.homeassistant.tls.certresolver: "cloudflare"
+      traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"

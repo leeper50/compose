@@ -13,11 +13,11 @@ services:
     volumes:
       - ${data:-.}/newweb/db:/app/db
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.mywebsite.entryPoints: 'https'
-      traefik.http.routers.mywebsite.rule: 'Host(`${domain}`) || Host(`www.${domain}`)'
-      traefik.http.routers.mywebsite.tls.certresolver: 'cloudflare'
-      traefik.http.services.mywebsite.loadbalancer.server.url: 'http://mywebsite:8080'
+      traefik.enable: "true"
+      traefik.http.routers.mywebsite.entryPoints: "https"
+      traefik.http.routers.mywebsite.rule: "Host(`${domain}`) || Host(`www.${domain}`)"
+      traefik.http.routers.mywebsite.tls.certresolver: "cloudflare"
+      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
     image: freshrss/freshrss:latest
     container_name: freshrss
@@ -37,13 +37,13 @@ services:
       TZ: ${timezone:-UTC}
       TRUSTED_PROXY: 0
       LISTEN: 0.0.0.0:80
-      CRON_MIN: '1,31'
+      CRON_MIN: "1,31"
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.freshrss.entryPoints: 'https'
-      traefik.http.routers.freshrss.rule: 'Host(`rss.${domain}`)'
-      traefik.http.routers.freshrss.tls.certresolver: 'cloudflare'
-      traefik.http.services.freshrss.loadbalancer.server.url: 'http://freshrss:80'
+      traefik.enable: "true"
+      traefik.http.routers.freshrss.entryPoints: "https"
+      traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
+      traefik.http.routers.freshrss.tls.certresolver: "cloudflare"
+      traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
     image: postgres:16
     container_name: freshrssdb
@@ -64,15 +64,15 @@ services:
       proxy:
     environment:
       DOMAIN: https://vault.${domain}
-      ADMIN_TOKEN: '${vaultwarden_admin_token}'
+      ADMIN_TOKEN: "${vaultwarden_admin_token}"
     volumes:
       - ${data:-.}/vault/data:/data
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.vaultwarden.entryPoints: 'https'
-      traefik.http.routers.vaultwarden.rule: 'Host(`vault.${domain}`)'
-      traefik.http.routers.vaultwarden.tls.certresolver: 'cloudflare'
-      traefik.http.services.vaultwarden.loadbalancer.server.url: 'http://vaultwarden:80'
+      traefik.enable: "true"
+      traefik.http.routers.vaultwarden.entryPoints: "https"
+      traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
+      traefik.http.routers.vaultwarden.tls.certresolver: "cloudflare"
+      traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
@@ -86,12 +86,12 @@ services:
       - ${data:-.}/homepage:/app/config:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.homepage.entryPoints: 'https'
-      traefik.http.routers.homepage.middlewares: 'localonly@file'
-      traefik.http.routers.homepage.rule: 'Host(`home.dellhplaptop.xyz`)'
-      traefik.http.routers.homepage.tls.certresolver: 'cloudflare'
-      traefik.http.services.homepage.loadbalancer.server.url: 'http://homepage:3000'
+      traefik.enable: "true"
+      traefik.http.routers.homepage.entryPoints: "https"
+      traefik.http.routers.homepage.middlewares: "localonly@file"
+      traefik.http.routers.homepage.rule: "Host(`home.dellhplaptop.xyz`)"
+      traefik.http.routers.homepage.tls.certresolver: "cloudflare"
+      traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
     image: copyparty/iv:latest
     container_name: copyparty
@@ -105,15 +105,15 @@ services:
       - ${data:-.}/copyparty/conf:/cfg
       - ${data:-.}/copyparty/files:/w
     labels:
-      traefik.enable: 'true'
-      traefik.http.routers.copyparty.entryPoints: 'https'
-      traefik.http.routers.copyparty.middlewares: 'goodbois@file'
-      traefik.http.routers.copyparty.rule: 'Host(`files.${domain}`) || Host(`files.${local_domain}`)'
-      traefik.http.routers.copyparty.tls.certresolver: 'cloudflare'
-      traefik.http.services.copyparty.loadbalancer.server.url: 'http://copyparty:3923'
-    stop_grace_period: 15s  # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+      traefik.enable: "true"
+      traefik.http.routers.copyparty.entryPoints: "https"
+      traefik.http.routers.copyparty.middlewares: "goodbois@file"
+      traefik.http.routers.copyparty.rule: "Host(`files.${domain}`) || Host(`files.${local_domain}`)"
+      traefik.http.routers.copyparty.tls.certresolver: "cloudflare"
+      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
+    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:
-      # hide it from logs with "/._" so it matches the default --lf-url filter 
+      # hide it from logs with "/._" so it matches the default --lf-url filter
       test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
       interval: 1m
       timeout: 2s
