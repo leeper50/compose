@@ -3,13 +3,19 @@ networks:
     external: true
 services:
   netbootxyz:
-    image: ghcr.io/netbootxyz/netbootxyz
+    image: lscr.io/linuxserver/netbootxyz:latest
     container_name: netbootxyz
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 3s
     environment:
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
-      WEB_APP_PORT: 3000
+      TZ: ${timezone:-UTC}
     ports:
       - "69:69/udp"
     volumes:
