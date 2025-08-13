@@ -1,0 +1,23 @@
+networks:
+  proxy:
+    external: true
+services:
+  netbootxyz:
+    image: ghcr.io/netbootxyz/netbootxyz
+    container_name: netbootxyz
+    restart: always
+    environment:
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
+    ports:
+      - "69:69/udp"
+    volumes:
+      - ${data:-.}/netbootxyz/config:/config:rw
+      - ${assets:-.}/netbootxyz/assets:/assets
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.netbootxyz.entryPoints: "https"
+      traefik.http.routers.netbootxyz.middlewares: "localonly@file"
+      traefik.http.routers.netbootxyz.rule: "Host(`nb.${local_domain}`)"
+      traefik.http.routers.netbootxyz.tls.certresolver: "cloudflare"
+      traefik.http.services.netbootxyz.loadbalancer.server.url: "http://netbootxyz:3000"
