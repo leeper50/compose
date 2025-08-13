@@ -9,11 +9,12 @@ services:
     environment:
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
+      WEB_APP_PORT: 3000
     ports:
       - "69:69/udp"
     volumes:
       - ${data:-.}/netbootxyz/config:/config:rw
-      - ${assets:-.}/netbootxyz/assets:/assets
+      - ${data:-.}/netbootxyz/assets:/assets:rw
     labels:
       traefik.enable: "true"
       traefik.http.routers.netbootxyz.entryPoints: "https"
