@@ -6,6 +6,8 @@ services:
     image: lscr.io/linuxserver/netbootxyz:latest
     container_name: netbootxyz
     restart: always
+    networks:
+      proxy: null
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 2s
