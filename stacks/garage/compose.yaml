@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   garage:
-    image: dxflrs/garage:${garage_version:-latest}
+    image: dxflrs/garage:${garage_version:-v2.0.0}
     container_name: garage
     restart: unless-stopped
     networks:
