@@ -4,7 +4,7 @@ networks:
 services:
   # Traefik configuration
   traefik:
-    image: traefik:v3.4
+    image: traefik:${traefik_verison:-v3.4}
     container_name: traefik
     restart: unless-stopped
     depends_on:
@@ -40,7 +40,7 @@ services:
 
   # Crowdsec configuration
   crowdsec:
-    image: crowdsecurity/crowdsec:latest
+    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
     container_name: crowdsec
     restart: unless-stopped
     depends_on:
@@ -55,7 +55,7 @@ services:
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
       - ${data:-.}/logs/traefik:/var/log/traefik/:ro
   bouncer-traefik:
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
     container_name: bouncer-traefik
     restart: unless-stopped
     depends_on:
@@ -68,7 +68,7 @@ services:
 
   # Authelia configuration
   authelia:
-    image: authelia/authelia:latest
+    image: authelia/authelia:${authelia_version:-latest}
     container_name: authelia
     restart: unless-stopped
     depends_on:
@@ -91,7 +91,7 @@ services:
       traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
   lldap:
-    image: lldap/lldap:stable
+    image: lldap/lldap:$:${lldap_version:-stable}
     container_name: lldap
     networks:
       proxy:

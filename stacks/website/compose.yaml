@@ -5,7 +5,7 @@ networks:
     external: true
 services:
   mywebsite:
-    image: dellhplaptop/newwebsite:latest
+    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     container_name: mywebsite
     restart: always
     networks:
@@ -19,7 +19,7 @@ services:
       traefik.http.routers.mywebsite.tls.certresolver: "cloudflare"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
-    image: freshrss/freshrss:latest
+    image: freshrss/freshrss:${freshrss_version:-latest}
     container_name: freshrss
     restart: always
     depends_on:
@@ -45,7 +45,7 @@ services:
       traefik.http.routers.freshrss.tls.certresolver: "cloudflare"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
-    image: postgres:16
+    image: postgres:${postgres_version:-16}
     container_name: freshrssdb
     restart: always
     networks:
@@ -57,7 +57,7 @@ services:
       POSTGRES_USER: rss
       POSTGRES_PASSWORD: ${DB_PASSWORD}
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: vaultwarden/server:${vaultwarden_version:-latest}
     container_name: vaultwarden
     restart: always
     networks:
@@ -74,7 +74,7 @@ services:
       traefik.http.routers.vaultwarden.tls.certresolver: "cloudflare"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     container_name: homepage
     restart: always
     networks:
@@ -93,7 +93,7 @@ services:
       traefik.http.routers.homepage.tls.certresolver: "cloudflare"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
-    image: copyparty/iv:latest
+    image: copyparty/iv:${copyparty_version:-latest}
     container_name: copyparty
     user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped

@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   garage:
-    image: dxflrs/garage:v2.0.0
+    image: dxflrs/garage:${garage_version:-latest}
     container_name: garage
     restart: unless-stopped
     networks:
@@ -28,7 +28,7 @@ services:
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
 
   webui:
-    image: khairul169/garage-webui:latest
+    image: khairul169/garage-webui:${garage_webui_version:-latest}
     container_name: garage-webui
     restart: unless-stopped
     depends_on:

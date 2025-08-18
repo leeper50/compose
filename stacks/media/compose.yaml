@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   jellyfin:
-    image: linuxserver/jellyfin:latest
+    image: linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
     restart: always
     networks:
@@ -30,7 +30,7 @@ services:
       traefik.http.routers.jellyfin.tls.certresolver: "cloudflare"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
     restart: always
     networks:
@@ -55,7 +55,7 @@ services:
       traefik.http.routers.jellyseerr.tls.certresolver: "cloudflare"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:
-    image: lscr.io/linuxserver/calibre-web:latest
+    image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
     restart: always
     networks:

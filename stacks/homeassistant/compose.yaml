@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:stable
+    image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     container_name: homeassistant
     restart: unless-stopped
     privileged: true

@@ -4,7 +4,7 @@ networks:
     external: true
 services:
   paperlessngx_broker:
-    image: eqalpha/keydb:latest
+    image: eqalpha/keydb:${keydb_version:-latest}
     container_name: paperlessngx_broker
     restart: unless-stopped
     networks:
@@ -12,7 +12,7 @@ services:
     volumes:
       - ${data:-.}/keydb:/data
   paperlessngx_db:
-    image: docker.io/library/postgres:16
+    image: docker.io/library/postgres:${postgres_version:-16}
     container_name: paperlessngx_db
     restart: unless-stopped
     networks:
@@ -24,7 +24,7 @@ services:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: ${db_pass:-paperless}
   paperlessngx:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     container_name: paperlessngx
     restart: unless-stopped
     networks:

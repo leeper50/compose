@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   netbootxyz:
-    image: ghcr.io/netbootxyz/netbootxyz
+    image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
     container_name: netbootxyz
     restart: always
     networks:

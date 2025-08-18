@@ -6,7 +6,7 @@ networks:
 services:
   # Picsur service
   picsur:
-    image: ghcr.io/caramelfur/picsur:latest
+    image: ghcr.io/caramelfur/picsur:${picsur_version:-latest}
     container_name: picsur
     restart: always
     depends_on:
@@ -30,7 +30,7 @@ services:
       traefik.http.routers.picsur.tls.certresolver: "cloudflare"
       traefik.http.services.picsur.loadbalancer.server.url: "http://picsur:8080"
   picsur_postgres:
-    image: postgres:14-alpine
+    image: postgres:${postgres_version:-14-alpine}
     container_name: picsur_postgres
     restart: always
     networks:
@@ -44,7 +44,7 @@ services:
 
   # Privatebin service
   privatebin:
-    image: privatebin/nginx-fpm-alpine:latest
+    image: privatebin/nginx-fpm-alpine:${privatebin_version:-latest}
     container_name: privatebin
     restart: always
     read_only: true
@@ -63,7 +63,7 @@ services:
 
   # Send service
   send:
-    image: registry.gitlab.com/timvisee/send:latest
+    image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     container_name: send
     restart: always
     depends_on:
@@ -91,7 +91,7 @@ services:
       traefik.http.routers.send.tls.certresolver: "cloudflare"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
   send_redis:
-    image: redis:alpine
+    image: redis:${redis_version:-alpine}
     container_name: send_redis
     restart: always
     networks:
@@ -101,7 +101,7 @@ services:
 
   # Convertx service
   convertx:
-    image: ghcr.io/c4illin/convertx:latest
+    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     container_name: convertx
     restart: always
     networks:
