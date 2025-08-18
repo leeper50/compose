@@ -24,12 +24,12 @@ services:
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
-    image: serjs/go-socks5-proxy
+    image: serjs/go-socks5-proxy:latest
     container_name: socks5proxy
     network_mode: service:gluetun-proxy
     restart: always
   tor-privoxy:
-    image: dockage/tor-privoxy
+    image: dockage/tor-privoxy:latest
     container_name: tor-privoxy
     restart: always
     ports:

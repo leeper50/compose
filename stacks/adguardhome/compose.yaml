@@ -1,6 +1,6 @@
 services:
   adguardhome:
-    image: adguard/adguardhome
+    image: adguard/adguardhome:latest
     container_name: adguardhome
     restart: unless-stopped
     volumes:
@@ -11,7 +11,7 @@ services:
       - "53:53/udp"
       - "3000:3000/tcp"
   adguardhome-sync:
-    image: ghcr.io/bakito/adguardhome-sync
+    image: ghcr.io/bakito/adguardhome-sync:latest
     container_name: adguardhome-sync
     restart: unless-stopped
     command: run --config /config/adguardhome-sync.yaml

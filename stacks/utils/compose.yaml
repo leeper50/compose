@@ -44,7 +44,7 @@ services:
 
   # Privatebin service
   privatebin:
-    image: privatebin/nginx-fpm-alpine
+    image: privatebin/nginx-fpm-alpine:latest
     container_name: privatebin
     restart: always
     read_only: true
@@ -101,7 +101,7 @@ services:
 
   # Convertx service
   convertx:
-    image: ghcr.io/c4illin/convertx
+    image: ghcr.io/c4illin/convertx:latest
     container_name: convertx
     restart: always
     networks:

@@ -3,7 +3,7 @@ networks:
     external: true
 services:
   syncthing:
-    image: lscr.io/linuxserver/syncthing
+    image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
     restart: always
     network_mode: host
