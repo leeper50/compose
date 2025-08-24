@@ -59,7 +59,7 @@ services:
       default: null
     environment:
       CONFIG_FILE: /config.yaml
-      GITEA_INSTANCE_URL: http://gitea:3000
+      GITEA_INSTANCE_URL: https://git.${domain}/
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
       GITEA_RUNNER_NAME: runner
     volumes:
