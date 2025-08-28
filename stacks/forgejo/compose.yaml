@@ -1,0 +1,67 @@
+networks:
+  proxy:
+    external: true
+
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-12-rootless}
+    container_name: forgejo
+    user: ${uid:-1000}:${gid:-1000}
+    restart: always
+    environment:
+      USER_UID: ${uid:-1000}
+      USER_GID: ${gid:-1000}
+      FORGEJO__database__DB_TYPE: postgres
+      FORGEJO__database__HOST: db:5432
+      FORGEJO__database__NAME: forgejo
+      FORGEJO__database__USER: forgejo
+      FORGEJO__database__PASSWD: ${db_pass:-forgejo}
+      FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
+    depends_on:
+      - db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.forgejo.entryPoints: "https"
+      traefik.http.routers.forgejo.middlewares: "goodbois@file"
+      traefik.http.routers.forgejo.rule: "Host(`fj.${domain}`)"
+      traefik.http.routers.forgejo.tls.certresolver: "cloudflare"
+      traefik.http.services.forgejo.loadbalancer.server.url: "http://forgejo:3000"
+    networks:
+      default:
+      proxy:
+    volumes:
+      - ${data:-.}/app/data:/var/lib/gitea
+      - ${data:-.}/app/conf:/etc/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+  db:
+    image: postgres:${postgres_version:-14}
+    restart: always
+    environment:
+      POSTGRES_USER: forgejo
+      POSTGRES_PASSWORD: ${db_pass:-forgejo}
+      POSTGRES_DB: forgejo
+    networks:
+      default:
+    volumes:
+      - ${data:-.}/db:/var/lib/postgresql/data
+
+  runner:
+    image: gitea/act_runner:${runner_version:-nightly}
+    container_name: forgejo_runner
+    restart: always
+    depends_on:
+      - forgejo
+    environment:
+      GITEA_INSTANCE_URL: https://git.${domain}/
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
+      GITEA_RUNNER_NAME: forgejo_runner
+      GITEA_RUNNER_LABELS: "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
+        ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\
+        ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04,\
+        ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
+    networks:
+      default: null
+    volumes:
+      - ${data:-.}/runner/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
