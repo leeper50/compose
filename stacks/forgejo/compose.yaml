@@ -53,10 +53,11 @@ services:
     depends_on:
       - forgejo
     environment:
-      GITEA_INSTANCE_URL: https://git.${domain}/
+      GITEA_INSTANCE_URL: https://fj.${domain}/
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
       GITEA_RUNNER_NAME: forgejo_runner
-      GITEA_RUNNER_LABELS: "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
+      GITEA_RUNNER_LABELS:
+        "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
         ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\
         ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04,\
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
