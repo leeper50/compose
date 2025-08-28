@@ -1,9 +1,17 @@
 networks:
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   # Traefik configuration
   traefik:
+    <<: *logging-policy
     image: traefik:${traefik_verison:-v3.4}
     container_name: traefik
     restart: unless-stopped
@@ -40,6 +48,7 @@ services:
 
   # Crowdsec configuration
   crowdsec:
+    <<: *logging-policy
     image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
     container_name: crowdsec
     restart: unless-stopped
@@ -55,6 +64,7 @@ services:
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
       - ${data:-.}/logs/traefik:/var/log/traefik/:ro
   bouncer-traefik:
+    <<: *logging-policy
     image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
     container_name: bouncer-traefik
     restart: unless-stopped
@@ -68,6 +78,7 @@ services:
 
   # Authelia configuration
   authelia:
+    <<: *logging-policy
     image: authelia/authelia:${authelia_version:-latest}
     container_name: authelia
     restart: unless-stopped
@@ -91,8 +102,10 @@ services:
       traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
   lldap:
+    <<: *logging-policy
     image: lldap/lldap:${lldap_version:-stable}
     container_name: lldap
+    restart: unless-stopped
     networks:
       proxy:
     environment:
