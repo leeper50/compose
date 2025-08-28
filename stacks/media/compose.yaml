@@ -1,8 +1,16 @@
 networks:
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   jellyfin:
+    <<: *logging-policy
     image: linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
     restart: always
@@ -30,6 +38,7 @@ services:
       traefik.http.routers.jellyfin.tls.certresolver: "cloudflare"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
   jellyseerr:
+    <<: *logging-policy
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
     restart: always
@@ -55,6 +64,7 @@ services:
       traefik.http.routers.jellyseerr.tls.certresolver: "cloudflare"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:
+    <<: *logging-policy
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
     restart: always

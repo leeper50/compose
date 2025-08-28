@@ -1,8 +1,20 @@
+networks:
+  default: null
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   adguardhome:
+    <<: *logging-policy
     image: adguard/adguardhome:${adguard_version:-latest}
     container_name: adguardhome
     restart: unless-stopped
+    networks:
+      default: null
     volumes:
       - ${data:-.}/adguardhome/work:/opt/adguardhome/work
       - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
@@ -11,9 +23,12 @@ services:
       - "53:53/udp"
       - "3000:3000/tcp"
   adguardhome-sync:
+    <<: *logging-policy
     image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
     container_name: adguardhome-sync
     restart: unless-stopped
+    networks:
+      default: null
     command: run --config /config/adguardhome-sync.yaml
     volumes:
       - ${data:-.}/adguardhome/adguardhome-sync.yaml:/config/adguardhome-sync.yaml

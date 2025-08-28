@@ -2,8 +2,16 @@ networks:
   default: null
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   gitea:
+    <<: *logging-policy
     image: gitea/gitea:${gitea_version:-1.24}
     container_name: gitea
     restart: always
@@ -33,6 +41,7 @@ services:
       traefik.http.routers.gitea.tls.certresolver: "cloudflare"
       traefik.http.services.gitea.loadbalancer.server.url: "http://gitea:3000"
   giteadb:
+    <<: *logging-policy
     image: postgres:${postgres_version:-14}
     container_name: gitea_db
     restart: always
@@ -45,6 +54,7 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   runner:
+    <<: *logging-policy
     image: gitea/act_runner:${runner_version:-nightly}
     container_name: gitea_runner
     restart: always

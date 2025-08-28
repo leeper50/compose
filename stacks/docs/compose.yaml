@@ -2,9 +2,17 @@ networks:
   bookstack: null
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   # Wiki service
   bookstack:
+    <<: *logging-policy
     image: lscr.io/linuxserver/bookstack:${bookstack_version:-latest}
     container_name: bookstack
     restart: unless-stopped
@@ -36,6 +44,7 @@ services:
       traefik.http.routers.bookstack.tls.certresolver: "cloudflare"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:80"
   bookstack_db:
+    <<: *logging-policy
     image: lscr.io/linuxserver/mariadb:${mariadb_version:-latest}
     container_name: bookstack_db
     restart: unless-stopped
@@ -54,6 +63,7 @@ services:
 
   # Metrics service
   grafana:
+    <<: *logging-policy
     image: grafana/grafana:${grafana_version:-latest}
     container_name: grafana
     restart: always
@@ -77,6 +87,7 @@ services:
       traefik.http.routers.grafana.tls.certresolver: "cloudflare"
       traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   prometheus:
+    <<: *logging-policy
     image: prom/prometheus:${prometheus_version:-latest}
     container_name: prometheus
     restart: always
@@ -95,6 +106,7 @@ services:
 
   # Uptime service
   uptimekuma:
+    <<: *logging-policy
     image: louislam/uptime-kuma:${uptimekuma_version:-latest}
     container_name: uptimekuma
     restart: always

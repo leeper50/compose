@@ -3,9 +3,17 @@ networks:
   send: null
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   # Picsur service
   picsur:
+    <<: *logging-policy
     image: ghcr.io/caramelfur/picsur:${picsur_version:-latest}
     container_name: picsur
     restart: always
@@ -30,6 +38,7 @@ services:
       traefik.http.routers.picsur.tls.certresolver: "cloudflare"
       traefik.http.services.picsur.loadbalancer.server.url: "http://picsur:8080"
   picsur_postgres:
+    <<: *logging-policy
     image: postgres:${postgres_version:-14-alpine}
     container_name: picsur_postgres
     restart: always
@@ -44,6 +53,7 @@ services:
 
   # Privatebin service
   privatebin:
+    <<: *logging-policy
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-latest}
     container_name: privatebin
     restart: always
@@ -63,6 +73,7 @@ services:
 
   # Send service
   send:
+    <<: *logging-policy
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     container_name: send
     restart: always
@@ -91,6 +102,7 @@ services:
       traefik.http.routers.send.tls.certresolver: "cloudflare"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
   send_redis:
+    <<: *logging-policy
     image: redis:${redis_version:-alpine}
     container_name: send_redis
     restart: always
@@ -101,6 +113,7 @@ services:
 
   # Convertx service
   convertx:
+    <<: *logging-policy
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     container_name: convertx
     restart: always

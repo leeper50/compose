@@ -1,8 +1,16 @@
 networks:
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   syncthing:
+    <<: *logging-policy
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     container_name: syncthing
     restart: always

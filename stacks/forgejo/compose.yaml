@@ -1,9 +1,17 @@
 networks:
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 
 services:
   forgejo:
+    <<: *logging-policy
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-12-rootless}
     container_name: forgejo
     user: ${uid:-1000}:${gid:-1000}
@@ -35,6 +43,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   db:
+    <<: *logging-policy
     image: postgres:${postgres_version:-14}
     restart: always
     environment:
@@ -47,6 +56,7 @@ services:
       - ${data:-.}/db:/var/lib/postgresql/data
 
   runner:
+    <<: *logging-policy
     image: gitea/act_runner:${runner_version:-nightly}
     container_name: forgejo_runner
     restart: always

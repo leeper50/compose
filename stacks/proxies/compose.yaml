@@ -2,8 +2,16 @@ networks:
   default:
     driver: bridge
     enable_ipv6: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   gluetun-proxy:
+    <<: *logging-policy
     image: qmcgaw/gluetun:${gluetun_version:-v3.40}
     container_name: gluetun-proxy
     restart: always
@@ -24,11 +32,13 @@ services:
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
+    <<: *logging-policy
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     container_name: socks5proxy
     network_mode: service:gluetun-proxy
     restart: always
   tor-privoxy:
+    <<: *logging-policy
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
     container_name: tor-privoxy
     restart: always

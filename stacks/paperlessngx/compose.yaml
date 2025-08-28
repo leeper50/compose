@@ -2,8 +2,16 @@ networks:
   default: null
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   paperlessngx_broker:
+    <<: *logging-policy
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: paperlessngx_broker
     restart: unless-stopped
@@ -12,6 +20,7 @@ services:
     volumes:
       - ${data:-.}/keydb:/data
   paperlessngx_db:
+    <<: *logging-policy
     image: docker.io/library/postgres:${postgres_version:-16}
     container_name: paperlessngx_db
     restart: unless-stopped
@@ -24,6 +33,7 @@ services:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: ${db_pass:-paperless}
   paperlessngx:
+    <<: *logging-policy
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     container_name: paperlessngx
     restart: unless-stopped

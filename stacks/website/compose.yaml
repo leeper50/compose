@@ -3,8 +3,16 @@ networks:
   freshrss: null
   proxy:
     external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
 services:
   mywebsite:
+    <<: *logging-policy
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     container_name: mywebsite
     restart: always
@@ -19,6 +27,7 @@ services:
       traefik.http.routers.mywebsite.tls.certresolver: "cloudflare"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
+    <<: *logging-policy
     image: freshrss/freshrss:${freshrss_version:-latest}
     container_name: freshrss
     restart: always
@@ -45,6 +54,7 @@ services:
       traefik.http.routers.freshrss.tls.certresolver: "cloudflare"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
+    <<: *logging-policy
     image: postgres:${postgres_version:-16}
     container_name: freshrssdb
     restart: always
@@ -57,6 +67,7 @@ services:
       POSTGRES_USER: rss
       POSTGRES_PASSWORD: ${DB_PASSWORD}
   vaultwarden:
+    <<: *logging-policy
     image: vaultwarden/server:${vaultwarden_version:-latest}
     container_name: vaultwarden
     restart: always
@@ -74,6 +85,7 @@ services:
       traefik.http.routers.vaultwarden.tls.certresolver: "cloudflare"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
   homepage:
+    <<: *logging-policy
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     container_name: homepage
     restart: always
@@ -93,6 +105,7 @@ services:
       traefik.http.routers.homepage.tls.certresolver: "cloudflare"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
+    <<: *logging-policy
     image: copyparty/iv:${copyparty_version:-latest}
     container_name: copyparty
     user: ${uid:-1000}:${gid:-1000}
