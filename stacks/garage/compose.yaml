@@ -30,7 +30,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
-      traefik.http.routers.garage.middlewares: "goodbois@file"
+      traefik.http.routers.garage.middlewares: "localonly@file"
       traefik.http.routers.garage.rule: "Host(`s3.${domain}`)"
       traefik.http.routers.garage.tls.certresolver: "cloudflare"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"

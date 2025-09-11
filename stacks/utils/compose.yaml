@@ -127,7 +127,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
-      traefik.http.routers.convertx.middlewares: "goodbois@file"
+      traefik.http.routers.convertx.middlewares: "localonly@file"
       traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
       traefik.http.routers.convertx.tls.certresolver: "cloudflare"
       traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"

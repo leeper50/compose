@@ -39,7 +39,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
-      traefik.http.routers.bookstack.middlewares: "authelia@docker"
+      traefik.http.routers.bookstack.middlewares: "localonly@file"
       traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
       traefik.http.routers.bookstack.tls.certresolver: "cloudflare"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:80"
@@ -118,7 +118,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"
-      traefik.http.routers.uptimekuma.middlewares: "authelia@docker"
+      traefik.http.routers.uptimekuma.middlewares: "localonly@file"
       traefik.http.routers.uptimekuma.rule: "Host(`up.${domain}`)"
       traefik.http.routers.uptimekuma.tls.certresolver: "cloudflare"
       traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"

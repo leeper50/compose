@@ -120,7 +120,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
-      traefik.http.routers.copyparty.middlewares: "goodbois@file"
+      traefik.http.routers.copyparty.middlewares: "localonly@file"
       traefik.http.routers.copyparty.rule: "Host(`files.${domain}`) || Host(`files.${local_domain}`)"
       traefik.http.routers.copyparty.tls.certresolver: "cloudflare"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
