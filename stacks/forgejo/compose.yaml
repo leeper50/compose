@@ -30,7 +30,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"
-      # traefik.http.routers.forgejo.middlewares: "goodbois@file"
+      # traefik.http.routers.forgejo.middlewares: "allowedIPs@file"
       traefik.http.routers.forgejo.rule: "Host(`fj.${domain}`)"
       traefik.http.routers.forgejo.tls.certresolver: "cloudflare"
       traefik.http.services.forgejo.loadbalancer.server.url: "http://forgejo:3000"

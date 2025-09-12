@@ -36,7 +36,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.gitea.entryPoints: "https"
-      # traefik.http.routers.gitea.middlewares: "goodbois@file"
+      # traefik.http.routers.gitea.middlewares: "allowedIPs@file"
       traefik.http.routers.gitea.rule: "Host(`git.${domain}`)"
       traefik.http.routers.gitea.tls.certresolver: "cloudflare"
       traefik.http.services.gitea.loadbalancer.server.url: "http://gitea:3000"

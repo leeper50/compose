@@ -66,7 +66,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
-      traefik.http.routers.privatebin.middlewares: "goodbois@file"
+      traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain}`)"
       traefik.http.routers.privatebin.tls.certresolver: "cloudflare"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
@@ -97,7 +97,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
-      traefik.http.routers.send.middlewares: "goodbois@file"
+      traefik.http.routers.send.middlewares: "allowedIPs@file"
       traefik.http.routers.send.rule: "Host(`send.${domain}`)"
       traefik.http.routers.send.tls.certresolver: "cloudflare"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
