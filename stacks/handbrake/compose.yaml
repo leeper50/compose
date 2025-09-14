@@ -1,0 +1,37 @@
+networks:
+  proxy:
+    external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
+services:
+  handbrake:
+    <<: *logging-policy
+    image: jlesage/handbrake:${handbrake_version:-latest}
+    container_name: handbrake
+    restart: always
+    networks:
+      proxy: null
+    environment:
+      TZ: ${timezone:-UTC}
+      USER_ID: ${uid:-1000}
+      GROUP_ID: ${gid:-1000}
+      DARK_MODE: 1
+      AUTOMATED_CONVERSION_PRESET: ${custom_profile:-General/Very Fast 1080p30}
+      AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
+    volumes:
+      - $data/handbrake:/config:rw
+      - $media/HandBrake/storage:/storage:rw
+      - $media/HandBrake/watch:/watch:rw
+      - $media/HandBrake/output:/output:rw
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.handbrake.entryPoints: 'https'
+      traefik.http.routers.handbrake.middlewares: 'localonly@file'
+      traefik.http.routers.handbrake.rule: 'Host(`hb.${local_domain}`)'
+      traefik.http.routers.handbrake.tls.certresolver: 'cloudflare'
+      traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'
