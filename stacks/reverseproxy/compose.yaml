@@ -24,8 +24,7 @@ services:
       - "443:443/tcp"
       - "443:443/udp"
     environment:
-      CF_API_EMAIL: ${email}
-      CF_DNS_API_TOKEN: ${cf_api_key}
+      CF_DNS_API_TOKEN: ${cf_dns_api_token}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     volumes:
       - /etc/localtime:/etc/localtime:ro
