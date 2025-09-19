@@ -11,7 +11,7 @@ x-logging-policy: &logging-policy
 services:
   garage:
     <<: *logging-policy
-    image: dxflrs/garage:${garage_version:-v2.0.0}
+    image: dxflrs/garage:${garage_version:-v2.1.0}
     container_name: garage
     restart: unless-stopped
     networks:

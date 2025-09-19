@@ -12,7 +12,7 @@ services:
   # Traefik configuration
   traefik:
     <<: *logging-policy
-    image: traefik:${traefik_verison:-v3.4}
+    image: traefik:${traefik_verison:-v3.5}
     container_name: traefik
     restart: unless-stopped
     depends_on:
