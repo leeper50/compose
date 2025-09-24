@@ -104,7 +104,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.${domain} || Host(`home.${local_domain}`)"
+      traefik.http.routers.homepage.rule: "Host(`home.${domain}`) || Host(`home.${local_domain}`)"
       traefik.http.routers.homepage.tls.certresolver: "cloudflare"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
