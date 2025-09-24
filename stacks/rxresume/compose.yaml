@@ -41,7 +41,7 @@ services:
       default: null
     environment:
       HEALTH: "true"
-      TOKEN: ${chrome_token:-chrome_token}
+      TOKEN: "${chrome_token}"
       PROXY_HOST: "printer.${local_domain}"
       PROXY_PORT: 443
       PROXY_SSL: "true"
@@ -74,27 +74,27 @@ services:
       STORAGE_URL: https://s3.${domain}
 
       # -- Printer (Chrome) --
-      CHROME_TOKEN: ${chrome_token:-chrome_token}
+      CHROME_TOKEN: ${chrome_token}
       CHROME_URL: wss://printer.${local_domain}
 
       # -- Database (Postgres) --
-      DATABASE_URL: postgresql://${db_user}:${db_pass}@rxresume_postgres:5432/${db_name}
+      DATABASE_URL: postgresql://${db_user:-postgres}:${db_pass:-postgres}@postgres:5432/${db_name:-postgres}
 
       # -- Auth --
-      ACCESS_TOKEN_SECRET: ${access_token:-changeme}
-      REFRESH_TOKEN_SECRET: ${refresh_token:-changeme}
+      ACCESS_TOKEN_SECRET: ${access_token}
+      REFRESH_TOKEN_SECRET: ${refresh_token}
 
       # -- Emails --
       MAIL_FROM: noreply@example.com
       # SMTP_URL: smtp://user:pass@smtp:587 # Optional
 
-      # -- Storage (Minio) --
+      # -- Storage (Garage) --
       STORAGE_ENDPOINT: https://s3.${domain}
       STORAGE_PORT: 443
-      STORAGE_REGION: garage # Optional
+      STORAGE_REGION: garage
       STORAGE_BUCKET: rxresume
-      STORAGE_ACCESS_KEY: ${s3_access_key:-changeme}
-      STORAGE_SECRET_KEY: ${s3_secret_key:-changeme}
+      STORAGE_ACCESS_KEY: ${s3_access_key}
+      STORAGE_SECRET_KEY: ${s3_secret_key}
       STORAGE_USE_SSL: "true"
       STORAGE_SKIP_BUCKET_CHECK: "false"
     labels:
