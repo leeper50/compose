@@ -134,6 +134,8 @@ services:
   it-tools:
     image: 'corentinth/it-tools:${ittools_version:-latest}'
     restart: unless-stopped
+    networks:
+      proxy: null
     labels:
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
