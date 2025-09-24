@@ -128,6 +128,16 @@ services:
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
-      traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
+      traefik.http.routers.convertx.rule: "Host(`cx.${local_domain}`)"
       traefik.http.routers.convertx.tls.certresolver: "cloudflare"
       traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"
+  it-tools:
+    image: 'corentinth/it-tools:${ittools_version:-latest}'
+    restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ittools.entryPoints: "https"
+      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
+      traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
+      traefik.http.routers.ittools.tls.certresolver: "cloudflare"
+      traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:80"
