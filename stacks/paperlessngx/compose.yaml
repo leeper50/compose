@@ -63,3 +63,7 @@ services:
       PAPERLESS_URL: https://paper.${domain}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_SECRET_KEY: ${secret_key}
+      # Authelia Header SSO
+      PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
+      PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
+      PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain}/logout
