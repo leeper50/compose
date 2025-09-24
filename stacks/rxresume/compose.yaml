@@ -1,0 +1,106 @@
+networks:
+  default: null
+  proxy:
+    external: true
+x-logging-policy: &logging-policy
+  logging:
+    driver: local
+    options:
+      max-size: "10m"
+      max-file: "3"
+      compress: "true"
+
+services:
+  # Database (Postgres)
+  postgres:
+    <<: *logging-policy
+    image: postgres:16-alpine
+    container_name: rxresume_postgres
+    restart: unless-stopped
+    networks:
+      default: null
+    volumes:
+      - $data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${db_user:-postgres}
+      POSTGRES_PASSWORD: ${db_pass:-postgres}
+      POSTGRES_DB: ${db_name:-postgres}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Chrome Browser (for printing and previews)
+  chrome:
+    <<: *logging-policy
+    image: ghcr.io/browserless/chromium:latest
+    container_name: rxresume_chrome
+    restart: unless-stopped
+    networks:
+      default: null
+    environment:
+      HEALTH: "true"
+      TOKEN: ${chrome_token:-chrome_token}
+      PROXY_HOST: "printer.${local_domain}"
+      PROXY_PORT: 443
+      PROXY_SSL: "true"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.printer.rule: "Host(`printer.${local_domain}`)"
+      traefik.http.routers.printer.middlewares: "allowedIPs@file"
+      traefik.http.routers.printer.entrypoints: "https"
+      traefik.http.routers.printer.tls.certresolver: "cloudflare"
+      traefik.http.services.printer.loadbalancer.server.port: 3000
+
+  rxresume:
+    <<: *logging-policy
+    image: amruthpillai/reactive-resume:latest
+    container_name: rxresume
+    restart: unless-stopped
+    networks:
+      default: null
+      proxy: null
+    depends_on:
+      - postgres
+      - chrome
+    environment:
+      # -- Environment Variables --
+      PORT: 3000
+      NODE_ENV: production
+
+      # -- URLs --
+      PUBLIC_URL: https://${domain}
+      STORAGE_URL: https://s3.${domain}
+
+      # -- Printer (Chrome) --
+      CHROME_TOKEN: ${chrome_token:-chrome_token}
+      CHROME_URL: wss://printer.${local_domain}
+
+      # -- Database (Postgres) --
+      DATABASE_URL: postgresql://${db_user}:${db_pass}@rxresume_postgres:5432/${db_name}
+
+      # -- Auth --
+      ACCESS_TOKEN_SECRET: ${access_token:-changeme}
+      REFRESH_TOKEN_SECRET: ${refresh_token:-changeme}
+
+      # -- Emails --
+      MAIL_FROM: noreply@example.com
+      # SMTP_URL: smtp://user:pass@smtp:587 # Optional
+
+      # -- Storage (Minio) --
+      STORAGE_ENDPOINT: https://s3.${domain}
+      STORAGE_PORT: 443
+      STORAGE_REGION: garage # Optional
+      STORAGE_BUCKET: rxresume
+      STORAGE_ACCESS_KEY: ${s3_access_key:-changeme}
+      STORAGE_SECRET_KEY: ${s3_secret_key:-changeme}
+      STORAGE_USE_SSL: "true"
+      STORAGE_SKIP_BUCKET_CHECK: "false"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.rxresume.rule: "Host(`rx.${domain}`)"
+      traefik.http.routers.rxresume.middlewares: "allowedIPs@file"
+      traefik.http.routers.rxresume.entrypoints: "https"
+      traefik.http.routers.rxresume.tls.certresolver: "cloudflare"
+      traefik.http.services.rxresume.loadbalancer.server.port: 3000
