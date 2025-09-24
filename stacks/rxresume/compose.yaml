@@ -14,7 +14,7 @@ services:
   # Database (Postgres)
   postgres:
     <<: *logging-policy
-    image: postgres:16-alpine
+    image: postgres:${postgres_version:-16-alpine}
     container_name: rxresume_postgres
     restart: unless-stopped
     networks:
@@ -34,7 +34,7 @@ services:
   # Chrome Browser (for printing and previews)
   chrome:
     <<: *logging-policy
-    image: ghcr.io/browserless/chromium:latest
+    image: ghcr.io/browserless/chromium:${chrome_version:-latest}
     container_name: rxresume_chrome
     restart: unless-stopped
     networks:
@@ -55,7 +55,7 @@ services:
 
   rxresume:
     <<: *logging-policy
-    image: amruthpillai/reactive-resume:latest
+    image: amruthpillai/reactive-resume:${rxresume_version:-latest}
     container_name: rxresume
     restart: unless-stopped
     networks:
