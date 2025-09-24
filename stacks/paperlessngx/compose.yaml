@@ -46,7 +46,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.paperlessngx.entryPoints: "https"
-      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file"
+      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@docker"
       traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain}`)"
       traefik.http.routers.paperlessngx.tls.certresolver: "cloudflare"
       traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
