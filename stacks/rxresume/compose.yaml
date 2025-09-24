@@ -70,7 +70,7 @@ services:
       NODE_ENV: production
 
       # -- URLs --
-      PUBLIC_URL: https://${domain}
+      PUBLIC_URL: https://rx.${domain}
       STORAGE_URL: https://s3.${domain}
 
       # -- Printer (Chrome) --
@@ -100,7 +100,6 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.rxresume.rule: "Host(`rx.${domain}`)"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file"
       traefik.http.routers.rxresume.entrypoints: "https"
       traefik.http.routers.rxresume.tls.certresolver: "cloudflare"
       traefik.http.services.rxresume.loadbalancer.server.port: 3000
