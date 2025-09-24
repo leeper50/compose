@@ -131,8 +131,9 @@ services:
       traefik.http.routers.convertx.rule: "Host(`cx.${local_domain}`)"
       traefik.http.routers.convertx.tls.certresolver: "cloudflare"
       traefik.http.services.convertx.loadbalancer.server.port: 3000
-  it-tools:
+  ittools:
     image: 'corentinth/it-tools:${ittools_version:-latest}'
+    container_name: ittools
     restart: unless-stopped
     networks:
       proxy: null
