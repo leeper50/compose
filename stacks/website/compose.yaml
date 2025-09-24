@@ -23,6 +23,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
+      traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
       traefik.http.routers.mywebsite.rule: "Host(`${domain}`) || Host(`www.${domain}`)"
       traefik.http.routers.mywebsite.tls.certresolver: "cloudflare"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
@@ -50,6 +51,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
+      traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
       traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
       traefik.http.routers.freshrss.tls.certresolver: "cloudflare"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
@@ -81,6 +83,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"
+      traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
       traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
       traefik.http.routers.vaultwarden.tls.certresolver: "cloudflare"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
@@ -101,7 +104,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.dellhplaptop.xyz`)"
+      traefik.http.routers.homepage.rule: "Host(`home.${domain} || Host(`home.${local_domain}`)"
       traefik.http.routers.homepage.tls.certresolver: "cloudflare"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
