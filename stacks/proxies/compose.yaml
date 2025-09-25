@@ -26,6 +26,8 @@ services:
       WIREGUARD_PRIVATE_KEY: ${wgkey}
       DOT_PROVIDERS: quad9
       SERVER_CITIES: ${cities:-Stockholm}
+      HTTPPROXY_USER: ${proxy_user}
+      HTTPPROXY_PASSWORD: ${proxy_pass}
     ports:
       - "1080:1080/tcp" # socks5 proxy
       - "8888:8888/tcp" # http proxy
@@ -37,6 +39,9 @@ services:
     container_name: socks5proxy
     network_mode: service:gluetun-proxy
     restart: always
+    environment:
+      PROXY_USER: ${proxy_user}
+      PROXY_PASS: ${proxy_pass}
   tor-privoxy:
     <<: *logging-policy
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
