@@ -23,6 +23,10 @@ services:
       default: null
     healthcheck:
       disable: false
+    environment:
+      DB_DATABASE_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${db_pass:-postgres}
     volumes:
       - ${data:-.}/immich/app:/data
       - /etc/localtime:/etc/localtime:ro
