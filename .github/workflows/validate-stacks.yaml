@@ -38,7 +38,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
-          branch: dev
+          branch: auto-pr/dev-to-main
           title: "Auto PR: Dev -> Main"
           body: "Latest commit: ${{ steps.commitmsg.outputs.msg }}"
           draft: false
