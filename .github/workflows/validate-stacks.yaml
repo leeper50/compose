@@ -32,21 +32,25 @@ jobs:
         run: |
           echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
-      - name: Create or Update Pull Request
-        if: success()
-        uses: peter-evans/create-pull-request@v7
+      - name: Create PR and Merge
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: auto-pr/dev-to-main
-          title: "Auto PR: Dev -> Main"
-          body: "Latest commit: ${{ steps.commitmsg.outputs.msg }}"
-          draft: false
-          labels: "automation"
+          script: |
+            const commitMessage = `${{ steps.commitmsg.outputs.msg }}`;
 
-      - name: Enable auto-merge for PR
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Auto-merge: Dev to Main',
+              head: 'dev',
+              base: 'main',
+              body: `## Latest Commit Message\n**${commitMessage}**\n\n---\n*Automated PR created after successful CI run*`
+            });
+
+            // Auto-merge the PR
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: 'merge'
+            });
