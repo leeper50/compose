@@ -43,3 +43,10 @@ jobs:
           body: "Latest commit: ${{ steps.commitmsg.outputs.msg }}"
           draft: false
           labels: "automation"
+
+      - name: Enable auto-merge for PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
