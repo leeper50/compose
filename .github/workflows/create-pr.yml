@@ -3,6 +3,7 @@ name: Create PR to Main
 on:
   workflow_run:
     workflows: ["Validate Stacks"]
+    branches: [dev]
     types:
       - completed
 
