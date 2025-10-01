@@ -1,4 +1,4 @@
-name: Validate and push to main
+name: Validate Stacks and PR to Main
 
 on:
   push:
@@ -23,17 +23,12 @@ jobs:
       - name: Validate Stacks
         run: bash tests/validate_stacks.sh
 
-      - name: Get last commit message
-        id: commitmsg
-        run: |
-          echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
-
       - name: Create PR and Merge
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const commitMessage = `${{ steps.commitmsg.outputs.msg }}`;
+            const commitMessage = `${{ github.event.workflow_run.head_commit.message }}`;
 
             const { data: pr } = await github.rest.pulls.create({
               owner: context.repo.owner,
