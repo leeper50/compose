@@ -37,7 +37,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          base: main
+          branch: dev
           title: "Auto PR: Dev -> Main"
           body: "Latest commit: ${{ steps.commitmsg.outputs.msg }}"
           draft: false
