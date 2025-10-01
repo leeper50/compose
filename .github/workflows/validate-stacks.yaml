@@ -1,6 +1,9 @@
 name: Validate Stacks
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
 
 jobs:
   validate:
@@ -15,3 +18,20 @@ jobs:
 
       - name: Validate Stacks
         run: bash tests/validate_stacks.sh
+
+      - name: Get last commit message
+        id: commitmsg
+        run: |
+          echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+
+      - name: Create or Update Pull Request
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.pull_token }}
+          base: main
+          branch: dev
+          title: "Auto PR: dev → Main"
+          body: "Latest commit: ${{ steps.commitmsg.outputs.msg }}"
+          draft: false
+          labels: "automation"
