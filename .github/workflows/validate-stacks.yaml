@@ -1,4 +1,4 @@
-name: Validate stacks
+name: Validate Stacks
 
 on:
   push:
@@ -22,15 +22,3 @@ jobs:
 
       - name: Validate Stacks
         run: bash tests/validate_stacks.sh
-
-      - name: Save last commit message
-        id: commitmsg
-        run: |
-          echo "msg=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
-
-      - name: Upload commit message
-        uses: actions/upload-artifact@v4
-        with:
-          name: last-commit-message
-          path: |
-            $GITHUB_OUTPUT
