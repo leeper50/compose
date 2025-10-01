@@ -28,7 +28,7 @@ jobs:
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const commitMessage = `${{ github.event.workflow_run.head_commit.message }}`;
+            const commitMessage = `${{ github.event.head_commit.message }}`;
 
             const { data: pr } = await github.rest.pulls.create({
               owner: context.repo.owner,
