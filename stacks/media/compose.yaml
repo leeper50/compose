@@ -106,6 +106,7 @@ services:
       traefik.http.routers.navidrome.tls.certresolver: "cloudflare"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
       # App specific auth with basic-auth
-      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
       traefik.http.routers.navidrome-subsonic.entrypoints: "https"
+      traefik.http.routers.navidrome-subsonic.tls.certresolver: "cloudflare"
+      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
       traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file, authelia-basicauth@docker"
