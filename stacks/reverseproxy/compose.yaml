@@ -100,6 +100,9 @@ services:
       traefik.http.middlewares.authelia.forwardAuth.address: "http://authelia:9091/api/authz/forward-auth"
       traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
+      # Basic auth for the scrubs
+      traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
+      traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
   lldap:
     <<: *logging-policy
     image: lldap/lldap:${lldap_version:-stable}
