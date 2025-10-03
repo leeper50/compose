@@ -34,9 +34,14 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.picsur.entryPoints: "https"
-      traefik.http.routers.picsur.rule: "Host(`ps.${domain}`)"
+      traefik.http.routers.picsur.middlewares: "allowedIPs@file"
+      traefik.http.routers.picsur.rule: "Host(`ps.dellhplaptop.xyz`)"
       traefik.http.routers.picsur.tls.certresolver: "cloudflare"
       traefik.http.services.picsur.loadbalancer.server.url: 'http://picsur:8080'
+      # No middleware for outbound images
+      traefik.http.routers.picsur-images.entrypoints: "https"
+      traefik.http.routers.picsur-images.rule: "Host(`ps.dellhplaptop.xyz`) && PathPrefix(`/i/`)"
+      traefik.http.routers.picsur-images.tls.certresolver: "cloudflare"
   picsur_postgres:
     <<: *logging-policy
     image: postgres:${postgres_version:-14-alpine}
