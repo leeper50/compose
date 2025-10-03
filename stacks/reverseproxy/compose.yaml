@@ -125,4 +125,4 @@ services:
       traefik.http.routers.lldap.middlewares: "localonly@file"
       traefik.http.routers.lldap.entryPoints: "https"
       traefik.http.routers.lldap.tls: "true"
-      traefik.http.services.lldap.loadbalancer.server.port: 17170
+      traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
