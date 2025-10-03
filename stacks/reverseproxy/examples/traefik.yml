@@ -7,17 +7,23 @@ entryPoints:
     address: :8082
   https:
     address: ":443"
+    # Needed for Immich uploads
+    transport:
+      respondingTimeouts:
+        readTimeout: 600s
+        idleTimeout: 600s
+        writeTimeout: 600s
     http3: {}
     forwardedHeaders:
       insecure: false
     proxyProtocol:
       trustedIPs:
         - "172.16.0.0/12"
-          # This subnet will include addresses of
-          # containers on a default docker network.
-          # IPV6 enabled networks should have their subnet
-          # included here as well.
       insecure: false
+    forwardedHeaders:
+      insecure: false
+      trustedIPs:
+        - "172.16.0.0/12"
     http:
       middlewares:
         - crowdsec-bouncer@file
