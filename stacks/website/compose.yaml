@@ -15,6 +15,7 @@ services:
     <<: *logging-policy
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     container_name: mywebsite
+    user: ${uid:-1000}:${gid:-1000}
     restart: always
     networks:
       proxy:

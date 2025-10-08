@@ -34,3 +34,6 @@ The stack includes `lldap` as the ldap server for authelia to use as its source 
 You can use the file provider if you wish, but any changes to new or existing users will require restarting the stack
 and users will have to reauthenticate. 
 The ldap server can also be used for applications that support ldap, but not `authelia`'s OAuth or `traefik`'s forward-headers authentication.
+
+Either way, you should consider a strong password with at least 1 special character, 1 number, 1 lowercase letter, and 1 uppercase letter.
+Some services like calibre-web expect users to meet some or all of these requirements and will not work with SSO without them.

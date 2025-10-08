@@ -109,4 +109,4 @@ services:
       traefik.http.routers.navidrome-subsonic.entrypoints: "https"
       traefik.http.routers.navidrome-subsonic.tls.certresolver: "cloudflare"
       traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
-      traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file, authelia-basicauth@docker"
+      traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
