@@ -59,7 +59,7 @@ services:
   # Privatebin service
   privatebin:
     <<: *logging-policy
-    image: privatebin/nginx-fpm-alpine:${privatebin_version:-latest}
+    image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     container_name: privatebin
     restart: always
     read_only: true
