@@ -46,10 +46,7 @@ services:
   libretranslate:
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
-    user: ${uid:-1000}:${gid:-1000}
     restart: always
-    volumes:
-      - '${data:-.}/libretranslate:/home/libretranslate/.local:rw'
     networks:
       proxy: null
     labels:
