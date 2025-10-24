@@ -11,7 +11,68 @@ x-logging-policy: &logging-policy
       max-file: "3"
       compress: "true"
 services:
-  # Picsur service
+  convertx:
+    <<: *logging-policy
+    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
+    container_name: convertx
+    restart: always
+    networks:
+      proxy: null
+    environment:
+      JWT_SECRET: ${convertx_jwt}
+      HIDE_HISTORY: true
+    volumes:
+      - ${data:-.}/convertx:/app/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.convertx.entryPoints: "https"
+      traefik.http.routers.convertx.middlewares: "localonly@file"
+      traefik.http.routers.convertx.rule: "Host(`cx.${local_domain}`)"
+      traefik.http.routers.convertx.tls.certresolver: "cloudflare"
+      traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
+  ittools:
+    image: 'corentinth/it-tools:${ittools_version:-latest}'
+    container_name: ittools
+    restart: always
+    networks:
+      proxy: null
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ittools.entryPoints: "https"
+      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
+      traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
+      traefik.http.routers.ittools.tls.certresolver: "cloudflare"
+      traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:80'
+  libretranslate:
+    image: libretranslate/libretranslate:${libretranslate_version:-latest}
+    container_name: libretranslate
+    restart: always
+    volumes:
+      - '${data:-.}/libretranslate:/home/libretranslate/.local:rw'
+    networks:
+      proxy: null
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.libretranslate.entryPoints: "https"
+      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
+      traefik.http.routers.libretranslate.rule: "Host(`lt.${domain}`)"
+      traefik.http.routers.libretranslate.tls.certresolver: "cloudflare"
+      traefik.http.services.libretranslate.loadbalancer.server.url: 'http://libretranslate:5000'
+  myspeed:
+    image: germannewsmaker/myspeed:${myspeed_version:-latest}
+    container_name: myspeed
+    restart: always
+    volumes:
+      - '${data:-.}/myspeed:/myspeed/data'
+    networks:
+      proxy: null
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.myspeed.entryPoints: "https"
+      traefik.http.routers.myspeed.middlewares: "localonly@file"
+      traefik.http.routers.myspeed.rule: "Host(`speed.${local_domain}`)"
+      traefik.http.routers.myspeed.tls.certresolver: "cloudflare"
+      traefik.http.services.myspeed.loadbalancer.server.url: 'http://myspeed:5216'
   picsur:
     <<: *logging-policy
     image: ghcr.io/caramelfur/picsur:${picsur_version:-latest}
@@ -55,8 +116,6 @@ services:
       POSTGRES_PASSWORD: ${picsur_dbpass}
     volumes:
       - ${data:-.}/picsur/db:/var/lib/postgresql/data
-
-  # Privatebin service
   privatebin:
     <<: *logging-policy
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
@@ -75,8 +134,6 @@ services:
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain}`)"
       traefik.http.routers.privatebin.tls.certresolver: "cloudflare"
       traefik.http.services.privatebin.loadbalancer.server.url: 'http://privatebin:8080'
-
-  # Send service
   send:
     <<: *logging-policy
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
@@ -115,52 +172,3 @@ services:
       send: null
     volumes:
       - ${data:-.}/send/redis:/data
-
-  # Convertx service
-  convertx:
-    <<: *logging-policy
-    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
-    container_name: convertx
-    restart: always
-    networks:
-      proxy: null
-    environment:
-      JWT_SECRET: ${convertx_jwt}
-      HIDE_HISTORY: true
-    volumes:
-      - ${data:-.}/convertx:/app/data
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.convertx.entryPoints: "https"
-      traefik.http.routers.convertx.middlewares: "localonly@file"
-      traefik.http.routers.convertx.rule: "Host(`cx.${local_domain}`)"
-      traefik.http.routers.convertx.tls.certresolver: "cloudflare"
-      traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
-  ittools:
-    image: 'corentinth/it-tools:${ittools_version:-latest}'
-    container_name: ittools
-    restart: always
-    networks:
-      proxy: null
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.ittools.entryPoints: "https"
-      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
-      traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
-      traefik.http.routers.ittools.tls.certresolver: "cloudflare"
-      traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:80'
-  myspeed:
-    image: germannewsmaker/myspeed:${myspeed_version:-latest}
-    container_name: myspeed
-    restart: always
-    volumes:
-      - '${data:-.}/myspeed:/myspeed/data'
-    networks:
-      proxy: null
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.myspeed.entryPoints: "https"
-      traefik.http.routers.myspeed.middlewares: "localonly@file"
-      traefik.http.routers.myspeed.rule: "Host(`speed.${local_domain}`)"
-      traefik.http.routers.myspeed.tls.certresolver: "cloudflare"
-      traefik.http.services.myspeed.loadbalancer.server.url: 'http://myspeed:5216'

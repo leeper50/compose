@@ -19,8 +19,6 @@ services:
     ports:
       - "3900:3900/tcp" ## s3 api
       - "3901:3901/tcp" ## rpc
-    #- "3902:3902/tcp"   ## s3 web
-    #- "3903:3903/tcp"   ## admin api and '/metrics' for prometheus
     environment:
       TZ: ${timezone:-UTC}
     volumes:
