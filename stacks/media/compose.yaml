@@ -22,7 +22,6 @@ services:
       PGID: ${gid:-1000}
       UMASK: ${umask}
       JELLYFIN_PublishedServerUrl: jf.${domain}
-      DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
     volumes:
       - ${data:-.}/jellyfin:/config:rw
       - ${media}/TV:/data/tvshows:rw
@@ -44,8 +43,6 @@ services:
     restart: always
     networks:
       proxy: null
-    dns:
-      - 9.9.9.9
     depends_on:
       - jellyfin
     environment:
@@ -53,7 +50,7 @@ services:
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
       UMASK: ${umask}
-      LOG_LEVEL: info
+      LOG_LEVEL: ${log_level:-warn}
     volumes:
       - ${data:-.}/jellyseerr:/app/config/:rw
     labels:
