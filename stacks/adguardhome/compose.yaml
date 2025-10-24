@@ -29,6 +29,8 @@ services:
     restart: unless-stopped
     networks:
       default: null
-    command: run --config /config/adguardhome-sync.yaml
+    environment:
+      LOG_LEVEL: ${log_level:-warn}
+    command: run --config /config/adguardhome-sync.yml
     volumes:
-      - ${data:-.}/adguardhome/adguardhome-sync.yaml:/config/adguardhome-sync.yaml
+      - ${data:-.}/adguardhome/adguardhome-sync.yml:/config/adguardhome-sync.yml
