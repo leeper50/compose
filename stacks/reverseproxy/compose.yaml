@@ -41,10 +41,6 @@ services:
       traefik.http.routers.traefik.middlewares: "localonly@file"
       traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
       traefik.http.routers.traefik.service: "api@internal"
-      traefik.http.routers.traefik.tls: "true"
-      traefik.http.routers.traefik.tls.certresolver: "cloudflare"
-      traefik.http.routers.traefik.tls.domains[0].main: "${domain}"
-      traefik.http.routers.traefik.tls.domains[0].sans: "*.${domain}"
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
 
   # Crowdsec configuration
@@ -101,7 +97,6 @@ services:
       traefik.http.routers.api.middlewares: "authelia@docker"
       traefik.http.routers.authelia.entryPoints: "https"
       traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
-      traefik.http.routers.authelia.tls: "true"
       # Basic auth for the scrubs
       traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
       traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
@@ -126,5 +121,4 @@ services:
       traefik.http.routers.lldap.entryPoints: "https"
       traefik.http.routers.lldap.middlewares: "localonly@file"
       traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
-      traefik.http.routers.lldap.tls: "true"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
