@@ -27,5 +27,4 @@ services:
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"
       traefik.http.routers.syncthing.rule: "Host(`sync.${domain}`)"
-      traefik.http.routers.syncthing.tls.certresolver: "cloudflare"
       traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"

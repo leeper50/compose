@@ -30,7 +30,6 @@ services:
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"
       traefik.http.routers.garage.rule: "Host(`s3.${domain}`)"
-      traefik.http.routers.garage.tls.certresolver: "cloudflare"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
 
   webui:
@@ -52,5 +51,4 @@ services:
       traefik.http.routers.garage-webui.entryPoints: "https"
       traefik.http.routers.garage-webui.middlewares: "localonly@file"
       traefik.http.routers.garage-webui.rule: "Host(`garage.${domain}`)"
-      traefik.http.routers.garage-webui.tls.certresolver: "cloudflare"
       traefik.http.services.garage-webui.loadbalancer.server.url: "http://garage-webui:3909"

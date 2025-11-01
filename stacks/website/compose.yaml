@@ -26,7 +26,6 @@ services:
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
       traefik.http.routers.mywebsite.rule: "Host(`${domain}`) || Host(`www.${domain}`)"
-      traefik.http.routers.mywebsite.tls.certresolver: "cloudflare"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
     <<: *logging-policy
@@ -54,7 +53,6 @@ services:
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
       traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
-      traefik.http.routers.freshrss.tls.certresolver: "cloudflare"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
     <<: *logging-policy
@@ -86,7 +84,6 @@ services:
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
       traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
-      traefik.http.routers.vaultwarden.tls.certresolver: "cloudflare"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
   homepage:
     <<: *logging-policy
@@ -106,7 +103,6 @@ services:
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
       traefik.http.routers.homepage.rule: "Host(`home.${domain}`)"
-      traefik.http.routers.homepage.tls.certresolver: "cloudflare"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
     <<: *logging-policy
@@ -126,7 +122,6 @@ services:
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
       traefik.http.routers.copyparty.rule: "Host(`files.${domain}`)"
-      traefik.http.routers.copyparty.tls.certresolver: "cloudflare"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
     stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:
