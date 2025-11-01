@@ -51,6 +51,6 @@ services:
       traefik.enable: "true"
       traefik.http.routers.garage-webui.entryPoints: "https"
       traefik.http.routers.garage-webui.middlewares: "localonly@file"
-      traefik.http.routers.garage-webui.rule: "Host(`garage.${local_domain}`)"
+      traefik.http.routers.garage-webui.rule: "Host(`garage.${domain}`)"
       traefik.http.routers.garage-webui.tls.certresolver: "cloudflare"
       traefik.http.services.garage-webui.loadbalancer.server.url: "http://garage-webui:3909"
