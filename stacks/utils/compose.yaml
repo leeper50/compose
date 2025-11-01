@@ -27,7 +27,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
-      traefik.http.routers.convertx.rule: "Host(`cx.${local_domain}`)"
+      traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
       traefik.http.routers.convertx.tls.certresolver: "cloudflare"
       traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
   ittools:
@@ -68,7 +68,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.myspeed.entryPoints: "https"
       traefik.http.routers.myspeed.middlewares: "localonly@file"
-      traefik.http.routers.myspeed.rule: "Host(`speed.${local_domain}`)"
+      traefik.http.routers.myspeed.rule: "Host(`speed.${domain}`)"
       traefik.http.routers.myspeed.tls.certresolver: "cloudflare"
       traefik.http.services.myspeed.loadbalancer.server.url: 'http://myspeed:5216'
   picsur:
