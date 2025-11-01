@@ -35,15 +35,17 @@ services:
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
     labels:
       traefik.enable: "true"
+      traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://bouncer-traefik:8080/api/v1/forwardAuth"
+      traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
       traefik.http.routers.traefik.entryPoints: "https"
+      traefik.http.routers.traefik.middlewares: "localonly@file"
       traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
+      traefik.http.routers.traefik.service: "api@internal"
       traefik.http.routers.traefik.tls: "true"
       traefik.http.routers.traefik.tls.certresolver: "cloudflare"
       traefik.http.routers.traefik.tls.domains[0].main: "${domain}"
       traefik.http.routers.traefik.tls.domains[0].sans: "*.${domain}"
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
-      traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.service: "api@internal"
 
   # Crowdsec configuration
   crowdsec:
@@ -93,13 +95,13 @@ services:
       - ${data:-.}/authelia/config:/config
     labels:
       traefik.enable: "true"
-      traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
-      traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.tls: "true"
-      traefik.http.routers.api.middlewares: "authelia@docker"
       traefik.http.middlewares.authelia.forwardAuth.address: "http://authelia:9091/api/authz/forward-auth"
-      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
+      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
+      traefik.http.routers.api.middlewares: "authelia@docker"
+      traefik.http.routers.authelia.entryPoints: "https"
+      traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
+      traefik.http.routers.authelia.tls: "true"
       # Basic auth for the scrubs
       traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
       traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
@@ -121,8 +123,8 @@ services:
       - ${data:-.}/lldap:/data
     labels:
       traefik.enable: "true"
-      traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
-      traefik.http.routers.lldap.middlewares: "localonly@file"
       traefik.http.routers.lldap.entryPoints: "https"
+      traefik.http.routers.lldap.middlewares: "localonly@file"
+      traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
       traefik.http.routers.lldap.tls: "true"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
