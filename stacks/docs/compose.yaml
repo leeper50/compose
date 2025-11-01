@@ -41,7 +41,6 @@ services:
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
       traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
-      traefik.http.routers.bookstack.tls.certresolver: "cloudflare"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:80"
   bookstack_db:
     <<: *logging-policy
@@ -84,7 +83,6 @@ services:
       traefik.http.routers.grafana.entryPoints: "https"
       traefik.http.routers.grafana.middlewares: "localonly@file"
       traefik.http.routers.grafana.rule: "Host(`gf.${domain}`)"
-      traefik.http.routers.grafana.tls.certresolver: "cloudflare"
       traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   prometheus:
     <<: *logging-policy
@@ -101,7 +99,6 @@ services:
       traefik.http.routers.prometheus.entryPoints: "https"
       traefik.http.routers.prometheus.middlewares: "localonly@file"
       traefik.http.routers.prometheus.rule: "Host(`pm.${domain}`)"
-      traefik.http.routers.prometheus.tls.certresolver: "cloudflare"
       traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
 
   # Uptime service
@@ -120,5 +117,4 @@ services:
       traefik.http.routers.uptimekuma.entryPoints: "https"
       traefik.http.routers.uptimekuma.middlewares: "localonly@file"
       traefik.http.routers.uptimekuma.rule: "Host(`up.${domain}`)"
-      traefik.http.routers.uptimekuma.tls.certresolver: "cloudflare"
       traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"

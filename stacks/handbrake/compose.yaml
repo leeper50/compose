@@ -33,5 +33,4 @@ services:
       traefik.http.routers.handbrake.entryPoints: 'https'
       traefik.http.routers.handbrake.middlewares: 'localonly@file'
       traefik.http.routers.handbrake.rule: 'Host(`hb.${domain}`)'
-      traefik.http.routers.handbrake.tls.certresolver: 'cloudflare'
       traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'

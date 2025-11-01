@@ -37,7 +37,6 @@ services:
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"
       traefik.http.routers.immich.rule: "Host(`im.${domain}`)"
-      traefik.http.routers.immich.tls.certresolver: "cloudflare"
       traefik.http.services.immich.loadbalancer.server.url: "http://immich_server:2283"
   immich-machine-learning:
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
