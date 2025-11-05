@@ -17,12 +17,13 @@ services:
     restart: always
     cap_add:
       - NET_ADMIN
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
     environment:
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider}
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey}
-      DOT_PROVIDERS: quad9
       SERVER_CITIES: ${cities:-Stockholm}
     ports:
       - "1080:1080/tcp" # socks5 proxy
