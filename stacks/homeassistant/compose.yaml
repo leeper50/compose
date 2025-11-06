@@ -41,7 +41,7 @@ services:
     networks:
       - proxy
     devices:
-      - '${device_id}:/dev/zwave'
+      - ${device_id}:/dev/zwave
     volumes:
       - ${data:-.}/zwave-config:/usr/src/app/store
     labels:
