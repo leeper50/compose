@@ -28,17 +28,18 @@ services:
       traefik.http.routers.homeassistant.rule: "Host(`ha.${domain}`)"
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
   zwave-js-ui:
-    container_name: zwave-js-ui
+    <<: *logging-policy
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
+    container_name: zwave-js-ui
+    restart: unless-stopped
     privileged: true
-    restart: always
     tty: true
     stop_signal: SIGINT
+    networks:
+      - proxy
     environment:
       SESSION_SECRET: ${key:?change_me}
       TZ: ${timezone:-UTC}
-    networks:
-      - proxy
     volumes:
       - ${data:-.}/zwave-config:/usr/src/app/store
     labels:
