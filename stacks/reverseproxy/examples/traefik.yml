@@ -14,23 +14,24 @@ api:
 certificatesResolvers:
   your-cert-provider:
     acme:
-      email: youremail@example.com
-      storage: /acme.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory
+      email: "youremail@example.com"
+      storage: "/acme.json"
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
       dnsChallenge:
-        provider: your-cert-provider
+        provider: "your-cert-provider"
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
 
 entryPoints:
   http:
-    address: :80
+    address: ":80"
     http:
       redirections:
         entryPoint:
-          to: https
-          scheme: https
+          to: "https"
+          scheme: "https"
+          permanent: true
   https:
     address: ":443"
     http3: {}
@@ -44,20 +45,20 @@ entryPoints:
         - "172.16.0.0/12"
     transport:
       respondingTimeouts:
-        readTimeout: 600s
-        idleTimeout: 600s
-        writeTimeout: 600s
+        readTimeout: "600s"
+        idleTimeout: "600s"
+        writeTimeout: "600s"
     http:
       middlewares:
-        - crowdsec-bouncer@docker
+        - "crowdsec-bouncer@docker"
       tls:
-        certResolver: your-cert-provider
+        certResolver: "your-cert-provider"
         domains:
-          - main: yourdomain.com
+          - main: "yourdomain.com"
             sans:
-              - '*.yourdomain.com'
+              - "*.yourdomain.com"
   metrics:
-    address: :8082
+    address: ":8082"
 
 log:
   level: "INFO"
@@ -75,14 +76,14 @@ metrics:
       - 0.3
       - 1.2
       - 5.0
-    entryPoint: metrics
+    entryPoint: "metrics"
 
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
   file:
-    filename: /dynamic.yml
+    filename: "/dynamic.yml"
     watch: true
 
 serversTransport:
