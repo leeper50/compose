@@ -31,7 +31,7 @@ services:
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
   zwave-js-ui:
     container_name: zwave-js-ui
-    image: zwavejs/zwave-js-ui:{zwave_version:-latest}
+    image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     restart: always
     tty: true
     stop_signal: SIGINT
