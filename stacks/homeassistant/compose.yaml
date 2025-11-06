@@ -21,8 +21,6 @@ services:
       - ${data:-.}/homeassistant:/config # Local storage
       - /etc/localtime:/etc/localtime:ro # Timezone synchronization
       - /run/dbus:/run/dbus:ro # Bluetooth connection
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0 # Zigbee radio controller
     labels:
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
@@ -32,6 +30,7 @@ services:
   zwave-js-ui:
     container_name: zwave-js-ui
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
+    privileged: true
     restart: always
     tty: true
     stop_signal: SIGINT
@@ -40,8 +39,6 @@ services:
       TZ: ${timezone:-UTC}
     networks:
       - proxy
-    devices:
-      - ${device_id}:/dev/zwave
     volumes:
       - ${data:-.}/zwave-config:/usr/src/app/store
     labels:
