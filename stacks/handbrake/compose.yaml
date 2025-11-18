@@ -25,6 +25,7 @@ services:
       AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
     volumes:
       - $data/handbrake:/config:rw
+      - $data/trash:/trash:rw
       - $media/HandBrake/storage:/storage:rw
       - $media/HandBrake/watch:/watch:rw
       - $media/HandBrake/output:/output:rw

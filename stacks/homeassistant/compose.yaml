@@ -87,4 +87,6 @@ services:
       ha_mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"
     volumes:
-      - ${data:-.}/mqtt:/mosquitto/config
+      - ${data:-.}/mqtt/config:/mosquitto/config
+      - ${data:-.}/mqtt/data:/mosquitto/data
+      - ${data:-.}/mqtt/log:/mosquitto/log

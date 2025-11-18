@@ -93,6 +93,7 @@ services:
       proxy: null
     volumes:
       - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${data:-.}/prometheus/data:/prometheus
       - /etc/timezone:/etc/timezone:ro
     labels:
       traefik.enable: "true"
