@@ -118,7 +118,10 @@ services:
     networks:
       proxy: null
     volumes:
-      - ${data:-.}/privatebin:/srv/data
+      - ${data:-.}/privatebin/data:/srv/data
+      - ${data:-.}/privatebin/tmp:/tmp
+      - ${data:-.}/privatebin/run:/run
+      - ${data:-.}/privatebin/nginx:/var/lib/nginx/tmp
     labels:
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
