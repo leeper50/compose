@@ -81,9 +81,12 @@ services:
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
       NTFY_BEHIND_PROXY: true
       NTFY_ENABLE_LOGIN: true
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
     volumes:
-      - ${data:-.}/ntfy/cache:/var/cache/ntfy
-      - ${data:-.}/ntfy/data:/etc/ntfy
+      - ${data:-.}/ntfy/data:/var/lib/ntfy
     labels:
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
