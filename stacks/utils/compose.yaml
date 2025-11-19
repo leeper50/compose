@@ -134,14 +134,14 @@ services:
     container_name: send
     restart: always
     depends_on:
-      - send_redis
+      - send_keydb
     networks:
       proxy:
       send: null
     environment:
       NODE_ENV: production
       BASE_URL: https://send.${domain}
-      REDIS_HOST: send_redis
+      REDIS_HOST: send_keydb
       EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
       DEFAULT_EXPIRE_SECONDS: 3600
       MAX_EXPIRE_SECONDS: 31536000
@@ -156,12 +156,12 @@ services:
       traefik.http.routers.send.middlewares: "allowedIPs@file"
       traefik.http.routers.send.rule: "Host(`send.${domain}`)"
       traefik.http.services.send.loadbalancer.server.url: 'http://send:1443'
-  send_redis:
+  send_keydb:
     <<: *logging-policy
-    image: redis:${redis_version:-alpine}
-    container_name: send_redis
+    image: eqalpha/keydb:${keydb_version:-latest}
+    container_name: send_keydb
     restart: always
     networks:
       send: null
     volumes:
-      - ${data:-.}/send/redis:/data
+      - ${data:-.}/send/keydb:/data
