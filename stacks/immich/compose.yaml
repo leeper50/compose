@@ -18,7 +18,7 @@ services:
     depends_on:
       - database
       - immich-machine-learning
-      - redis
+      - immich_keydb
     networks:
       proxy: null
       default: null
@@ -53,15 +53,15 @@ services:
       - ${data:-.}/model-cache:/cache
     healthcheck:
       disable: false
-  redis:
+  immich_keydb:
     <<: *logging-policy
-    image: docker.io/valkey/valkey:8-bookworm
-    container_name: immich_redis
+    image: eqalpha/keydb:${keydb_version:-latest}
+    container_name: immich_keydb
     restart: unless-stopped
     networks:
       default: null
     volumes:
-      - ${data:-.}/redis:/data
+      - ${data:-.}/keydb:/data
     healthcheck:
       test: redis-cli ping || exit 1
   database:
