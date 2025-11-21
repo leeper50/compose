@@ -30,7 +30,7 @@ services:
       traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
       traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
   ittools:
-    image: 'corentinth/it-tools:${ittools_version:-latest}'
+    image: 'sharevb/it-tools:${ittools_version:-latest}'
     container_name: ittools
     restart: always
     networks:
@@ -40,7 +40,7 @@ services:
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
-      traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:80'
+      traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:8080'
   libretranslate:
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
