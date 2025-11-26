@@ -12,7 +12,7 @@ x-logging-policy: &logging-policy
 services:
   gitea:
     <<: *logging-policy
-    image: gitea/gitea:${gitea_version:-1.24}
+    image: gitea/gitea:${gitea_version:-1.25}
     container_name: gitea
     restart: always
     depends_on:

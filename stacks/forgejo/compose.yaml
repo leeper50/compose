@@ -12,7 +12,7 @@ x-logging-policy: &logging-policy
 services:
   forgejo:
     <<: *logging-policy
-    image: codeberg.org/forgejo/forgejo:${forgejo_version:-12-rootless}
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
     container_name: forgejo
     user: ${uid:-1000}:${gid:-1000}
     restart: always
