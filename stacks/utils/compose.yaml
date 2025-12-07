@@ -30,6 +30,7 @@ services:
       traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
       traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
   ittools:
+    <<: *logging-policy
     image: 'sharevb/it-tools:${ittools_version:-latest}'
     container_name: ittools
     restart: always
@@ -42,6 +43,7 @@ services:
       traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
       traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:8080'
   libretranslate:
+    <<: *logging-policy
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
     restart: always
@@ -54,6 +56,7 @@ services:
       traefik.http.routers.libretranslate.rule: "Host(`lt.${domain}`)"
       traefik.http.services.libretranslate.loadbalancer.server.url: 'http://libretranslate:5000'
   myspeed:
+    <<: *logging-policy
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     container_name: myspeed
     restart: always
@@ -67,47 +70,37 @@ services:
       traefik.http.routers.myspeed.middlewares: "localonly@file"
       traefik.http.routers.myspeed.rule: "Host(`speed.${domain}`)"
       traefik.http.services.myspeed.loadbalancer.server.url: 'http://myspeed:5216'
-  picsur:
+  slink:
     <<: *logging-policy
-    image: ghcr.io/caramelfur/picsur:${picsur_version:-latest}
-    container_name: picsur
+    image: anirdev/slink:${slink_version:-latest}
+    container_name: slink
     restart: always
-    depends_on:
-      - picsur_postgres
+    user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
-      picsur: null
     environment:
-      PICSUR_DB_HOST: picsur_postgres
-      PICSUR_DB_DATABASE: picsur
-      PICSUR_DB_USERNAME: picsur
-      PICSUR_DB_PASSWORD: ${picsur_dbpass}
-      ## The default username is admin, this is not modifiable
-      PICSUR_ADMIN_PASSWORD: ${picsur_adminpass}
-      ## Maximum accepted size for uploads in bytes
-      PICSUR_MAX_FILE_SIZE: 128000000
+      TZ: ${timezone:-UTC}
+      ORIGIN: https://sl.${domain}
+      USER_APPROVAL_REQUIRED: true
+      USER_PASSWORD_MIN_LENGTH: 8
+      USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
+      IMAGE_MAX_SIZE: 50M
+      IMAGE_STRIP_EXIF_METADATA: true
+      IMAGE_COMPRESSION_QUALITY: 100
+      REQUIRE_SSL: true
+      STORAGE_PROVIDER: local
+    volumes:
+      - ${data:-.}/slink/db:/app/var/data
+      - ${data:-.}/slink/images:/app/slink/images
     labels:
       traefik.enable: "true"
-      traefik.http.routers.picsur.entryPoints: "https"
-      traefik.http.routers.picsur.middlewares: "allowedIPs@file"
-      traefik.http.routers.picsur.rule: "Host(`ps.dellhplaptop.xyz`)"
-      traefik.http.services.picsur.loadbalancer.server.url: 'http://picsur:8080'
+      traefik.http.routers.slink.entryPoints: "https"
+      traefik.http.routers.slink.middlewares: "allowedIPs@file"
+      traefik.http.routers.slink.rule: "Host(`sl.${domain}`)"
+      traefik.http.services.slink.loadbalancer.server.url: 'http://slink:3000'
       # No middleware for outbound images
       traefik.http.routers.picsur-images.entrypoints: "https"
-      traefik.http.routers.picsur-images.rule: "Host(`ps.dellhplaptop.xyz`) && PathPrefix(`/i/`)"
-  picsur_postgres:
-    <<: *logging-policy
-    image: postgres:${postgres_version:-14-alpine}
-    container_name: picsur_postgres
-    restart: always
-    networks:
-      picsur: null
-    environment:
-      POSTGRES_DB: picsur
-      POSTGRES_USER: picsur
-      POSTGRES_PASSWORD: ${picsur_dbpass}
-    volumes:
-      - ${data:-.}/picsur/db:/var/lib/postgresql/data
+      traefik.http.routers.picsur-images.rule: "Host(`sl.${domain}`) && PathPrefix(`/image/`)"
   privatebin:
     <<: *logging-policy
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
