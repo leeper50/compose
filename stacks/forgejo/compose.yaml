@@ -20,13 +20,13 @@ services:
       USER_UID: ${uid:-1000}
       USER_GID: ${gid:-1000}
       FORGEJO__database__DB_TYPE: postgres
-      FORGEJO__database__HOST: db:5432
+      FORGEJO__database__HOST: forgejodb:5432
       FORGEJO__database__NAME: forgejo
       FORGEJO__database__USER: forgejo
       FORGEJO__database__PASSWD: ${db_pass:-forgejo}
       FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
     depends_on:
-      - db
+      - forgejodb
     labels:
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"
@@ -40,9 +40,10 @@ services:
       - ${data:-.}/app/conf:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-  db:
+  forgejodb:
     <<: *logging-policy
     image: postgres:${postgres_version:-14}
+    container_name: forgejodb
     restart: always
     environment:
       POSTGRES_USER: forgejo
