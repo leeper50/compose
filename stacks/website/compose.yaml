@@ -16,7 +16,7 @@ services:
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     container_name: mywebsite
     user: ${uid:-1000}:${gid:-1000}
-    restart: always
+    restart: unless-stopped
     networks:
       proxy:
     volumes:
@@ -31,7 +31,7 @@ services:
     <<: *logging-policy
     image: freshrss/freshrss:${freshrss_version:-latest}
     container_name: freshrss
-    restart: always
+    restart: unless-stopped
     depends_on:
       - freshrssdb
     networks:
@@ -58,7 +58,7 @@ services:
     <<: *logging-policy
     image: postgres:${postgres_version:-16}
     container_name: freshrssdb
-    restart: always
+    restart: unless-stopped
     networks:
       freshrss:
     volumes:
@@ -71,7 +71,7 @@ services:
     <<: *logging-policy
     image: vaultwarden/server:${vaultwarden_version:-latest}
     container_name: vaultwarden
-    restart: always
+    restart: unless-stopped
     networks:
       proxy:
     environment:
@@ -89,7 +89,7 @@ services:
     <<: *logging-policy
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     container_name: homepage
-    restart: always
+    restart: unless-stopped
     networks:
       proxy:
     environment:

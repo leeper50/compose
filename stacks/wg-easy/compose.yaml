@@ -13,7 +13,7 @@ services:
     <<: *logging-policy
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     container_name: wgeasy
-    restart: always
+    restart: unless-stopped
     networks:
       proxy:
     cap_add:

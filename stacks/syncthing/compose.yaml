@@ -13,7 +13,7 @@ services:
     <<: *logging-policy
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     container_name: syncthing
-    restart: always
+    restart: unless-stopped
     network_mode: host
     environment:
       PUID: ${uid:-1000}

@@ -14,7 +14,7 @@ services:
     <<: *logging-policy
     image: gitea/gitea:${gitea_version:-1.25}
     container_name: gitea
-    restart: always
+    restart: unless-stopped
     depends_on:
       - giteadb
     environment:
@@ -42,7 +42,7 @@ services:
     <<: *logging-policy
     image: postgres:${postgres_version:-14}
     container_name: gitea_db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_DB: gitea
       POSTGRES_USER: gitea
@@ -55,7 +55,7 @@ services:
     <<: *logging-policy
     image: gitea/act_runner:${runner_version:-nightly}
     container_name: gitea_runner
-    restart: always
+    restart: unless-stopped
     depends_on:
       - gitea
     environment:

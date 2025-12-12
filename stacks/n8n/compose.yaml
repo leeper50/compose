@@ -7,7 +7,7 @@ services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:${n8n_version:-latest}
     container_name: n8n
-    restart: always
+    restart: unless-stopped
     environment:
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
       N8N_HOST: n8n.${domain}
