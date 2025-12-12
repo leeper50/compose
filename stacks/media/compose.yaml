@@ -13,7 +13,7 @@ services:
     <<: *logging-policy
     image: linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     environment:
@@ -39,7 +39,7 @@ services:
     <<: *logging-policy
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     depends_on:
@@ -62,7 +62,7 @@ services:
     <<: *logging-policy
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     environment:
@@ -83,7 +83,7 @@ services:
     image: deluan/navidrome:${navidrome_version:-latest}
     container_name: navidrome
     user: ${uid:-1000}:${gid:-1000}
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     environment:
@@ -103,5 +103,4 @@ services:
       traefik.http.routers.navidrome-subsonic.entrypoints: "https"
       traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
       traefik.http.routers.navidrome-subsonic.priority: 50
-      traefik.http.services.navidrome-subsonic.loadbalancer.server.url: "http://navidrome:4533"
       traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)

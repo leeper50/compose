@@ -14,7 +14,7 @@ services:
     <<: *logging-policy
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     container_name: convertx
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     environment:
@@ -32,7 +32,7 @@ services:
     <<: *logging-policy
     image: 'sharevb/it-tools:${ittools_version:-latest}'
     container_name: ittools
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     labels:
@@ -45,7 +45,7 @@ services:
     <<: *logging-policy
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
-    restart: always
+    restart: unless-stopped
     networks:
       proxy: null
     labels:
@@ -58,7 +58,7 @@ services:
     <<: *logging-policy
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     container_name: myspeed
-    restart: always
+    restart: unless-stopped
     volumes:
       - '${data:-.}/myspeed:/myspeed/data'
     networks:
@@ -73,7 +73,7 @@ services:
     <<: *logging-policy
     image: anirdev/slink:${slink_version:-latest}
     container_name: slink
-    restart: always
+    restart: unless-stopped
     user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
@@ -106,7 +106,7 @@ services:
     <<: *logging-policy
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     container_name: privatebin
-    restart: always
+    restart: unless-stopped
     read_only: true
     user: ${uid:-1000}:${gid:-1000}
     networks:
@@ -126,7 +126,7 @@ services:
     <<: *logging-policy
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     container_name: send
-    restart: always
+    restart: unless-stopped
     depends_on:
       - send_keydb
     networks:
@@ -154,7 +154,7 @@ services:
     <<: *logging-policy
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: send_keydb
-    restart: always
+    restart: unless-stopped
     networks:
       send: null
     volumes:

@@ -14,7 +14,7 @@ services:
     <<: *logging-policy
     image: qmcgaw/gluetun:${gluetun_version:-v3.40}
     container_name: gluetun-proxy
-    restart: always
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     sysctls:
@@ -34,7 +34,7 @@ services:
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     container_name: socks5proxy
     network_mode: service:gluetun-proxy
-    restart: always
+    restart: unless-stopped
     environment:
       REQUIRE_AUTH: ${enable_auth}
       PROXY_USER: ${proxy_user}
@@ -43,6 +43,6 @@ services:
     <<: *logging-policy
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
     container_name: tor-privoxy
-    restart: always
+    restart: unless-stopped
     ports:
       - "9050:9050/tcp"
