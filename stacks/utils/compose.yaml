@@ -95,10 +95,12 @@ services:
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file"
+      traefik.http.routers.slink.priority: 30
       traefik.http.routers.slink.rule: "Host(`sl.${domain}`)"
       traefik.http.services.slink.loadbalancer.server.url: 'http://slink:3000'
       # No middleware for outbound images
       traefik.http.routers.slink-images.entrypoints: "https"
+      traefik.http.routers.slink-images.priority: 50
       traefik.http.routers.slink-images.rule: "Host(`sl.${domain}`) && PathPrefix(`/image/`)"
   privatebin:
     <<: *logging-policy

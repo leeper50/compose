@@ -90,15 +90,18 @@ services:
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
       ND_ENABLEUSEREDITING: false
     volumes:
-      - ${data:-.}/jellyfin:/data:rw
+      - ${data:-.}/navidrome:/data:rw
       - ${media}/Music:/music:ro
     labels:
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
       traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@docker"
+      traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.${domain}`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
       # App specific auth with basic-auth
       traefik.http.routers.navidrome-subsonic.entrypoints: "https"
-      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
       traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
+      traefik.http.routers.navidrome-subsonic.priority: 50
+      traefik.http.services.navidrome-subsonic.loadbalancer.server.url: "http://navidrome:4533"
+      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
