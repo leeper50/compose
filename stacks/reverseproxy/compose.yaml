@@ -9,70 +9,6 @@ x-logging-policy: &logging-policy
       max-file: "3"
       compress: "true"
 services:
-  # Traefik configuration
-  traefik:
-    <<: *logging-policy
-    image: traefik:${traefik_version:-v3.6}
-    container_name: traefik
-    restart: unless-stopped
-    depends_on:
-      - authelia
-    networks:
-      proxy:
-    ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
-      - "443:443/udp"
-    environment:
-      CF_DNS_API_TOKEN: ${cf_dns_api_token}
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json
-      - ${data:-.}/logs/traefik:/var/log/traefik:rw
-    labels:
-      traefik.enable: "true"
-      traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://bouncer-traefik:8080/api/v1/forwardAuth"
-      traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
-      traefik.http.routers.traefik.entryPoints: "https"
-      traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
-      traefik.http.routers.traefik.service: "api@internal"
-      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
-
-  # Crowdsec configuration
-  crowdsec:
-    <<: *logging-policy
-    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
-    container_name: crowdsec
-    restart: unless-stopped
-    depends_on:
-      - traefik
-    networks:
-      proxy:
-    environment:
-      GID: ${gid:-1000}
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
-    volumes:
-      - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
-      - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs/traefik:/var/log/traefik/:ro
-  bouncer-traefik:
-    <<: *logging-policy
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
-    container_name: bouncer-traefik
-    restart: unless-stopped
-    depends_on:
-      - crowdsec
-    networks:
-      proxy:
-    environment:
-      CROWDSEC_BOUNCER_API_KEY: ${cs_api_key}
-      CROWDSEC_AGENT_HOST: crowdsec:8080
-
   # Authelia configuration
   authelia:
     <<: *logging-policy
@@ -99,6 +35,51 @@ services:
       # Basic auth for the scrubs
       traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
       traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
+  bouncer-traefik:
+    <<: *logging-policy
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
+    container_name: bouncer-traefik
+    restart: unless-stopped
+    depends_on:
+      - crowdsec
+    networks:
+      proxy:
+    environment:
+      CROWDSEC_BOUNCER_API_KEY: ${cs_api_key}
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+
+  # Crowdsec configuration
+  crowdsec:
+    <<: *logging-policy
+    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
+    container_name: crowdsec
+    restart: unless-stopped
+    depends_on:
+      - traefik
+    networks:
+      proxy:
+    environment:
+      GID: ${gid:-1000}
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    volumes:
+      - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
+      - ${data:-.}/crowdsec/config:/etc/crowdsec/
+      - ${data:-.}/logs/traefik:/var/log/traefik/:ro
+  geoipfilter:
+    <<: *logging-policy
+    image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
+    container_name: geoipfilter
+    restart: unless-stopped
+    networks:
+      proxy:
+    environment:
+      MAXMIND_ID: ${maxmind_id:?}
+      MAXMIND_KEY: ${maxmind_key:?}
+      FILTER_TYPE: ${filter:-allow}
+      COUNTRY_CODES: ${country_codes:-US}
+      EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+    volumes:
+      - ${data:-.}/geoip:/geoip
   lldap:
     <<: *logging-policy
     image: lldap/lldap:${lldap_version:-stable}
@@ -121,3 +102,38 @@ services:
       traefik.http.routers.lldap.middlewares: "localonly@file"
       traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
+  # Traefik configuration
+  traefik:
+    <<: *logging-policy
+    image: traefik:${traefik_version:-v3.6}
+    container_name: traefik
+    restart: unless-stopped
+    depends_on:
+      - authelia
+      - geoipfilter
+    networks:
+      proxy:
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "443:443/udp"
+    environment:
+      CF_DNS_API_TOKEN: ${cf_dns_api_token}
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
+      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
+      - ${data:-.}/traefik/acme.json:/acme.json
+      - ${data:-.}/logs/traefik:/var/log/traefik:rw
+    labels:
+      traefik.enable: "true"
+      traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://bouncer-traefik:8080/api/v1/forwardAuth"
+      traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.middlewares-geoipfilter.forwardAuth.address: http://geoipfilter:8080/traefik
+      traefik.http.routers.traefik.entryPoints: "https"
+      traefik.http.routers.traefik.middlewares: "localonly@file"
+      traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
+      traefik.http.routers.traefik.service: "api@internal"
+      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"

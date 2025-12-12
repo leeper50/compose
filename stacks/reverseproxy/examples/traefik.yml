@@ -50,7 +50,8 @@ entryPoints:
         writeTimeout: "600s"
     http:
       middlewares:
-        - "crowdsec-bouncer@docker"
+        - middlewares-geoipfilter@docker
+        - crowdsec-bouncer@docker
       tls:
         certResolver: "your-cert-provider"
         domains:
