@@ -37,3 +37,9 @@ The ldap server can also be used for applications that support ldap, but not `au
 
 Either way, you should consider a strong password with at least 1 special character, 1 number, 1 lowercase letter, and 1 uppercase letter.
 Some services like calibre-web expect users to meet some or all of these requirements and will not work with SSO without them.
+
+### Geoip Filter
+This stack integrates a container that allows traefik to use MaxMind GeoIP data to filter traffic from specific countries or regions.
+
+This integration requires a free maxmind account that can be setup [here](https://www.maxmind.com/en/geolite2/signup).
+You will need to create a license key and provide your account id when setting up the stack.
