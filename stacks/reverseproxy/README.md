@@ -48,3 +48,6 @@ This stack integrates a container that allows traefik to use MaxMind GeoIP data 
 
 This integration requires a free maxmind account that can be setup [here](https://www.maxmind.com/en/geolite2/signup).
 You will need to create a license key and provide your account id when setting up the stack.
+
+You may change the http response code given when a user is geo-blocked. I have this set to code 418 which is unused in normal HTTP operations.
+This allows me to ignore logging traffic geo-blocked, which lowers my usage for crowdsec's free plan.

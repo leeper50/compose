@@ -77,6 +77,7 @@ services:
       MAXMIND_KEY: ${maxmind_key:?}
       FILTER_TYPE: ${filter:-allow}
       COUNTRY_CODES: ${country_codes:-US}
+      BLOCK_STATUS_CODE: ${block_status_code:-418}
       EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
     volumes:
       - ${data:-.}/geoip:/geoip
