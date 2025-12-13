@@ -24,6 +24,11 @@ some configuration options. The default configuration expects the following sett
 
 A sample of both the `traefik/traefik.yml` and `traefik/dynamic.yml` files will be provided in the `examples` directory.
 
+Traefik can also be used to proxy TCP or UDP traffic. This allows us to apply middlewares to this traffic for some additional controls.
+The example `traefik/dynamic.yml` file will show how one can reuse an ip whitelist between both TCP and HTTP middlewares using yaml anchors.
+The middlewares must be applied to a router that points to a service, much like HTTP routes. TLS TCP traffic can use specific HostSNI for matching, otherwise
+a default wildcard should be used.
+
 ### Authelia
 
 Authelia is a very configurable piece of software, and I can not offer a suitable default configuration for general use.
