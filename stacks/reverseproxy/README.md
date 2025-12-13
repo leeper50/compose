@@ -24,6 +24,11 @@ some configuration options. The default configuration expects the following sett
 
 A sample of both the `traefik/traefik.yml` and `traefik/dynamic.yml` files will be provided in the `examples` directory.
 
+Traefik can also be used to proxy TCP or UDP traffic. This allows us to apply middlewares to this traffic for some additional controls.
+The example `traefik/dynamic.yml` file will show how one can reuse an ip whitelist between both TCP and HTTP middlewares using yaml anchors.
+The middlewares must be applied to a router that points to a service, much like HTTP routes. TLS TCP traffic can use specific HostSNI for matching, otherwise
+a default wildcard should be used.
+
 ### Authelia
 
 Authelia is a very configurable piece of software, and I can not offer a suitable default configuration for general use.
@@ -43,3 +48,6 @@ This stack integrates a container that allows traefik to use MaxMind GeoIP data 
 
 This integration requires a free maxmind account that can be setup [here](https://www.maxmind.com/en/geolite2/signup).
 You will need to create a license key and provide your account id when setting up the stack.
+
+You may change the http response code given when a user is geo-blocked. I have this set to code 418 which is unused in normal HTTP operations.
+This allows me to ignore logging traffic geo-blocked, which lowers my usage for crowdsec's free plan.
