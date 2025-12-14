@@ -136,3 +136,4 @@ services:
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://crowdsec-bouncer:8080/api/v1/forwardAuth"
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
       traefik.http.middlewares.geoipfilter.forwardAuth.address: http://geoipfilter:8080/traefik
+
