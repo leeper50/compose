@@ -63,6 +63,7 @@ entryPoints:
     address: :8082
   minecraft:
     address: :25565
+
 log:
   compress: true
   filePath: /var/log/traefik/traefik.log
