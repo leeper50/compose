@@ -37,13 +37,14 @@ Please refer to the documentation for Authelia when building out your own `confi
 
 The stack includes `lldap` as the ldap server for authelia to use as its source of truth for users.
 You can use the file provider if you wish, but any changes to new or existing users will require restarting the stack
-and users will have to reauthenticate. 
+and users will have to reauthenticate.
 The ldap server can also be used for applications that support ldap, but not `authelia`'s OAuth or `traefik`'s forward-headers authentication.
 
 Either way, you should consider a strong password with at least 1 special character, 1 number, 1 lowercase letter, and 1 uppercase letter.
 Some services like calibre-web expect users to meet some or all of these requirements and will not work with SSO without them.
 
 ### Geoip Filter
+
 This stack integrates a container that allows traefik to use MaxMind GeoIP data to filter traffic from specific countries or regions.
 
 This integration requires a free maxmind account that can be setup [here](https://www.maxmind.com/en/geolite2/signup).
@@ -51,3 +52,11 @@ You will need to create a license key and provide your account id when setting u
 
 You may change the http response code given when a user is geo-blocked. I have this set to code 418 which is unused in normal HTTP operations.
 This allows me to ignore logging traffic geo-blocked, which lowers my usage for crowdsec's free plan.
+
+### Vector
+
+Vector will allow us to filter out specific log items from traefik's access logs.
+
+I use this to filter private ip information and status code 418 before it hits crowdsec.
+
+An example configuration file will be provided in the examples folder. This file must be put in the ${data}/vector folder to be read by vector.

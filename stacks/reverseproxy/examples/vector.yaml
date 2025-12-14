@@ -1,0 +1,43 @@
+sources:
+  traefik_access:
+    type: file
+    include:
+      - /var/log/traefik/access.log
+    read_from: beginning
+    ignore_older: 86400
+transforms:
+  parse_clf:
+    type: remap
+    inputs:
+      - traefik_access
+    source: |
+      .match = parse_regex!(
+        .message,
+        r'^(?P<client_ip>\S+).*" (?P<status>\d{3}) \d+'
+      )
+      .client_ip = .match.client_ip
+      .status = to_int!(.match.status)
+  filter_unwanted:
+    type: filter
+    inputs:
+      - parse_clf
+    condition: |
+      .client_ip != null &&
+      .status != 0 &&
+      !(ip_cidr_contains!("10.0.0.0/8", .client_ip) ||
+        ip_cidr_contains!("172.16.0.0/12", .client_ip) ||
+        ip_cidr_contains!("192.168.0.0/16", .client_ip) ||
+        ip_cidr_contains!("127.0.0.0/8", .client_ip) ||
+        ip_cidr_contains!("169.254.0.0/16", .client_ip) ||
+        ip_cidr_contains!("::1/128", .client_ip) ||
+        ip_cidr_contains!("fc00::/7", .client_ip) ||
+        ip_cidr_contains!("fe80::/10", .client_ip))&&
+      .status != 418
+sinks:
+  crowdsec_file:
+    type: file
+    inputs:
+      - filter_unwanted
+    path: /var/log/vector/traefik-clean.log
+    encoding:
+      codec: text

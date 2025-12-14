@@ -1,4 +1,5 @@
 networks:
+  default:
   proxy:
     external: true
 x-logging-policy: &logging-policy
@@ -46,7 +47,7 @@ services:
     volumes:
       - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs/traefik:/var/log/traefik/:ro
+      - ${data:-.}/logs:/var/log:ro
   crowdsec-bouncer:
     <<: *logging-policy
     image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
@@ -123,7 +124,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
       - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json
+      - ${data:-.}/traefik/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
     labels:
       traefik.enable: "true"
@@ -135,5 +136,17 @@ services:
       # Container security middlewares
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://crowdsec-bouncer:8080/api/v1/forwardAuth"
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
-      traefik.http.middlewares.geoipfilter.forwardAuth.address: http://geoipfilter:8080/traefik
-
+      traefik.http.middlewares.geoipfilter.forwardAuth.address: "http://geoipfilter:8080/traefik"
+  vector:
+    <<: *logging-policy
+    image: timberio/vector:${vector_version:-latest-alpine}
+    container_name: vector
+    restart: unless-stopped
+    depends_on:
+      - crowdsec
+    networks:
+      default:
+    command: ["--config", "/etc/vector/vector.yaml"]
+    volumes:
+      - ${data:-.}/logs:/var/log
+      - ${data:-.}/vector:/etc/vector:ro

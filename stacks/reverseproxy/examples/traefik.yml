@@ -2,8 +2,7 @@ accessLog:
   filePath: /var/log/traefik/access.log
   filters:
     statusCodes:
-      - 400-417
-      - 419-499
+      - 400-499
       - 500-599
     retryAttempts: true
     minDuration: 1000ms
