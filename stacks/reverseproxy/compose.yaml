@@ -75,8 +75,6 @@ services:
       EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
     volumes:
       - ${data:-.}/geoip:/geoip
-    labels:
-      traefik.http.middlewares.geoipfilter.forwardAuth.address: http://geoipfilter:8080/traefik
   lldap:
     <<: *logging-policy
     image: lldap/lldap:${lldap_version:-stable}
@@ -134,5 +132,8 @@ services:
       traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
       traefik.http.routers.traefik.service: "api@internal"
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
+      # Container security middlewares
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://crowdsec-bouncer:8080/api/v1/forwardAuth"
       traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
+      traefik.http.middlewares.geoipfilter.forwardAuth.address: http://geoipfilter:8080/traefik
+
