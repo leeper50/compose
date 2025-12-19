@@ -1,4 +1,4 @@
-name: Validate Stacks and PR to Main
+name: Validate Stacks
 
 on:
   push:
@@ -22,20 +22,3 @@ jobs:
 
       - name: Validate Stacks
         run: bash tests/validate_stacks.sh
-
-      - name: Create PR to Main
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.PAT }}
-          script: |
-            const commitMessage = `${{ github.event.head_commit.message }}`;
-
-            const { data: pr } = await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Merge: Dev to Main',
-              head: 'dev',
-              base: 'main',
-              body: `## Latest Commit Message\n**${commitMessage}**\n\n---\n*Automated PR created after successful CI run*`
-            });
-
