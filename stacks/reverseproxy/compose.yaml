@@ -27,13 +27,8 @@ services:
       - ${data:-.}/authelia/config:/config
     labels:
       traefik.enable: "true"
-      traefik.http.middlewares.authelia.forwardAuth.address: "http://authelia:9091/api/authz/forward-auth"
-      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
-      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.routers.authelia.entryPoints: "https"
       traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
-      traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
-      traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
   crowdsec:
     <<: *logging-policy
     image: crowdsecurity/crowdsec:${crowdsec_version:-latest}

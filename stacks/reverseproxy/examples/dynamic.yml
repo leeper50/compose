@@ -14,9 +14,15 @@ http:
     allowedIPs:
       ipAllowList:
         <<: *allowedIPs
-    localonly:
-      ipAllowList:
-        <<: *localIPs
+    authelia:
+      forwardAuth:
+        address: http://authelia:9091/api/authz/forward-auth
+        authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
+        trustForwardHeader: true
+    authelia-basicauth:
+      forwardAuth:
+        address: http://authelia:9091/api/verify?auth=basic
+        authResponseHeaders: "Remote-User"
     crowdsec:
       plugin:
         bouncer:
@@ -29,6 +35,9 @@ http:
     geoipfilter:
       forwardAuth:
         address: http://geoipfilter:8080/traefik
+    localonly:
+      ipAllowList:
+        <<: *localIPs
 tcp:
   middlewares:
     allowedIPs:
