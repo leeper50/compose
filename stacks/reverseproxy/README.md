@@ -31,7 +31,7 @@ some configuration options. The default configuration expects the following sett
 
 1. An entrypoint named `https` that running on port `443/tcp` and `443/udp` to serve web traffic and http3 traffic.
 2. A docker provider to connect to connect to the containers on the `proxy` network.
-3. A file provider that provides the middlewares `localonly`,`allowedIPs`, and `crowdsec-bouncer`. `localonly` is used to restrict access to your LAN. `allowedIPs` extends this to include a specific whitelist of IP addresses for friends, organizations, etc. The `crowdsec-bouncer` middleware is used to prevent access to resources from IP addresses banned by crowdsec. This file will be named `traefik/dynamic.yml` on disk.
+3. A file provider that provides the middlewares `localonly`,`allowedIPs`, and `crowdsec`. `localonly` is used to restrict access to your LAN. `allowedIPs` extends this to include a specific whitelist of IP addresses for friends, organizations, etc. The `crowdsec` middleware is used to prevent access to resources from IP addresses banned by crowdsec. This file will be named `traefik/dynamic.yml` on disk.
 
 A sample of both the `traefik/traefik.yml` and `traefik/dynamic.yml` files will be provided in the `examples` directory.
 
