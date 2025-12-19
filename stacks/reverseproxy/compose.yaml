@@ -61,6 +61,7 @@ services:
       CROWDSEC_BOUNCER_API_KEY: ${cs_api_key}
       CROWDSEC_AGENT_HOST: crowdsec:8080
       GIN_MODE: ${gin_mode:-release}
+      TRUSTED_PROXIES: ${trusted_proxies:-172.16.0.0/12}
   geoipfilter:
     <<: *logging-policy
     image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
