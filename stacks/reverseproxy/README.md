@@ -11,6 +11,17 @@ Authelia is used to provide SSO functionality to applications that support OAuth
 The LLDAP container is the source of truth for all accounts in authelia, and can
 be used to provide SSO for apps that only support LDAP.
 
+Vector is a tool that can transform and filter data. It is used here to filter out geoip blocked and private ranges
+in traefik's access log. This is done to prevent those logs from reaching crowdsec and using up the free plan's quota on
+addresses that are outside your defined region.
+
+This requires a logging structure like this:
+- traefik puts logs into `/var/log/traefik`.
+- vector reads from `/var/log/traefik`, filters and outputs to `/var/log/crowdsec/traefik`.
+- crowdsec read from `/var/log/traefik`. From what I understand, this can not be changed, so we must map the bind mount accordingly.
+So it would be `${data:-.}/logs/crowdsec:/var/log/:ro`.
+
+
 ## Extra info
 
 ### Traefik & Crowdsec

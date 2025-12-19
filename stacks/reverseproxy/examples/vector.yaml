@@ -39,6 +39,6 @@ sinks:
     type: file
     inputs:
       - filter_unwanted
-    path: /var/log/vector/%Y-%m-%d-traefik_clean.log
+    path: /var/log/crowdsec/traefik/%Y-%m-%d-traefik_clean.log
     encoding:
       codec: text

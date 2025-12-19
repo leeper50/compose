@@ -47,7 +47,7 @@ services:
     volumes:
       - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs:/var/log:ro
+      - ${data:-.}/logs/crowdsec:/var/log:ro
   crowdsec-bouncer:
     <<: *logging-policy
     image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
