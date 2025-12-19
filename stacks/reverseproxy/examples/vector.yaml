@@ -35,9 +35,10 @@ transforms:
       .status != 418
 sinks:
   crowdsec_file:
+    compression: zstd
     type: file
     inputs:
       - filter_unwanted
-    path: /var/log/vector/traefik-clean.log
+    path: /var/log/vector/%Y-%m-%d-traefik_clean.log
     encoding:
       codec: text
