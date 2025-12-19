@@ -95,7 +95,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@docker"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@file"
       traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.${domain}`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
