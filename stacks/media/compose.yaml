@@ -8,6 +8,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -17,7 +18,6 @@ services:
     <<: *common-settings
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -50,7 +50,6 @@ services:
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     init: true
@@ -80,7 +79,6 @@ services:
     <<: *common-settings
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -107,7 +105,6 @@ services:
     image: deluan/navidrome:${navidrome_version:-latest}
     container_name: navidrome
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:

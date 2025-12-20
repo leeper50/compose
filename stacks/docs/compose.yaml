@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -19,7 +20,6 @@ services:
     <<: *common-settings
     image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     container_name: bookstack
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -47,7 +47,6 @@ services:
     <<: *common-settings
     image: mysql:${mysql_version:-9.2}
     container_name: bookstack_db
-    restart: unless-stopped
     networks:
       bookstack: null
     environment:
@@ -61,7 +60,6 @@ services:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     container_name: ntfy
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     init: true
@@ -103,7 +101,6 @@ services:
     image: grafana/grafana:${grafana_version:-latest}
     container_name: grafana
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -125,7 +122,6 @@ services:
     <<: *common-settings
     image: prom/prometheus:${prometheus_version:-latest}
     container_name: prometheus
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:
@@ -145,7 +141,6 @@ services:
     <<: *common-settings
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
     container_name: uptimekuma
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:

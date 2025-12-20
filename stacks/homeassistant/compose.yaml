@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -18,7 +19,6 @@ services:
     <<: *common-settings
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     container_name: homeassistant
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -41,7 +41,6 @@ services:
     <<: *common-settings
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     container_name: zwave-js-ui
-    restart: unless-stopped
     cap_drop:
       - ALL
     tty: true
@@ -65,7 +64,6 @@ services:
     <<: *common-settings
     container_name: zigbee2mqtt
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -92,7 +90,6 @@ services:
     <<: *common-settings
     container_name: mqtt
     image: eclipse-mosquitto:${mqtt_version:-latest}
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:

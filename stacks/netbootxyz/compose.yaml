@@ -8,6 +8,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -17,7 +18,6 @@ services:
     <<: *common-settings
     image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
     container_name: netbootxyz
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:

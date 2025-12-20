@@ -8,6 +8,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -18,7 +19,6 @@ services:
     image: rustfs/rustfs:${rustfs_version:-latest}
     container_name: rustfs
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data

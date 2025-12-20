@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -18,7 +19,6 @@ services:
     <<: *common-settings
     image: qmcgaw/gluetun:${gluetun_version:-v3.40}
     container_name: gluetun-proxy
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -42,7 +42,6 @@ services:
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     container_name: socks5proxy
     network_mode: service:gluetun-proxy
-    restart: unless-stopped
     cap_drop:
       - ALL
     environment:
@@ -53,7 +52,6 @@ services:
     <<: *common-settings
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
     container_name: tor-privoxy
-    restart: unless-stopped
     cap_drop:
       - ALL
     ports:

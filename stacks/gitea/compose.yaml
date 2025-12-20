@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -19,7 +20,6 @@ services:
     image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
     container_name: gitea
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -50,7 +50,6 @@ services:
     <<: *common-settings
     image: postgres:${postgres_version:-14}
     container_name: gitea_db
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -71,7 +70,6 @@ services:
     <<: *common-settings
     image: gitea/act_runner:${runner_version:-nightly}
     container_name: gitea_runner
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:

@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -18,7 +19,6 @@ services:
     <<: *common-settings
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: paperlessngx_broker
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -32,7 +32,6 @@ services:
     <<: *common-settings
     image: docker.io/library/postgres:${postgres_version:-16}
     container_name: paperlessngx_db
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -53,7 +52,6 @@ services:
     <<: *common-settings
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     container_name: paperlessngx
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:

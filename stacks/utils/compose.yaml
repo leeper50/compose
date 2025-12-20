@@ -9,6 +9,7 @@ x-common-settings: &common-settings
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -18,7 +19,6 @@ services:
     <<: *common-settings
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     container_name: convertx
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:
@@ -38,7 +38,6 @@ services:
     <<: *common-settings
     image: "sharevb/it-tools:${ittools_version:-latest}"
     container_name: ittools
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:
@@ -53,7 +52,6 @@ services:
     <<: *common-settings
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:
@@ -68,7 +66,6 @@ services:
     <<: *common-settings
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     container_name: myspeed
-    restart: unless-stopped
     cap_drop:
       - ALL
     volumes:
@@ -86,7 +83,6 @@ services:
     image: anirdev/slink:${slink_version:-latest}
     container_name: slink
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     networks:
@@ -121,7 +117,6 @@ services:
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     container_name: privatebin
     user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     read_only: true
@@ -142,7 +137,6 @@ services:
     <<: *common-settings
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     container_name: send
-    restart: unless-stopped
     cap_drop:
       - ALL
     depends_on:
@@ -172,7 +166,6 @@ services:
     <<: *common-settings
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: send_keydb
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
