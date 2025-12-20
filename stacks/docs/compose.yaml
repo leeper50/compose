@@ -35,8 +35,6 @@ services:
       proxy: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
       APP_DEBUG: true
       APP_URL: https://wiki.${domain}
       APP_KEY: ${app_key}
@@ -71,8 +69,6 @@ services:
       bookstack: null
     environment:
       TZ: ${timezone:-UTC}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
       MYSQL_ROOT_PASSWORD: ${root_pass}
       MYSQL_DATABASE: bookstack
       MYSQL_USER: bookstack
