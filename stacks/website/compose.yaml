@@ -63,7 +63,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
-      traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
+      traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
@@ -106,7 +106,13 @@ services:
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
       traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
+      traefik.http.routers.vaultwarden.priority: 30
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
+      # Block admin page with authelia
+      traefik.http.routers.vaultwarden-admin.entrypoints: "https"
+      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.vaultwarden-admin.priority: 50
+      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain}`) && PathPrefix(`/admin/`)
   homepage:
     <<: *common-settings
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}

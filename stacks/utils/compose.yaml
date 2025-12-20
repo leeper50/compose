@@ -61,7 +61,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
-      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
+      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.libretranslate.rule: "Host(`lt.${domain}`)"
       traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
   myspeed:
