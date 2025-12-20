@@ -24,6 +24,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
       - SETGID
       - SETUID
     depends_on:
@@ -45,7 +47,7 @@ services:
       DB_PASSWORD: ${db_pass}
       QUEUE_CONNECTION: null
     volumes:
-      - ${data:-.}/bookstack/config:/config
+      - ${data:-.}/bookstack/config:/config:rw
     labels:
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
@@ -61,6 +63,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
       - SETGID
       - SETUID
     networks:
@@ -74,7 +78,7 @@ services:
       MYSQL_USER: bookstack
       MYSQL_PASSWORD: ${db_pass}
     volumes:
-      - ${data:-.}/bookstack/db:/config
+      - ${data:-.}/bookstack/db:/config:rw
   ntfy:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     container_name: ntfy
@@ -161,9 +165,8 @@ services:
   # Uptime service
   uptimekuma:
     <<: *common-settings
-    image: louislam/uptime-kuma:${uptimekuma_version:-2-rootless}
+    image: louislam/uptime-kuma:${uptimekuma_version:-2}
     container_name: uptimekuma
-    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
