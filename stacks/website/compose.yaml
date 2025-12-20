@@ -64,7 +64,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
+      traefik.http.routers.freshrss.rule: "Host(`fr.${domain}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
     <<: *common-settings
@@ -153,7 +153,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`files.${domain}`)"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain}`)"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
     stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:
