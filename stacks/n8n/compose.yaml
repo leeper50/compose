@@ -28,6 +28,7 @@ services:
       N8N_HOST: n8n.${domain}
       N8N_PORT: 5678
       N8N_PROTOCOL: https
+      N8N_PROXY_HOPS: 1
       N8N_RUNNERS_ENABLED: true
       NODE_ENV: production
       TZ: ${timezone:-UTC}
