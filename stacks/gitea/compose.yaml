@@ -28,6 +28,8 @@ services:
     depends_on:
       - giteadb
     environment:
+      USER_UID: ${uid:-1000}
+      USER_GID: ${gid:-1000}
       GITEA__server__ROOT_URL: https://git.${domain}/
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: giteadb:5432
