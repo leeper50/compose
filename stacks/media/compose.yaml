@@ -50,6 +50,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - SETGID
+      - SETUID
     networks:
       proxy: null
     depends_on:
