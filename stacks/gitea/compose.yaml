@@ -16,20 +16,15 @@ x-common-settings: &common-settings
 services:
   gitea:
     <<: *common-settings
-    image: gitea/gitea:${gitea_version:-1.25}
+    image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
     container_name: gitea
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     depends_on:
       - giteadb
     environment:
-      USER_UID: ${uid:-1000}
-      USER_GID: ${gid:-1000}
       GITEA__server__ROOT_URL: https://git.${domain}/
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: giteadb:5432
@@ -42,7 +37,8 @@ services:
       proxy: null
       default: null
     volumes:
-      - ${data:-.}/server:/data
+      - ${data:-.}/data:/var/lib/gitea:rw
+      - ${data:-.}/config:/etc/gitea:rw
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     labels:
