@@ -153,8 +153,9 @@ services:
   # Uptime service
   uptimekuma:
     <<: *common-settings
-    image: louislam/uptime-kuma:${uptimekuma_version:-latest}
+    image: louislam/uptime-kuma:${uptimekuma_version:-2-rootless}
     container_name: uptimekuma
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
