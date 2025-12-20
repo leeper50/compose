@@ -48,12 +48,6 @@ services:
     image: mysql:${mysql_version:-9.2}
     container_name: bookstack_db
     restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     networks:
       bookstack: null
     environment:
