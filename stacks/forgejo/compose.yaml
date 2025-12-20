@@ -55,6 +55,10 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
     environment:
       POSTGRES_USER: forgejo
       POSTGRES_PASSWORD: ${db_pass:-forgejo}
