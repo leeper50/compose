@@ -50,6 +50,10 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     networks:
       bookstack: null
     environment:
