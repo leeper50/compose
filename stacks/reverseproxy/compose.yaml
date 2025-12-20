@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     depends_on:
       - lldap
     networks:
@@ -58,6 +60,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       proxy:
     environment:
@@ -76,6 +80,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       proxy:
     environment:
