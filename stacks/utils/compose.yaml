@@ -85,10 +85,10 @@ services:
     <<: *common-settings
     image: anirdev/slink:${slink_version:-latest}
     container_name: slink
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
-    user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
     environment:
@@ -120,11 +120,11 @@ services:
     <<: *common-settings
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     container_name: privatebin
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
     read_only: true
-    user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
     volumes:

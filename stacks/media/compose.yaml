@@ -45,9 +45,11 @@ services:
     <<: *common-settings
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
+    init: true
     cap_add:
       - CHOWN
       - SETGID

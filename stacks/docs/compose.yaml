@@ -70,10 +70,10 @@ services:
   ntfy:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     container_name: ntfy
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
     cap_drop:
       - ALL
-    user: ${uid:-1000}:${gid:-1000}
     init: true
     command:
       - serve

@@ -97,7 +97,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
-      - CAP_DAC_OVERRIDE
+      - SETGID
+      - SETUID
     networks:
       ha_mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"
