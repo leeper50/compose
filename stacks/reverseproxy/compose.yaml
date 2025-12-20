@@ -83,6 +83,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - SETGID
+      - SETUID
     networks:
       proxy:
     environment:
