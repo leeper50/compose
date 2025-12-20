@@ -81,6 +81,8 @@ services:
     user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       proxy:
     environment:
