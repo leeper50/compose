@@ -1,19 +1,29 @@
 networks:
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   jellyfin:
-    <<: *logging-policy
-    image: linuxserver/jellyfin:${jellyfin_version:-latest}
+    <<: *common-settings
+    image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     networks:
       proxy: null
     environment:
@@ -36,10 +46,18 @@ services:
       traefik.http.routers.jellyfin.rule: "Host(`jf.${domain}`)"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
   jellyseerr:
-    <<: *logging-policy
+    <<: *common-settings
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
+    user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    init: true
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     networks:
       proxy: null
     depends_on:
@@ -55,14 +73,20 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entryPoints: "https"
-      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file"
-      traefik.http.routers.jellyseerr.rule: "Host(`seer.${domain}`)"
+      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.jellyseerr.rule: "Host(`js.${domain}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:
-    <<: *logging-policy
+    <<: *common-settings
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     networks:
       proxy: null
     environment:
@@ -79,11 +103,13 @@ services:
       traefik.http.routers.calibre.rule: "Host(`books.${domain}`)"
       traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
   navidrome:
-    <<: *logging-policy
+    <<: *common-settings
     image: deluan/navidrome:${navidrome_version:-latest}
     container_name: navidrome
     user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     environment:
@@ -95,7 +121,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@docker"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@file"
       traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.${domain}`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"

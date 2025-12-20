@@ -1,19 +1,25 @@
 networks:
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   garage:
-    <<: *logging-policy
+    <<: *common-settings
     image: dxflrs/garage:${garage_version:-v2.1.0}
     container_name: garage
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     ports:
@@ -31,12 +37,13 @@ services:
       traefik.http.routers.garage.middlewares: "localonly@file"
       traefik.http.routers.garage.rule: "Host(`s3.${domain}`)"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
-
   webui:
-    <<: *logging-policy
+    <<: *common-settings
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     container_name: garage-webui
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - garage
     networks:

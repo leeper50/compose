@@ -2,21 +2,32 @@ networks:
   default: null
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
-
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   # Database (Postgres)
   postgres:
-    <<: *logging-policy
+    <<: *common-settings
     image: postgres:${postgres_version:-16-alpine}
     container_name: rxresume_postgres
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
     networks:
       default: null
     volumes:
@@ -30,13 +41,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   # Chrome Browser (for printing and previews)
   chrome:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/browserless/chromium:${chrome_version:-latest}
     container_name: rxresume_chrome
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     environment:
@@ -51,12 +63,13 @@ services:
       traefik.http.routers.printer.middlewares: "localonly@file"
       traefik.http.routers.printer.rule: "Host(`printer.${domain}`)"
       traefik.http.services.printer.loadbalancer.server.url: 'http://chrome:3000'
-
   rxresume:
-    <<: *logging-policy
+    <<: *common-settings
     image: amruthpillai/reactive-resume:${rxresume_version:-latest}
     container_name: rxresume
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
       proxy: null
@@ -67,26 +80,20 @@ services:
       # -- Environment Variables --
       PORT: 3000
       NODE_ENV: production
-
       # -- URLs --
       PUBLIC_URL: https://rx.${domain}
       STORAGE_URL: https://s3.${domain}
-
       # -- Printer (Chrome) --
       CHROME_TOKEN: ${chrome_token}
       CHROME_URL: wss://printer.${domain}
-
       # -- Database (Postgres) --
       DATABASE_URL: postgresql://${db_user:-postgres}:${db_pass:-postgres}@postgres:5432/${db_name:-postgres}
-
       # -- Auth --
       ACCESS_TOKEN_SECRET: ${access_token}
       REFRESH_TOKEN_SECRET: ${refresh_token}
-
       # -- Emails --
       MAIL_FROM: noreply@example.com
       # SMTP_URL: smtp://user:pass@smtp:587 # Optional
-
       # -- Storage (Garage) --
       STORAGE_ENDPOINT: garage
       STORAGE_PORT: 3900
@@ -99,6 +106,6 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file"
+      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.rxresume.rule: "Host(`rx.${domain}`)"
       traefik.http.services.rxresume.loadbalancer.server.url: 'http://rxresume:3000'

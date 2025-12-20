@@ -3,20 +3,26 @@ networks:
   freshrss: null
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   mywebsite:
-    <<: *logging-policy
+    <<: *common-settings
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     container_name: mywebsite
     user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     volumes:
@@ -28,10 +34,16 @@ services:
       traefik.http.routers.mywebsite.rule: "Host(`${domain}`) || Host(`www.${domain}`)"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
-    <<: *logging-policy
+    <<: *common-settings
     image: freshrss/freshrss:${freshrss_version:-latest}
     container_name: freshrss
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     depends_on:
       - freshrssdb
     networks:
@@ -51,14 +63,22 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
-      traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
-      traefik.http.routers.freshrss.rule: "Host(`rss.${domain}`)"
+      traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.freshrss.rule: "Host(`fr.${domain}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
-    <<: *logging-policy
+    <<: *common-settings
     image: postgres:${postgres_version:-16}
     container_name: freshrssdb
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
     networks:
       freshrss:
     volumes:
@@ -68,10 +88,12 @@ services:
       POSTGRES_USER: rss
       POSTGRES_PASSWORD: ${DB_PASSWORD}
   vaultwarden:
-    <<: *logging-policy
+    <<: *common-settings
     image: vaultwarden/server:${vaultwarden_version:-latest}
     container_name: vaultwarden
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     environment:
@@ -84,12 +106,20 @@ services:
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
       traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
+      traefik.http.routers.vaultwarden.priority: 30
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
+      # Block admin page with authelia
+      traefik.http.routers.vaultwarden-admin.entrypoints: "https"
+      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.vaultwarden-admin.priority: 50
+      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain}`) && PathPrefix(`/admin`)
   homepage:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     container_name: homepage
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     environment:
@@ -105,11 +135,13 @@ services:
       traefik.http.routers.homepage.rule: "Host(`home.${domain}`)"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
-    <<: *logging-policy
+    <<: *common-settings
     image: copyparty/iv:${copyparty_version:-latest}
     container_name: copyparty
     user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     environment:
@@ -121,7 +153,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`files.${domain}`)"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain}`)"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
     stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:

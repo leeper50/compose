@@ -11,6 +11,17 @@ Authelia is used to provide SSO functionality to applications that support OAuth
 The LLDAP container is the source of truth for all accounts in authelia, and can
 be used to provide SSO for apps that only support LDAP.
 
+Vector is a tool that can transform and filter data. It is used here to filter out geoip blocked and private ranges
+in traefik's access log. This is done to prevent those logs from reaching crowdsec and using up the free plan's quota on
+addresses that are outside your defined region.
+
+This requires a logging structure like this:
+- traefik puts logs into `/var/log/traefik`.
+- vector reads from `/var/log/traefik`, filters and outputs to `/var/log/crowdsec/traefik`.
+- crowdsec read from `/var/log/traefik`. From what I understand, this can not be changed, so we must map the bind mount accordingly.
+So it would be `${data:-.}/logs/crowdsec:/var/log/:ro`.
+
+
 ## Extra info
 
 ### Traefik & Crowdsec
@@ -20,7 +31,7 @@ some configuration options. The default configuration expects the following sett
 
 1. An entrypoint named `https` that running on port `443/tcp` and `443/udp` to serve web traffic and http3 traffic.
 2. A docker provider to connect to connect to the containers on the `proxy` network.
-3. A file provider that provides the middlewares `localonly`,`allowedIPs`, and `crowdsec-bouncer`. `localonly` is used to restrict access to your LAN. `allowedIPs` extends this to include a specific whitelist of IP addresses for friends, organizations, etc. The `crowdsec-bouncer` middleware is used to prevent access to resources from IP addresses banned by crowdsec. This file will be named `traefik/dynamic.yml` on disk.
+3. A file provider that provides the middlewares `localonly`,`allowedIPs`, and `crowdsec`. `localonly` is used to restrict access to your LAN. `allowedIPs` extends this to include a specific whitelist of IP addresses for friends, organizations, etc. The `crowdsec` middleware is used to prevent access to resources from IP addresses banned by crowdsec. This file will be named `traefik/dynamic.yml` on disk.
 
 A sample of both the `traefik/traefik.yml` and `traefik/dynamic.yml` files will be provided in the `examples` directory.
 

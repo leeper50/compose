@@ -1,4 +1,1 @@
-- Write github actions to validate yaml.
-- Check that all environment variables are present in example.env are used in compose.yaml and vice-verse.
-- Maybe find docker-compose validator which could do both tasks above.
 - Consider using secrets for domains, api-keys, other random global config junk.

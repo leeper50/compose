@@ -2,19 +2,29 @@ networks:
   default:
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   authelia:
-    <<: *logging-policy
+    <<: *common-settings
     image: authelia/authelia:${authelia_version:-latest}
     container_name: authelia
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     depends_on:
       - lldap
     networks:
@@ -27,18 +37,15 @@ services:
       - ${data:-.}/authelia/config:/config
     labels:
       traefik.enable: "true"
-      traefik.http.middlewares.authelia.forwardAuth.address: "http://authelia:9091/api/authz/forward-auth"
-      traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
-      traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader: "true"
       traefik.http.routers.authelia.entryPoints: "https"
       traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
-      traefik.http.middlewares.authelia-basicauth.forwardAuth.address: "http://authelia:9091/api/verify?auth=basic"
-      traefik.http.middlewares.authelia-basicauth.forwardAuth.authResponseHeaders: "Remote-User"
   crowdsec:
-    <<: *logging-policy
+    <<: *common-settings
     image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
     container_name: crowdsec
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy:
     environment:
@@ -47,24 +54,16 @@ services:
     volumes:
       - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs:/var/log:ro
-  crowdsec-bouncer:
-    <<: *logging-policy
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:${crowdsec_bouncer_version:-latest}
-    container_name: crowdsec-bouncer
-    restart: unless-stopped
-    depends_on:
-      - crowdsec
-    networks:
-      proxy:
-    environment:
-      CROWDSEC_BOUNCER_API_KEY: ${cs_api_key}
-      CROWDSEC_AGENT_HOST: crowdsec:8080
+      - ${data:-.}/logs/crowdsec:/var/log:ro
   geoipfilter:
-    <<: *logging-policy
+    <<: *common-settings
     image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
     container_name: geoipfilter
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
     networks:
       proxy:
     environment:
@@ -77,7 +76,7 @@ services:
     volumes:
       - ${data:-.}/geoip:/geoip
   lldap:
-    <<: *logging-policy
+    <<: *common-settings
     image: lldap/lldap:${lldap_version:-stable}
     container_name: lldap
     restart: unless-stopped
@@ -99,13 +98,15 @@ services:
       traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
   traefik:
-    <<: *logging-policy
+    <<: *common-settings
     image: traefik:${traefik_version:-v3.6}
     container_name: traefik
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - authelia
-      - crowdsec-bouncer
+      - crowdsec
       - geoipfilter
     networks:
       proxy:
@@ -133,15 +134,13 @@ services:
       traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
       traefik.http.routers.traefik.service: "api@internal"
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
-      # Container security middlewares
-      traefik.http.middlewares.crowdsec-bouncer.forwardauth.address: "http://crowdsec-bouncer:8080/api/v1/forwardAuth"
-      traefik.http.middlewares.crowdsec-bouncer.forwardauth.trustForwardHeader: true
-      traefik.http.middlewares.geoipfilter.forwardAuth.address: "http://geoipfilter:8080/traefik"
   vector:
-    <<: *logging-policy
+    <<: *common-settings
     image: timberio/vector:${vector_version:-latest-alpine}
     container_name: vector
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - crowdsec
     networks:

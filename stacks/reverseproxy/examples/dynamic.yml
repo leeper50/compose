@@ -1,27 +1,48 @@
-localIPs: &localIPs
-  sourceRange:
-    - "10.0.0.0/8"
-    - "192.168.0.0/16"
-    - "172.16.0.0/12"
 allowedIPs: &allowedIPs
   sourceRange:
     - "10.0.0.0/8"
     - "192.168.0.0/16"
     - "172.16.0.0/12"
     - "1.1.1.1/32"
+localIPs: &localIPs
+  sourceRange:
+    - "10.0.0.0/8"
+    - "192.168.0.0/16"
+    - "172.16.0.0/12"
 http:
   middlewares:
-    localonly:
-      ipAllowList:
-        <<: *localIPs
     allowedIPs:
       ipAllowList:
         <<: *allowedIPs
+    authelia:
+      forwardAuth:
+        address: http://authelia:9091/api/authz/forward-auth
+        authResponseHeaders: "Remote-User,Remote-Groups,Remote-Email,Remote-Name"
+        trustForwardHeader: true
+    authelia-basicauth:
+      forwardAuth:
+        address: http://authelia:9091/api/verify?auth=basic
+        authResponseHeaders: "Remote-User"
+    crowdsec:
+      plugin:
+        bouncer:
+          enabled: true
+          logLevel: DEBUG
+          LogFilePath: ""
+          crowdsecLapiHost: crowdsec:8080
+          crowdsecLapiScheme: http
+          crowdsecLapiKey: <crowdsec_api_key_here>
+    geoipfilter:
+      forwardAuth:
+        address: http://geoipfilter:8080/traefik
+    localonly:
+      ipAllowList:
+        <<: *localIPs
 tcp:
   middlewares:
-    localonly:
-      ipAllowList:
-        <<: *localIPs
     allowedIPs:
       ipAllowList:
         <<: *allowedIPs
+    localonly:
+      ipAllowList:
+        <<: *localIPs

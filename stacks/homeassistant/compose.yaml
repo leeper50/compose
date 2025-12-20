@@ -2,19 +2,25 @@ networks:
   proxy:
     external: true
   ha_mqtt:
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   homeassistant:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     container_name: homeassistant
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - zwave-js-ui
       - zigbee2mqtt
@@ -32,10 +38,12 @@ services:
       traefik.http.routers.homeassistant.rule: "Host(`ha.${domain}`)"
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
   zwave-js-ui:
-    <<: *logging-policy
+    <<: *common-settings
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     container_name: zwave-js-ui
     restart: unless-stopped
+    cap_drop:
+      - ALL
     tty: true
     stop_signal: SIGINT
     networks:
@@ -54,10 +62,12 @@ services:
       traefik.http.routers.zwave.rule: "Host(`zw.${domain}`)"
       traefik.http.services.zwave.loadbalancer.server.url: "http://zwave-js-ui:8091"
   zigbee2mqtt:
-    <<: *logging-policy
+    <<: *common-settings
     container_name: zigbee2mqtt
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - mqtt
     networks:
@@ -79,10 +89,16 @@ services:
       traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.${domain}`)"
       traefik.http.services.zigbee2mqtt.loadbalancer.server.url: "http://zigbee2mqtt:8080"
   mqtt:
-    <<: *logging-policy
+    <<: *common-settings
     container_name: mqtt
     image: eclipse-mosquitto:${mqtt_version:-latest}
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     networks:
       ha_mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"
