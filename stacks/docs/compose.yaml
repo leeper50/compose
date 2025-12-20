@@ -17,52 +17,48 @@ services:
   # Wiki service
   bookstack:
     <<: *common-settings
-    image: lscr.io/linuxserver/bookstack:${bookstack_version:-latest}
+    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     container_name: bookstack
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - bookstack_db
     networks:
       bookstack: null
       proxy: null
     environment:
-      TZ: ${timezone:-UTC}
-      APP_DEBUG: true
       APP_URL: https://wiki.${domain}
       APP_KEY: ${app_key}
-      DB_HOST: bookstack_db
-      DB_PORT: 3306
+      DB_HOST: bookstack_db:3306
       DB_DATABASE: bookstack
       DB_USERNAME: bookstack
       DB_PASSWORD: ${db_pass}
-      QUEUE_CONNECTION: null
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
     volumes:
-      - ${data:-.}/bookstack/config:/config:rw
+      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
+      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
     labels:
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
       traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
-      traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:80"
+      traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
   bookstack_db:
     <<: *common-settings
-    image: lscr.io/linuxserver/mariadb:${mariadb_version:-latest}
+    image: mysql:$mysql_version:-9.2}
     container_name: bookstack_db
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       bookstack: null
     environment:
-      TZ: ${timezone:-UTC}
       MYSQL_ROOT_PASSWORD: ${root_pass}
       MYSQL_DATABASE: bookstack
       MYSQL_USER: bookstack
       MYSQL_PASSWORD: ${db_pass}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
     volumes:
-      - ${data:-.}/bookstack/db:/config:rw
+      - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   ntfy:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     container_name: ntfy
