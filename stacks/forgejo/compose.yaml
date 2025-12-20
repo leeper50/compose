@@ -53,6 +53,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     environment:
       POSTGRES_USER: forgejo
       POSTGRES_PASSWORD: ${db_pass:-forgejo}
@@ -61,7 +63,6 @@ services:
       default:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
-
   runner:
     <<: *common-settings
     image: gitea/act_runner:${runner_version:-nightly}
@@ -69,6 +70,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     depends_on:
       - forgejo
     environment:

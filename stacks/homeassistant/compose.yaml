@@ -95,6 +95,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       ha_mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"

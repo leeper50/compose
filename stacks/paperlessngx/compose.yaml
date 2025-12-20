@@ -21,6 +21,9 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - SETGID
+      - SETUID
     networks:
       default: null
     volumes:
@@ -32,6 +35,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       default: null
     volumes:

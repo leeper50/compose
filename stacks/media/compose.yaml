@@ -48,6 +48,8 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     networks:
       proxy: null
     depends_on:

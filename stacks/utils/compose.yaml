@@ -175,6 +175,9 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - SETGID
+      - SETUID
     networks:
       send: null
     volumes:
