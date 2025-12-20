@@ -40,6 +40,10 @@ services:
     restart: unless-stopped
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     depends_on:
       - freshrssdb
     networks:
