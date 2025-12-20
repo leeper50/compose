@@ -2,19 +2,25 @@ networks:
   proxy:
     external: true
   default:
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   immich-server:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     container_name: immich_server
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - database
       - immich-machine-learning
@@ -43,6 +49,8 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
     container_name: immich_machine_learning
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     environment:
@@ -55,10 +63,12 @@ services:
     healthcheck:
       disable: false
   immich_keydb:
-    <<: *logging-policy
+    <<: *common-settings
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: immich_keydb
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     volumes:
@@ -66,10 +76,12 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
   database:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     container_name: immich_postgres
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     shm_size: 128mb

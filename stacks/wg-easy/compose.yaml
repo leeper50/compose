@@ -1,24 +1,30 @@
 networks:
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   wgeasy:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     container_name: wgeasy
     restart: unless-stopped
-    networks:
-      proxy:
+    cap_drop:
+      - ALL
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+    networks:
+      proxy:
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1

@@ -1,19 +1,25 @@
 networks:
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   jellyfin:
-    <<: *logging-policy
+    <<: *common-settings
     image: linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     environment:
@@ -36,10 +42,12 @@ services:
       traefik.http.routers.jellyfin.rule: "Host(`jf.${domain}`)"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
   jellyseerr:
-    <<: *logging-policy
+    <<: *common-settings
     image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
     container_name: jellyseerr
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     depends_on:
@@ -59,10 +67,12 @@ services:
       traefik.http.routers.jellyseerr.rule: "Host(`seer.${domain}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:
-    <<: *logging-policy
+    <<: *common-settings
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     container_name: calibre
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     environment:
@@ -79,11 +89,13 @@ services:
       traefik.http.routers.calibre.rule: "Host(`books.${domain}`)"
       traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
   navidrome:
-    <<: *logging-policy
+    <<: *common-settings
     image: deluan/navidrome:${navidrome_version:-latest}
     container_name: navidrome
     user: ${uid:-1000}:${gid:-1000}
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     environment:

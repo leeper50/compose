@@ -2,19 +2,25 @@ networks:
   send: null
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 services:
   convertx:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     container_name: convertx
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     environment:
@@ -27,12 +33,14 @@ services:
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
       traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
-      traefik.http.services.convertx.loadbalancer.server.url: 'http://convertx:3000'
+      traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"
   ittools:
-    <<: *logging-policy
-    image: 'sharevb/it-tools:${ittools_version:-latest}'
+    <<: *common-settings
+    image: "sharevb/it-tools:${ittools_version:-latest}"
     container_name: ittools
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     labels:
@@ -40,12 +48,14 @@ services:
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
-      traefik.http.services.ittools.loadbalancer.server.url: 'http://ittools:8080'
+      traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
   libretranslate:
-    <<: *logging-policy
+    <<: *common-settings
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     container_name: libretranslate
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       proxy: null
     labels:
@@ -53,14 +63,16 @@ services:
       traefik.http.routers.libretranslate.entryPoints: "https"
       traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
       traefik.http.routers.libretranslate.rule: "Host(`lt.${domain}`)"
-      traefik.http.services.libretranslate.loadbalancer.server.url: 'http://libretranslate:5000'
+      traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
   myspeed:
-    <<: *logging-policy
+    <<: *common-settings
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     container_name: myspeed
     restart: unless-stopped
+    cap_drop:
+      - ALL
     volumes:
-      - '${data:-.}/myspeed:/myspeed/data'
+      - "${data:-.}/myspeed:/myspeed/data"
     networks:
       proxy: null
     labels:
@@ -68,12 +80,14 @@ services:
       traefik.http.routers.myspeed.entryPoints: "https"
       traefik.http.routers.myspeed.middlewares: "localonly@file"
       traefik.http.routers.myspeed.rule: "Host(`speed.${domain}`)"
-      traefik.http.services.myspeed.loadbalancer.server.url: 'http://myspeed:5216'
+      traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
   slink:
-    <<: *logging-policy
+    <<: *common-settings
     image: anirdev/slink:${slink_version:-latest}
     container_name: slink
     restart: unless-stopped
+    cap_drop:
+      - ALL
     user: ${uid:-1000}:${gid:-1000}
     networks:
       proxy: null
@@ -97,16 +111,18 @@ services:
       traefik.http.routers.slink.middlewares: "allowedIPs@file"
       traefik.http.routers.slink.priority: 30
       traefik.http.routers.slink.rule: "Host(`sl.${domain}`)"
-      traefik.http.services.slink.loadbalancer.server.url: 'http://slink:3000'
+      traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
       # No middleware for outbound images
       traefik.http.routers.slink-images.entrypoints: "https"
       traefik.http.routers.slink-images.priority: 50
       traefik.http.routers.slink-images.rule: "Host(`sl.${domain}`) && PathPrefix(`/image/`)"
   privatebin:
-    <<: *logging-policy
+    <<: *common-settings
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     container_name: privatebin
     restart: unless-stopped
+    cap_drop:
+      - ALL
     read_only: true
     user: ${uid:-1000}:${gid:-1000}
     networks:
@@ -121,12 +137,14 @@ services:
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain}`)"
-      traefik.http.services.privatebin.loadbalancer.server.url: 'http://privatebin:8080'
+      traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
   send:
-    <<: *logging-policy
+    <<: *common-settings
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     container_name: send
     restart: unless-stopped
+    cap_drop:
+      - ALL
     depends_on:
       - send_keydb
     networks:
@@ -149,12 +167,14 @@ services:
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file"
       traefik.http.routers.send.rule: "Host(`send.${domain}`)"
-      traefik.http.services.send.loadbalancer.server.url: 'http://send:1443'
+      traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
   send_keydb:
-    <<: *logging-policy
+    <<: *common-settings
     image: eqalpha/keydb:${keydb_version:-latest}
     container_name: send_keydb
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       send: null
     volumes:

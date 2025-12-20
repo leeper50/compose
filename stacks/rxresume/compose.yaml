@@ -2,21 +2,27 @@ networks:
   default: null
   proxy:
     external: true
-x-logging-policy: &logging-policy
+x-common-settings: &common-settings
   logging:
     driver: local
     options:
       max-size: "10m"
       max-file: "3"
       compress: "true"
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
 
 services:
   # Database (Postgres)
   postgres:
-    <<: *logging-policy
+    <<: *common-settings
     image: postgres:${postgres_version:-16-alpine}
     container_name: rxresume_postgres
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     volumes:
@@ -33,10 +39,12 @@ services:
 
   # Chrome Browser (for printing and previews)
   chrome:
-    <<: *logging-policy
+    <<: *common-settings
     image: ghcr.io/browserless/chromium:${chrome_version:-latest}
     container_name: rxresume_chrome
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
     environment:
@@ -53,10 +61,12 @@ services:
       traefik.http.services.printer.loadbalancer.server.url: 'http://chrome:3000'
 
   rxresume:
-    <<: *logging-policy
+    <<: *common-settings
     image: amruthpillai/reactive-resume:${rxresume_version:-latest}
     container_name: rxresume
     restart: unless-stopped
+    cap_drop:
+      - ALL
     networks:
       default: null
       proxy: null
