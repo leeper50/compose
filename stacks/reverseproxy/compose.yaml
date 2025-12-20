@@ -78,12 +78,6 @@ services:
     image: lldap/lldap:${lldap_version:-stable}
     container_name: lldap
     restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     networks:
       proxy:
     environment:
