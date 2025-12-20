@@ -15,7 +15,7 @@ x-common-settings: &common-settings
 services:
   jellyfin:
     <<: *common-settings
-    image: linuxserver/jellyfin:${jellyfin_version:-latest}
+    image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     container_name: jellyfin
     restart: unless-stopped
     cap_drop:
