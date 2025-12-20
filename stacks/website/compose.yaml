@@ -112,7 +112,7 @@ services:
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
       traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.vaultwarden-admin.priority: 50
-      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain}`) && PathPrefix(`/admin/`)
+      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain}`) && PathPrefix(`/admin`)
   homepage:
     <<: *common-settings
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
