@@ -45,7 +45,7 @@ services:
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
   bookstack_db:
     <<: *common-settings
-    image: mysql:$mysql_version:-9.2}
+    image: mysql:${mysql_version:-9.2}
     container_name: bookstack_db
     restart: unless-stopped
     cap_drop:
