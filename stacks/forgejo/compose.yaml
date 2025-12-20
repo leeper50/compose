@@ -12,7 +12,6 @@ x-common-settings: &common-settings
     - no-new-privileges:true
   stdin_open: false
   tty: false
-
 services:
   forgejo:
     <<: *common-settings

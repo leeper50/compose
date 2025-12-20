@@ -150,7 +150,6 @@ services:
       traefik.http.routers.prometheus.middlewares: "localonly@file"
       traefik.http.routers.prometheus.rule: "Host(`pm.${domain}`)"
       traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
-
   # Uptime service
   uptimekuma:
     <<: *common-settings

@@ -37,7 +37,6 @@ services:
       traefik.http.routers.garage.middlewares: "localonly@file"
       traefik.http.routers.garage.rule: "Host(`s3.${domain}`)"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
-
   webui:
     <<: *common-settings
     image: khairul169/garage-webui:${garage_webui_version:-latest}
