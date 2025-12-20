@@ -73,7 +73,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entryPoints: "https"
-      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file"
+      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.jellyseerr.rule: "Host(`seer.${domain}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:

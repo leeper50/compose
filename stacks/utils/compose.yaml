@@ -46,7 +46,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
-      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
+      traefik.http.routers.ittools.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
   libretranslate:
@@ -108,7 +108,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
-      traefik.http.routers.slink.middlewares: "allowedIPs@file"
+      traefik.http.routers.slink.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.slink.priority: 30
       traefik.http.routers.slink.rule: "Host(`sl.${domain}`)"
       traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
@@ -135,7 +135,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
-      traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
+      traefik.http.routers.privatebin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain}`)"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
   send:
@@ -165,7 +165,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
-      traefik.http.routers.send.middlewares: "allowedIPs@file"
+      traefik.http.routers.send.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.send.rule: "Host(`send.${domain}`)"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
   send_keydb:
