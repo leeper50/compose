@@ -20,14 +20,6 @@ services:
     image: lscr.io/linuxserver/bookstack:${bookstack_version:-latest}
     container_name: bookstack
     restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
     depends_on:
       - bookstack_db
     networks:
@@ -44,6 +36,8 @@ services:
       DB_USERNAME: bookstack
       DB_PASSWORD: ${db_pass}
       QUEUE_CONNECTION: null
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
     volumes:
       - ${data:-.}/bookstack/config:/config:rw
     labels:
@@ -57,14 +51,6 @@ services:
     image: lscr.io/linuxserver/mariadb:${mariadb_version:-latest}
     container_name: bookstack_db
     restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
     networks:
       bookstack: null
     environment:
@@ -73,6 +59,8 @@ services:
       MYSQL_DATABASE: bookstack
       MYSQL_USER: bookstack
       MYSQL_PASSWORD: ${db_pass}
+      PUID: ${uid:-1000}
+      PGID: ${gid:-1000}
     volumes:
       - ${data:-.}/bookstack/db:/config:rw
   ntfy:
