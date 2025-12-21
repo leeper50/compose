@@ -6,9 +6,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -73,24 +73,24 @@ services:
       - postgres
       - chrome
     environment:
-      PORT: 3000
-      NODE_ENV: production
-      PUBLIC_URL: https://rx.${domain:?}
-      STORAGE_URL: https://s3.${domain:?}
+      ACCESS_TOKEN_SECRET: ${access_token:?}
       CHROME_TOKEN: ${chrome_token:?}
       CHROME_URL: wss://printer.${domain:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@postgres:5432/${db_name:-rxresume}
-      ACCESS_TOKEN_SECRET: ${access_token:?}
-      REFRESH_TOKEN_SECRET: ${refresh_token:?}
       MAIL_FROM: noreply@example.com
+      NODE_ENV: production
+      PORT: 3000
+      PUBLIC_URL: https://rx.${domain:?}
+      REFRESH_TOKEN_SECRET: ${refresh_token:?}
+      STORAGE_ACCESS_KEY: ${s3_access_key:?}
+      STORAGE_BUCKET: rxresume
       STORAGE_ENDPOINT: garage
       STORAGE_PORT: 3900
       STORAGE_REGION: garage
-      STORAGE_BUCKET: rxresume
-      STORAGE_ACCESS_KEY: ${s3_access_key:?}
       STORAGE_SECRET_KEY: ${s3_secret_key:?}
-      STORAGE_USE_SSL: "false"
       STORAGE_SKIP_BUCKET_CHECK: "false"
+      STORAGE_URL: https://s3.${domain:?}
+      STORAGE_USE_SSL: "false"
     labels:
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"

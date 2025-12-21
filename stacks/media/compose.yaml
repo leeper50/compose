@@ -5,15 +5,40 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
   tty: false
 services:
+  calibre:
+    <<: *common-settings
+    image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
+    container_name: calibre
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    networks:
+      proxy: null
+    environment:
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
+    volumes:
+      - ${data:-.}/calibre:/config
+      - ${media}/Books:/books
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.calibre.entryPoints: "https"
+      traefik.http.routers.calibre.middlewares: "allowedIPs@file"
+      traefik.http.routers.calibre.rule: "Host(`books.${domain:?}`)"
+      traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
   jellyfin:
     <<: *common-settings
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
@@ -27,11 +52,10 @@ services:
     networks:
       proxy: null
     environment:
-      TZ: ${timezone:-UTC}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
-      UMASK: ${umask}
       JELLYFIN_PublishedServerUrl: jf.${domain:?}
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
     volumes:
       - ${data:-.}/jellyfin:/config:rw
       - ${media}/TV:/data/tvshows:rw
@@ -62,11 +86,10 @@ services:
     depends_on:
       - jellyfin
     environment:
-      TZ: ${timezone:-UTC}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
-      UMASK: ${umask}
       LOG_LEVEL: ${log_level:-warn}
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
     volumes:
       - ${data:-.}/jellyseerr:/app/config/:rw
     labels:
@@ -75,31 +98,6 @@ services:
       traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.jellyseerr.rule: "Host(`js.${domain:?}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
-  calibre:
-    <<: *common-settings
-    image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
-    container_name: calibre
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    networks:
-      proxy: null
-    environment:
-      TZ: ${timezone:-UTC}
-      PUID: ${uid:-1000}
-      PGID: ${gid:-1000}
-    volumes:
-      - ${data:-.}/calibre:/config
-      - ${media}/Books:/books
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.calibre.entryPoints: "https"
-      traefik.http.routers.calibre.middlewares: "allowedIPs@file"
-      traefik.http.routers.calibre.rule: "Host(`books.${domain:?}`)"
-      traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
   navidrome:
     <<: *common-settings
     image: deluan/navidrome:${navidrome_version:-latest}
@@ -110,8 +108,8 @@ services:
     networks:
       proxy: null
     environment:
-      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
       ND_ENABLEUSEREDITING: false
+      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     volumes:
       - ${data:-.}/navidrome:/data:rw
       - ${media}/Music:/music:ro

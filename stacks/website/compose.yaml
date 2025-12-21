@@ -1,5 +1,4 @@
 networks:
-  mywebsite: null
   freshrss: null
   proxy:
     external: true
@@ -7,32 +6,43 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
   tty: false
 services:
-  mywebsite:
+  copyparty:
     <<: *common-settings
-    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
-    container_name: mywebsite
+    image: copyparty/iv:${copyparty_version:-latest}
+    container_name: copyparty
     user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
     networks:
       proxy:
+    environment:
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
     volumes:
-      - ${data:-.}/newweb/db:/app/db
+      - ${data:-.}/copyparty/conf:/cfg
+      - ${data:-.}/copyparty/files:/w
     labels:
       traefik.enable: "true"
-      traefik.http.routers.mywebsite.entryPoints: "https"
-      traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-      traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
-      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
+      traefik.http.routers.copyparty.entryPoints: "https"
+      traefik.http.routers.copyparty.middlewares: "localonly@file"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
+      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
+    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    healthcheck:
+      # hide it from logs with "/._" so it matches the default --lf-url filter
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
   freshrss:
     <<: *common-settings
     image: freshrss/freshrss:${freshrss_version:-latest}
@@ -85,6 +95,43 @@ services:
       POSTGRES_DB: ${db_name:-freshrss}
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_user:-freshrss}
+  homepage:
+    <<: *common-settings
+    image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
+    container_name: homepage
+    cap_drop:
+      - ALL
+    networks:
+      proxy:
+    environment:
+      TZ: ${timezone:-UTC}
+      HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
+    volumes:
+      - ${data:-.}/homepage:/app/config:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.homepage.entryPoints: "https"
+      traefik.http.routers.homepage.middlewares: "localonly@file"
+      traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
+      traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
+  mywebsite:
+    <<: *common-settings
+    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
+    container_name: mywebsite
+    user: ${uid:-1000}:${gid:-1000}
+    cap_drop:
+      - ALL
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/newweb/db:/app/db
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.mywebsite.entryPoints: "https"
+      traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
+      traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
+      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   vaultwarden:
     <<: *common-settings
     image: vaultwarden/server:${vaultwarden_version:-latest}
@@ -110,51 +157,3 @@ services:
       traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.vaultwarden-admin.priority: 50
       traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain:?}`) && PathPrefix(`/admin`)
-  homepage:
-    <<: *common-settings
-    image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
-    container_name: homepage
-    cap_drop:
-      - ALL
-    networks:
-      proxy:
-    environment:
-      TZ: ${timezone:-UTC}
-      HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
-    volumes:
-      - ${data:-.}/homepage:/app/config:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.homepage.entryPoints: "https"
-      traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
-      traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
-  copyparty:
-    <<: *common-settings
-    image: copyparty/iv:${copyparty_version:-latest}
-    container_name: copyparty
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
-    networks:
-      proxy:
-    environment:
-      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
-    volumes:
-      - ${data:-.}/copyparty/conf:/cfg
-      - ${data:-.}/copyparty/files:/w
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.copyparty.entryPoints: "https"
-      traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
-      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
-    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
-    healthcheck:
-      # hide it from logs with "/._" so it matches the default --lf-url filter
-      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
-      interval: 1m
-      timeout: 2s
-      retries: 5
-      start_period: 15s

@@ -6,9 +6,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -55,6 +55,28 @@ services:
       MYSQL_USER: ${db_user:-bookstack}
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
+  grafana:
+    <<: *common-settings
+    image: grafana/grafana:${grafana_version:-latest}
+    container_name: grafana
+    user: ${uid:-1000}:${gid:-1000}
+    cap_drop:
+      - ALL
+    depends_on:
+      - prometheus
+    networks:
+      proxy: null
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+    volumes:
+      - ${data:-.}/grafana:/var/lib/grafana
+      - /etc/timezone:/etc/timezone:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.grafana.entryPoints: "https"
+      traefik.http.routers.grafana.middlewares: "localonly@file"
+      traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
+      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   ntfy:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     container_name: ntfy
@@ -94,28 +116,6 @@ services:
       traefik.http.routers.ntfy.middlewares: "localonly@file"
       traefik.http.routers.ntfy.rule: "Host(`n.${domain:?}`)"
       traefik.http.services.ntfy.loadbalancer.server.url: "http://ntfy:80"
-  grafana:
-    <<: *common-settings
-    image: grafana/grafana:${grafana_version:-latest}
-    container_name: grafana
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
-    depends_on:
-      - prometheus
-    networks:
-      proxy: null
-    environment:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
-    volumes:
-      - ${data:-.}/grafana:/var/lib/grafana
-      - /etc/timezone:/etc/timezone:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.grafana.entryPoints: "https"
-      traefik.http.routers.grafana.middlewares: "localonly@file"
-      traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
-      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   prometheus:
     <<: *common-settings
     image: prom/prometheus:${prometheus_version:-latest}

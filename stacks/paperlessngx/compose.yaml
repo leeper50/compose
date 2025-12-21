@@ -6,48 +6,15 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
   tty: false
 services:
-  paperlessngx_broker:
-    <<: *common-settings
-    image: eqalpha/keydb:${keydb_version:-latest}
-    container_name: paperlessngx_broker
-    cap_drop:
-      - ALL
-    cap_add:
-      - SETGID
-      - SETUID
-    networks:
-      default: null
-    volumes:
-      - ${data:-.}/keydb:/data
-  paperlessngx_db:
-    <<: *common-settings
-    image: docker.io/library/postgres:${postgres_version:-16}
-    container_name: paperlessngx_db
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    networks:
-      default: null
-    volumes:
-      - ${data:-.}/db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${db_name:-paperless}
-      POSTGRES_PASSWORD: ${db_pass:?}
-      POSTGRES_USER: ${db_user:-paperless}
   paperlessngx:
     <<: *common-settings
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
@@ -90,3 +57,36 @@ services:
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
       PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout
+  paperlessngx_broker:
+    <<: *common-settings
+    image: eqalpha/keydb:${keydb_version:-latest}
+    container_name: paperlessngx_broker
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    networks:
+      default: null
+    volumes:
+      - ${data:-.}/keydb:/data
+  paperlessngx_db:
+    <<: *common-settings
+    image: docker.io/library/postgres:${postgres_version:-16}
+    container_name: paperlessngx_db
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    networks:
+      default: null
+    volumes:
+      - ${data:-.}/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${db_name:-paperless}
+      POSTGRES_PASSWORD: ${db_pass:?}
+      POSTGRES_USER: ${db_user:-paperless}

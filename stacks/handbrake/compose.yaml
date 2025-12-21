@@ -5,9 +5,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -23,12 +23,12 @@ services:
     networks:
       proxy: null
     environment:
+      AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
+      AUTOMATED_CONVERSION_PRESET: ${custom_profile:-General/Very Fast 1080p30}
+      DARK_MODE: 1
+      GROUP_ID: ${gid:-1000}
       TZ: ${timezone:-UTC}
       USER_ID: ${uid:-1000}
-      GROUP_ID: ${gid:-1000}
-      DARK_MODE: 1
-      AUTOMATED_CONVERSION_PRESET: ${custom_profile:-General/Very Fast 1080p30}
-      AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
     volumes:
       - $data/handbrake:/config:rw
       - $data/trash:/trash:rw

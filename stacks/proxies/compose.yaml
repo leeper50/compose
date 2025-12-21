@@ -6,9 +6,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -28,11 +28,11 @@ services:
     ports:
       - "1080:1080/tcp"
     environment:
+      SERVER_CITIES: ${cities:-Stockholm}
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
-      SERVER_CITIES: ${cities:-Stockholm}
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
     devices:
@@ -45,9 +45,9 @@ services:
     cap_drop:
       - ALL
     environment:
-      REQUIRE_AUTH: ${enable_auth:-true}
-      PROXY_USER: ${proxy_user:?}
       PROXY_PASS: ${proxy_pass:?}
+      PROXY_USER: ${proxy_user:?}
+      REQUIRE_AUTH: ${enable_auth:-true}
   tor-privoxy:
     <<: *common-settings
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}

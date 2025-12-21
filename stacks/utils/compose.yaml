@@ -6,9 +6,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -24,8 +24,8 @@ services:
     networks:
       proxy: null
     environment:
-      JWT_SECRET: ${convertx_jwt:?}
       HIDE_HISTORY: true
+      JWT_SECRET: ${convertx_jwt:?}
     volumes:
       - ${data:-.}/convertx:/app/data
     labels:
@@ -78,40 +78,6 @@ services:
       traefik.http.routers.myspeed.middlewares: "localonly@file"
       traefik.http.routers.myspeed.rule: "Host(`speed.${domain:?}`)"
       traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
-  slink:
-    <<: *common-settings
-    image: anirdev/slink:${slink_version:-latest}
-    container_name: slink
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
-    networks:
-      proxy: null
-    environment:
-      TZ: ${timezone:-UTC}
-      ORIGIN: https://sl.${domain:?}
-      USER_APPROVAL_REQUIRED: true
-      USER_PASSWORD_MIN_LENGTH: 8
-      USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
-      IMAGE_MAX_SIZE: 50M
-      IMAGE_STRIP_EXIF_METADATA: true
-      IMAGE_COMPRESSION_QUALITY: 100
-      REQUIRE_SSL: true
-      STORAGE_PROVIDER: local
-    volumes:
-      - ${data:-.}/slink/db:/app/var/data
-      - ${data:-.}/slink/images:/app/slink/images
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.slink.entryPoints: "https"
-      traefik.http.routers.slink.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.slink.priority: 30
-      traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
-      traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
-      # No middleware for outbound images
-      traefik.http.routers.slink-images.entrypoints: "https"
-      traefik.http.routers.slink-images.priority: 50
-      traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"
   privatebin:
     <<: *common-settings
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
@@ -145,15 +111,15 @@ services:
       proxy:
       send: null
     environment:
-      NODE_ENV: production
       BASE_URL: https://send.${domain:?}
-      REDIS_HOST: send_keydb
-      EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
       DEFAULT_EXPIRE_SECONDS: 3600
-      MAX_EXPIRE_SECONDS: 31536000
       DOWNLOAD_COUNTS: 1,2,5
+      EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
       MAX_DOWNLOADS: 5
+      MAX_EXPIRE_SECONDS: 31536000
       MAX_FILE_SIZE: 10737418240
+      NODE_ENV: production
+      REDIS_HOST: send_keydb
     volumes:
       - ${data:-.}/send/app:/uploads
     labels:
@@ -175,3 +141,37 @@ services:
       send: null
     volumes:
       - ${data:-.}/send/keydb:/data
+  slink:
+    <<: *common-settings
+    image: anirdev/slink:${slink_version:-latest}
+    container_name: slink
+    user: ${uid:-1000}:${gid:-1000}
+    cap_drop:
+      - ALL
+    networks:
+      proxy: null
+    environment:
+      IMAGE_COMPRESSION_QUALITY: 100
+      IMAGE_MAX_SIZE: 50M
+      IMAGE_STRIP_EXIF_METADATA: true
+      ORIGIN: https://sl.${domain:?}
+      REQUIRE_SSL: true
+      STORAGE_PROVIDER: local
+      TZ: ${timezone:-UTC}
+      USER_APPROVAL_REQUIRED: true
+      USER_PASSWORD_MIN_LENGTH: 8
+      USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
+    volumes:
+      - ${data:-.}/slink/db:/app/var/data
+      - ${data:-.}/slink/images:/app/slink/images
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.slink.entryPoints: "https"
+      traefik.http.routers.slink.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.slink.priority: 30
+      traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
+      traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
+      # No middleware for outbound images
+      traefik.http.routers.slink-images.entrypoints: "https"
+      traefik.http.routers.slink-images.priority: 50
+      traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"

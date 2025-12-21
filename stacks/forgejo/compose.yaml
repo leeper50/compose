@@ -5,9 +5,9 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
   restart: unless-stopped
   security_opt:
     - no-new-privileges:true
@@ -22,14 +22,14 @@ services:
     cap_drop:
       - ALL
     environment:
-      USER_UID: ${uid:-1000}
-      USER_GID: ${gid:-1000}
       FORGEJO__database__DB_TYPE: postgres
       FORGEJO__database__HOST: forgejodb:5432
       FORGEJO__database__NAME: ${db_name:-forgejo}
       FORGEJO__database__PASSWD: ${db_pass:?}
       FORGEJO__database__USER: ${db_user:-forgejo}
       FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
+      USER_GID: ${gid:-1000}
+      USER_UID: ${uid:-1000}
     depends_on:
       - forgejodb
     labels:
@@ -77,13 +77,13 @@ services:
       - forgejo
     environment:
       GITEA_INSTANCE_URL: https://fj.${domain:?}/
-      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
-      GITEA_RUNNER_NAME: forgejo_runner
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
         ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\
         ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04,\
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
+      GITEA_RUNNER_NAME: forgejo_runner
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
     networks:
       default: null
     volumes:
