@@ -1,16 +1,25 @@
 # Purpose
 
-This repo contains docker compose files to be used in deploying a stack of containers on a server using the [Komodo](https://komo.do) service.
+This repo contains standardized docker compose stacks to be deployed using [Komodo](https://komo.do).
 
-The stacks/test folder represents the general format that all additional stacks should follow:
+The heart of this project is the `stacks/reverseproxy` folder.
+It provides:
+- Traefik for declarative https routing for web facing services.
+- Authelia & LLDAP for OAUTH, OIDC, and LDAP support for universal login and route protection.
+- Crowdsec, a MaxMind(TM) geoipfilter, and Vector for intrusion prevention and security.
 
-1. The path for a stack should be `stacks/{name_of_stack}`
-2. The docker-compose file should be named `compose.yaml`
-3. Generally, I prefer `snake_case` for folder and file names.
-4. Including an `example.env` is recommended if the stack uses environment variables.
+All web facing stacks depend on an external network called `proxy`. 
+This is used to connect services that provide an http website to traefik.
+This network must be created before the stacks can run.
+You can run this command to create the network `docker network create -d bridge proxy`.
 
-Many of these stacks depend on an external network called `proxy`. This is used to connect services that provide an http website to
-a reverse proxy. This network must be created before the stacks can run.
+Addional stacks are provided as deploy-able services in the `stacks` folder that users may want.
+The stacks will always have this layout:
+1. The path for stack is `stacks/{name_of_stack}`
+2. The docker compose file is named `compose.yaml`
+3. An `example.env` is included and should be changed to match your environment.
+4. A README.md file may be included if the stack requires additional work. Some examples include
+  - Post-install steps
+  - Providing an initial configuration file
+  - Setting up folder with specific permissions
 
-You can run this command to create the network:
-`docker network create -d bridge proxy`
