@@ -27,12 +27,12 @@ services:
       bookstack: null
       proxy: null
     environment:
-      APP_URL: https://wiki.${domain:?}
       APP_KEY: ${app_key:?}
+      APP_URL: https://wiki.${domain:?}
+      DB_DATABASE: ${db_name:-bookstack}
       DB_HOST: bookstack_db:3306
-      DB_DATABASE: bookstack
-      DB_USERNAME: bookstack
       DB_PASSWORD: ${db_pass:?}
+      DB_USERNAME: ${db_user:-bookstack}
     volumes:
       - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
@@ -49,10 +49,10 @@ services:
     networks:
       bookstack: null
     environment:
-      MYSQL_ROOT_PASSWORD: ${root_pass:?}
-      MYSQL_DATABASE: bookstack
-      MYSQL_USER: bookstack
+      MYSQL_DATABASE: ${db_name:-bookstack}
       MYSQL_PASSWORD: ${db_pass:?}
+      MYSQL_ROOT_PASSWORD: ${root_pass:?}
+      MYSQL_USER: ${db_user:-bookstack}
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   ntfy:
@@ -77,15 +77,15 @@ services:
       retries: 3
       start_period: 40s
     environment:
-      TZ: ${timezone:-UTC}
-      NTFY_BASE_URL: https://n.${domain:?}
-      NTFY_AUTH_DEFAULT_ACCESS: deny-all
-      NTFY_BEHIND_PROXY: true
-      NTFY_ENABLE_LOGIN: true
-      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
-      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
       NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_BASE_URL: https://n.${domain:?}
+      NTFY_BEHIND_PROXY: true
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_ENABLE_LOGIN: true
       NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+      TZ: ${timezone:-UTC}
     volumes:
       - ${data:-.}/ntfy/data:/var/lib/ntfy
     labels:
