@@ -45,9 +45,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: paperless
-      POSTGRES_USER: paperless
-      POSTGRES_PASSWORD: ${db_pass:-paperless}
+      POSTGRES_DB: ${db_name:-paperless}
+      POSTGRES_PASSWORD: ${db_pass:?}
+      POSTGRES_USER: ${db_user:-paperless}
   paperlessngx:
     <<: *common-settings
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
@@ -68,7 +68,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.paperlessngx.entryPoints: "https"
       traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain}`)"
+      traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain:?}`)"
       traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
     volumes:
       - ${data:-.}/app/data:/usr/src/paperless/data
@@ -76,14 +76,17 @@ services:
       - ${data:-.}/app/export:/usr/src/paperless/export
       - ${data:-.}/app/consume:/usr/src/paperless/consume
     environment:
-      PAPERLESS_REDIS: redis://paperlessngx_broker:6379
       PAPERLESS_DBHOST: paperlessngx_db
-      USERMAP_UID: ${uid:-1000}
-      USERMAP_GID: ${gid:-1000}
-      PAPERLESS_URL: https://paper.${domain}
+      PAPERLESS_DBNAME: ${db_name:-paperless}
+      PAPERLESS_DBPASS: ${db_pass:?}
+      PAPERLESS_DBUSER: ${db_user:-paperless}
+      PAPERLESS_REDIS: redis://paperlessngx_broker:6379
+      PAPERLESS_SECRET_KEY: ${secret_key:?}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
-      PAPERLESS_SECRET_KEY: ${secret_key}
+      PAPERLESS_URL: https://paper.${domain:?}
+      USERMAP_GID: ${gid:-1000}
+      USERMAP_UID: ${uid:-1000}
       # Authelia Header SSO
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
-      PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain}/logout
+      PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout

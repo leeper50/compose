@@ -25,14 +25,14 @@ services:
     environment:
       GENERIC_TIMEZONE: ${timezone:-UTC}
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
-      N8N_HOST: n8n.${domain}
+      N8N_HOST: n8n.${domain:?}
       N8N_PORT: 5678
       N8N_PROTOCOL: https
       N8N_PROXY_HOPS: 1
       N8N_RUNNERS_ENABLED: true
       NODE_ENV: production
       TZ: ${timezone:-UTC}
-      WEBHOOK_URL: https://n8n.${domain}/
+      WEBHOOK_URL: https://n8n.${domain:?}/
     networks:
       proxy:
     volumes:
@@ -43,12 +43,12 @@ services:
       traefik.http.middlewares.n8n.headers.browserXSSFilter: true
       traefik.http.middlewares.n8n.headers.contentTypeNosniff: true
       traefik.http.middlewares.n8n.headers.forceSTSHeader: true
-      traefik.http.middlewares.n8n.headers.SSLHost: ${domain}
+      traefik.http.middlewares.n8n.headers.SSLHost: ${domain:?}
       traefik.http.middlewares.n8n.headers.SSLRedirect: true
       traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: true
       traefik.http.middlewares.n8n.headers.STSPreload: true
       traefik.http.middlewares.n8n.headers.STSSeconds: 315360000
       traefik.http.routers.n8n.entryPoints: "https"
       traefik.http.routers.n8n.middlewares: "n8n@docker"
-      traefik.http.routers.n8n.rule: "Host(`n8n.${domain}`)"
+      traefik.http.routers.n8n.rule: "Host(`n8n.${domain:?}`)"
       traefik.http.services.n8n.loadbalancer.server.url: "http://n8n:5678"

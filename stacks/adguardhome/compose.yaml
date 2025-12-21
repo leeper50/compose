@@ -37,7 +37,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"
-      traefik.http.routers.adguardhome.rule: "Host(`ad.${domain}`)"
+      traefik.http.routers.adguardhome.rule: "Host(`ad.${domain:?}`)"
       traefik.http.services.adguardhome.loadbalancer.server.url: "http://adguardhome:3000"
   adguardhome-sync:
     <<: *common-settings

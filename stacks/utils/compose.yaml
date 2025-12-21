@@ -24,7 +24,7 @@ services:
     networks:
       proxy: null
     environment:
-      JWT_SECRET: ${convertx_jwt}
+      JWT_SECRET: ${convertx_jwt:?}
       HIDE_HISTORY: true
     volumes:
       - ${data:-.}/convertx:/app/data
@@ -32,7 +32,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
-      traefik.http.routers.convertx.rule: "Host(`cx.${domain}`)"
+      traefik.http.routers.convertx.rule: "Host(`cx.${domain:?}`)"
       traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"
   ittools:
     <<: *common-settings
@@ -46,7 +46,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.ittools.rule: "Host(`it.${domain}`)"
+      traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
   libretranslate:
     <<: *common-settings
@@ -60,7 +60,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
       traefik.http.routers.libretranslate.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.libretranslate.rule: "Host(`lt.${domain}`)"
+      traefik.http.routers.libretranslate.rule: "Host(`lt.${domain:?}`)"
       traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
   myspeed:
     <<: *common-settings
@@ -76,7 +76,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.myspeed.entryPoints: "https"
       traefik.http.routers.myspeed.middlewares: "localonly@file"
-      traefik.http.routers.myspeed.rule: "Host(`speed.${domain}`)"
+      traefik.http.routers.myspeed.rule: "Host(`speed.${domain:?}`)"
       traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
   slink:
     <<: *common-settings
@@ -89,7 +89,7 @@ services:
       proxy: null
     environment:
       TZ: ${timezone:-UTC}
-      ORIGIN: https://sl.${domain}
+      ORIGIN: https://sl.${domain:?}
       USER_APPROVAL_REQUIRED: true
       USER_PASSWORD_MIN_LENGTH: 8
       USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
@@ -106,12 +106,12 @@ services:
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.slink.priority: 30
-      traefik.http.routers.slink.rule: "Host(`sl.${domain}`)"
+      traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
       traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
       # No middleware for outbound images
       traefik.http.routers.slink-images.entrypoints: "https"
       traefik.http.routers.slink-images.priority: 50
-      traefik.http.routers.slink-images.rule: "Host(`sl.${domain}`) && PathPrefix(`/image/`)"
+      traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"
   privatebin:
     <<: *common-settings
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
@@ -131,7 +131,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.privatebin.rule: "Host(`pb.${domain}`)"
+      traefik.http.routers.privatebin.rule: "Host(`pb.${domain:?}`)"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
   send:
     <<: *common-settings
@@ -146,7 +146,7 @@ services:
       send: null
     environment:
       NODE_ENV: production
-      BASE_URL: https://send.${domain}
+      BASE_URL: https://send.${domain:?}
       REDIS_HOST: send_keydb
       EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
       DEFAULT_EXPIRE_SECONDS: 3600
@@ -160,7 +160,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.send.rule: "Host(`send.${domain}`)"
+      traefik.http.routers.send.rule: "Host(`send.${domain:?}`)"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
   send_keydb:
     <<: *common-settings

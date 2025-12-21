@@ -26,12 +26,12 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
     ports:
-      - "1080:1080/tcp" # socks5 proxy
+      - "1080:1080/tcp"
     environment:
       TZ: ${timezone:-UTC}
-      VPN_SERVICE_PROVIDER: ${provider}
+      VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
-      WIREGUARD_PRIVATE_KEY: ${wgkey}
+      WIREGUARD_PRIVATE_KEY: ${wgkey:?}
       SERVER_CITIES: ${cities:-Stockholm}
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
@@ -45,9 +45,9 @@ services:
     cap_drop:
       - ALL
     environment:
-      REQUIRE_AUTH: ${enable_auth}
-      PROXY_USER: ${proxy_user}
-      PROXY_PASS: ${proxy_pass}
+      REQUIRE_AUTH: ${enable_auth:-true}
+      PROXY_USER: ${proxy_user:?}
+      PROXY_PASS: ${proxy_pass:?}
   tor-privoxy:
     <<: *common-settings
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}

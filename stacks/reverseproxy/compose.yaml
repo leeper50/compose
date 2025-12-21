@@ -38,7 +38,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
+      traefik.http.routers.authelia.rule: "Host(`auth.${domain:?}`)"
   crowdsec:
     <<: *common-settings
     image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
@@ -83,16 +83,16 @@ services:
       UID: ${uid:-1000}
       GID: ${gid:-1000}
       TZ: ${timezone:-UTC}
-      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET}"
-      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED}"
-      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain},dc=${tld}"
+      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET:?}"
+      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED:?}"
+      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain:?},dc=${tld:?}"
     volumes:
       - ${data:-.}/lldap:/data
     labels:
       traefik.enable: "true"
       traefik.http.routers.lldap.entryPoints: "https"
       traefik.http.routers.lldap.middlewares: "localonly@file"
-      traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
+      traefik.http.routers.lldap.rule: "Host(`lldap.${domain:?}`)"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
   traefik:
     <<: *common-settings
@@ -107,15 +107,13 @@ services:
     networks:
       proxy:
     ports:
-      # Web Ports
       - "80:80/tcp"
       - "443:443/tcp"
       - "443:443/udp"
-      # Non Web Ports
       - "25565:25565/tcp"
     environment:
-      CF_DNS_API_TOKEN: ${cf_dns_api_token}
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -127,7 +125,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.traefik.entryPoints: "https"
       traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
+      traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
       traefik.http.routers.traefik.service: "api@internal"
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
   vector:

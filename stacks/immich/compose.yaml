@@ -32,9 +32,9 @@ services:
       disable: false
     environment:
       TZ: ${timezone:-UTC}
-      DB_DATABASE_NAME: postgres
-      DB_USERNAME: postgres
-      DB_PASSWORD: ${db_pass:-postgres}
+      DB_DATABASE_NAME: ${db_name:-immich}
+      DB_PASSWORD: ${db_pass:?}
+      DB_USERNAME: ${db_user:-immich}
       REDIS_HOSTNAME: immich_keydb
     volumes:
       - ${data:-.}/app:/data
@@ -43,7 +43,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"
-      traefik.http.routers.immich.rule: "Host(`im.${domain}`)"
+      traefik.http.routers.immich.rule: "Host(`im.${domain:?}`)"
       traefik.http.services.immich.loadbalancer.server.url: "http://immich_server:2283"
   immich-machine-learning:
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
@@ -54,9 +54,9 @@ services:
       default: null
     environment:
       TZ: ${timezone:-UTC}
-      DB_DATABASE_NAME: postgres
-      DB_USERNAME: postgres
-      DB_PASSWORD: ${db_pass:-postgres}
+      DB_DATABASE_NAME: ${db_name:-immich}
+      DB_USERNAME: ${db_user:-immich}
+      DB_PASSWORD: ${db_pass:?}
     volumes:
       - ${data:-.}/model-cache:/cache
     healthcheck:
@@ -92,9 +92,9 @@ services:
       default: null
     shm_size: 128mb
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${db_pass:-postgres}
+      POSTGRES_DB: ${db_name:-immich}
       POSTGRES_INITDB_ARGS: '--data-checksums'
+      POSTGRES_PASSWORD: ${db_pass:?}
+      POSTGRES_USER: ${db_user:-immich}
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data

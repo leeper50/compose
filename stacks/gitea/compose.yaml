@@ -25,12 +25,12 @@ services:
     depends_on:
       - giteadb
     environment:
-      GITEA__server__ROOT_URL: https://git.${domain}/
+      GITEA__server__ROOT_URL: https://git.${domain:?}/
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: giteadb:5432
-      GITEA__database__NAME: gitea
-      GITEA__database__USER: gitea
-      GITEA__database__PASSWD: ${db_pass}
+      GITEA__database__NAME: ${db_name:-gitea}
+      GITEA__database__USER: ${db_user:-gitea}
+      GITEA__database__PASSWD: ${db_pass:?}
       GITEA__actions__ENABLED: true
       GITEA__server__DISABLE_SSH: true
     networks:
@@ -44,7 +44,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.routers.gitea.entryPoints: "https"
-      traefik.http.routers.gitea.rule: "Host(`git.${domain}`)"
+      traefik.http.routers.gitea.rule: "Host(`git.${domain:?}`)"
       traefik.http.services.gitea.loadbalancer.server.url: "http://gitea:3000"
   giteadb:
     <<: *common-settings
@@ -59,9 +59,9 @@ services:
       - SETGID
       - SETUID
     environment:
-      POSTGRES_DB: gitea
-      POSTGRES_USER: gitea
-      POSTGRES_PASSWORD: ${db_pass}
+      POSTGRES_DB: ${db_name:-gitea}
+      POSTGRES_USER: ${db_user:-gitea}
+      POSTGRES_PASSWORD: ${db_pass:?}
     networks:
       default: null
     volumes:
@@ -77,7 +77,7 @@ services:
     depends_on:
       - gitea
     environment:
-      GITEA_INSTANCE_URL: https://git.${domain}/
+      GITEA_INSTANCE_URL: https://git.${domain:?}/
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
       GITEA_RUNNER_NAME: gitea_runner
       GITEA_RUNNER_LABELS:

@@ -30,11 +30,11 @@ services:
       PGID: ${gid:-1000}
       UMASK: ${umask:-0220}
     volumes:
-      - ${syncthingFolder}/Syncthing:/data1:rw
+      - ${syncthingFolder:?}/Syncthing:/data1:rw
       - ${data:-.}/sync:/config:rw
     labels:
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"
-      traefik.http.routers.syncthing.rule: "Host(`sync.${domain}`)"
+      traefik.http.routers.syncthing.rule: "Host(`sync.${domain:?}`)"
       traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"

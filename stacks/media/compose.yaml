@@ -31,7 +31,7 @@ services:
       PUID: ${uid:-1000}
       PGID: ${gid:-1000}
       UMASK: ${umask}
-      JELLYFIN_PublishedServerUrl: jf.${domain}
+      JELLYFIN_PublishedServerUrl: jf.${domain:?}
     volumes:
       - ${data:-.}/jellyfin:/config:rw
       - ${media}/TV:/data/tvshows:rw
@@ -43,7 +43,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.jellyfin.entryPoints: "https"
       traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
-      traefik.http.routers.jellyfin.rule: "Host(`jf.${domain}`)"
+      traefik.http.routers.jellyfin.rule: "Host(`jf.${domain:?}`)"
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
   jellyseerr:
     <<: *common-settings
@@ -73,7 +73,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entryPoints: "https"
       traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.jellyseerr.rule: "Host(`js.${domain}`)"
+      traefik.http.routers.jellyseerr.rule: "Host(`js.${domain:?}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
   calibre:
     <<: *common-settings
@@ -98,7 +98,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.calibre.entryPoints: "https"
       traefik.http.routers.calibre.middlewares: "allowedIPs@file"
-      traefik.http.routers.calibre.rule: "Host(`books.${domain}`)"
+      traefik.http.routers.calibre.rule: "Host(`books.${domain:?}`)"
       traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
   navidrome:
     <<: *common-settings
@@ -120,10 +120,10 @@ services:
       traefik.http.routers.navidrome.entryPoints: "https"
       traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@file"
       traefik.http.routers.navidrome.priority: 30
-      traefik.http.routers.navidrome.rule: "Host(`nav.${domain}`)"
+      traefik.http.routers.navidrome.rule: "Host(`nav.${domain:?}`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
       # App specific auth with basic-auth
       traefik.http.routers.navidrome-subsonic.entrypoints: "https"
       traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
       traefik.http.routers.navidrome-subsonic.priority: 50
-      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain:?}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)

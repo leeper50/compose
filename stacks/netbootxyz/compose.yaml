@@ -42,5 +42,5 @@ services:
       traefik.enable: "true"
       traefik.http.routers.netbootxyz.entryPoints: "https"
       traefik.http.routers.netbootxyz.middlewares: "localonly@file"
-      traefik.http.routers.netbootxyz.rule: "Host(`nb.${domain}`)"
+      traefik.http.routers.netbootxyz.rule: "Host(`nb.${domain:?}`)"
       traefik.http.services.netbootxyz.loadbalancer.server.url: "http://netbootxyz:3000"

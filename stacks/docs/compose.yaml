@@ -15,7 +15,6 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  # Wiki service
   bookstack:
     <<: *common-settings
     image: solidnerd/bookstack:${bookstack_version:-25.11.6}
@@ -28,12 +27,12 @@ services:
       bookstack: null
       proxy: null
     environment:
-      APP_URL: https://wiki.${domain}
-      APP_KEY: ${app_key}
+      APP_URL: https://wiki.${domain:?}
+      APP_KEY: ${app_key:?}
       DB_HOST: bookstack_db:3306
       DB_DATABASE: bookstack
       DB_USERNAME: bookstack
-      DB_PASSWORD: ${db_pass}
+      DB_PASSWORD: ${db_pass:?}
     volumes:
       - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
@@ -41,7 +40,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
-      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
+      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain:?}`)"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
   bookstack_db:
     <<: *common-settings
@@ -50,10 +49,10 @@ services:
     networks:
       bookstack: null
     environment:
-      MYSQL_ROOT_PASSWORD: ${root_pass}
+      MYSQL_ROOT_PASSWORD: ${root_pass:?}
       MYSQL_DATABASE: bookstack
       MYSQL_USER: bookstack
-      MYSQL_PASSWORD: ${db_pass}
+      MYSQL_PASSWORD: ${db_pass:?}
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   ntfy:
@@ -79,7 +78,7 @@ services:
       start_period: 40s
     environment:
       TZ: ${timezone:-UTC}
-      NTFY_BASE_URL: https://n.${domain}
+      NTFY_BASE_URL: https://n.${domain:?}
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
       NTFY_BEHIND_PROXY: true
       NTFY_ENABLE_LOGIN: true
@@ -93,9 +92,8 @@ services:
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
-      traefik.http.routers.ntfy.rule: "Host(`n.${domain}`)"
+      traefik.http.routers.ntfy.rule: "Host(`n.${domain:?}`)"
       traefik.http.services.ntfy.loadbalancer.server.url: "http://ntfy:80"
-  # Metrics service
   grafana:
     <<: *common-settings
     image: grafana/grafana:${grafana_version:-latest}
@@ -116,7 +114,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.grafana.entryPoints: "https"
       traefik.http.routers.grafana.middlewares: "localonly@file"
-      traefik.http.routers.grafana.rule: "Host(`gf.${domain}`)"
+      traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
       traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
   prometheus:
     <<: *common-settings
@@ -134,9 +132,8 @@ services:
       traefik.enable: "true"
       traefik.http.routers.prometheus.entryPoints: "https"
       traefik.http.routers.prometheus.middlewares: "localonly@file"
-      traefik.http.routers.prometheus.rule: "Host(`pm.${domain}`)"
+      traefik.http.routers.prometheus.rule: "Host(`pm.${domain:?}`)"
       traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
-  # Uptime service
   uptimekuma:
     <<: *common-settings
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
@@ -152,5 +149,5 @@ services:
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"
       traefik.http.routers.uptimekuma.middlewares: "localonly@file"
-      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain}`)"
+      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain:?}`)"
       traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"

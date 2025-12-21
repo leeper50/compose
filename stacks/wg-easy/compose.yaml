@@ -43,5 +43,5 @@ services:
       traefik.enable: "true"
       traefik.http.routers.wgeasy.entryPoints: "https"
       traefik.http.routers.wgeasy.middlewares: "localonly@file"
-      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain}`)"
+      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain:?}`)"
       traefik.http.services.wgeasy.loadbalancer.server.url: "http://wgeasy:51821"

@@ -31,7 +31,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-      traefik.http.routers.mywebsite.rule: "Host(`${domain}`) || Host(`www.${domain}`)"
+      traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
   freshrss:
     <<: *common-settings
@@ -63,7 +63,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.freshrss.rule: "Host(`fr.${domain}`)"
+      traefik.http.routers.freshrss.rule: "Host(`fr.${domain:?}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
   freshrssdb:
     <<: *common-settings
@@ -82,9 +82,9 @@ services:
     volumes:
       - ${data:-.}/rss/db:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: db
-      POSTGRES_USER: rss
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${db_name:-freshrss}
+      POSTGRES_PASSWORD: ${db_pass:?}
+      POSTGRES_USER: ${db_user:-freshrss}
   vaultwarden:
     <<: *common-settings
     image: vaultwarden/server:${vaultwarden_version:-latest}
@@ -94,22 +94,22 @@ services:
     networks:
       proxy:
     environment:
-      DOMAIN: https://vault.${domain}
-      ADMIN_TOKEN: "${vaultwarden_admin_token}"
+      DOMAIN: https://vault.${domain:?}
+      ADMIN_TOKEN: "${vaultwarden_admin_token:?}"
     volumes:
       - ${data:-.}/vault/data:/data
     labels:
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
-      traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain}`)"
+      traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain:?}`)"
       traefik.http.routers.vaultwarden.priority: 30
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
       # Block admin page with authelia
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
       traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.vaultwarden-admin.priority: 50
-      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain}`) && PathPrefix(`/admin`)
+      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain:?}`) && PathPrefix(`/admin`)
   homepage:
     <<: *common-settings
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
@@ -120,7 +120,7 @@ services:
       proxy:
     environment:
       TZ: ${timezone:-UTC}
-      HOMEPAGE_ALLOWED_HOSTS: home.${domain}
+      HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
     volumes:
       - ${data:-.}/homepage:/app/config:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -128,7 +128,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.${domain}`)"
+      traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
   copyparty:
     <<: *common-settings
@@ -148,7 +148,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`c.${domain}`)"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
     stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:
