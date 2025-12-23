@@ -15,6 +15,51 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
+  autokuma:
+    <<: *common-settings
+    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
+    container_name: autokuma
+    cap_drop:
+      - ALL
+    depends_on:
+      - uptimekuma
+    networks:
+      proxy: null
+    environment:
+      AUTOKUMA__DEFAULT_SETTINGS: |- 
+         docker.docker_container: {{container_name}}
+         http.max_redirects: 10
+         *.max_retries: 3
+      AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
+      AUTOKUMA__KUMA__URL: http://uptimekuma:3001
+      AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
+      AUTOKUMA__SNIPPETS__WEB: |- 
+         {{container_name}}_http.http.name: web_{{container_name}}
+         {{container_name}}_http.http.url: https://{{ args[0] }}:{{ args[1] }}
+         {{container_name}}_http.http.notification_name_list: ["ntfy"]
+      AUTOKUMA__SNIPPETS__DOCKER: |- 
+         {{container_name}}_docker.docker.docker_container: {{container_name}}
+         {{container_name}}_docker.docker.docker_host_name: local
+         {{container_name}}_docker.docker.name: docker_{{container_name}}
+         {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
+    volumes:
+      - ${data:-.}/autokuma:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      kuma.local.docker_host.name: 'Local Docker Socket'
+      kuma.local.docker_host.connection_type: 'socket'
+      kuma.local.docker_host.path: '/var/run/docker.sock'
+      kuma.ntfy.notification.name: 'NTFY'
+      kuma.ntfy.notification.active: 'true'
+      kuma.ntfy.notification.config: |
+        {
+          "ntfyAuthenticationMethod": "accessToken",
+          "ntfyPriority": 2,
+          "ntfyaccesstoken": "${ntfy_token:?}",
+          "ntfyserverurl": "http://ntfy:80",
+          "ntfytopic": "UptimeKuma",
+          "type": "ntfy"
+        }
   bookstack:
     <<: *common-settings
     image: solidnerd/bookstack:${bookstack_version:-25.11.6}
@@ -37,6 +82,8 @@ services:
       - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
     labels:
+      kuma.__docker:
+      kuma.__web: '"wiki.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
@@ -55,6 +102,8 @@ services:
       MYSQL_USER: ${db_user:-bookstack}
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
+    labels:
+      kuma.__docker:
   grafana:
     <<: *common-settings
     image: grafana/grafana:${grafana_version:-latest}
@@ -72,6 +121,8 @@ services:
       - ${data:-.}/grafana:/var/lib/grafana
       - /etc/timezone:/etc/timezone:ro
     labels:
+      kuma.__docker:
+      kuma.__web: '"gf.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.grafana.entryPoints: "https"
       traefik.http.routers.grafana.middlewares: "localonly@file"
@@ -111,6 +162,8 @@ services:
     volumes:
       - ${data:-.}/ntfy/data:/var/lib/ntfy
     labels:
+      kuma.__docker:
+      kuma.__web: '"n.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
@@ -129,6 +182,8 @@ services:
       - ${data:-.}/prometheus/data:/prometheus
       - /etc/timezone:/etc/timezone:ro
     labels:
+      kuma.__docker:
+      kuma.__web: '"pm.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.prometheus.entryPoints: "https"
       traefik.http.routers.prometheus.middlewares: "localonly@file"
