@@ -25,6 +25,10 @@ services:
     labels:
       kuma.__docker:
       kuma.__web: "s3.${domain:?}"
+      kuma.garage_s3.port.hostname: garage
+      kuma.garage_s3.port.name: port_garage_s3
+      kuma.garage_s3.port.notification_name_list: '["ntfy"]'
+      kuma.garage_s3.port.port: 3900
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"

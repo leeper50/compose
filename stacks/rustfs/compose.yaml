@@ -26,12 +26,11 @@ services:
     image: rustfs/rustfs:${rustfs_version:-latest}
     labels:
       kuma.__docker:
-      kuma.rustfs_s3.http.name: web_rustfs_s3
-      kuma.rustfs_s3.http.notification_name_list: '["ntfy"]'
-      kuma.rustfs_s3.http.url: https://r3.${domain:?}:443
-      kuma.rustfs_web.http.name: web_rustfs
-      kuma.rustfs_web.http.notification_name_list: '["ntfy"]'
-      kuma.rustfs_web.http.url: https://rs.${domain:?}:443
+      kuma.__web: "rs.${domain:?}/rustfs/console"
+      kuma.rustfs_s3.port.hostname: rustfs
+      kuma.rustfs_s3.port.name: port_rustfs_s3
+      kuma.rustfs_s3.port.notification_name_list: '["ntfy"]'
+      kuma.rustfs_s3.port.port: 9000
       traefik.enable: "true"
       traefik.http.routers.rustfs.entryPoints: "https"
       traefik.http.routers.rustfs.middlewares: "localonly@file"
