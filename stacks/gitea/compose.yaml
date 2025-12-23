@@ -21,7 +21,7 @@ services:
       - ALL
     container_name: gitea
     depends_on:
-      - giteadb
+      - gitea_db
     environment:
       GITEA__actions__ENABLED: true
       GITEA__database__DB_TYPE: postgres
@@ -48,7 +48,7 @@ services:
       - ${data:-.}/config:/etc/gitea:rw
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-  giteadb:
+  gitea_db:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -70,7 +70,7 @@ services:
       default: null
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
-  runner:
+  gitea_runner:
     <<: *common-settings
     cap_drop:
       - ALL

@@ -29,7 +29,7 @@ services:
       USER_GID: ${gid:-1000}
       USER_UID: ${uid:-1000}
     depends_on:
-      - forgejodb
+      - forgejo_db
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
     labels:
       kuma.__docker:
@@ -47,7 +47,7 @@ services:
       - ${data:-.}/app/conf:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-  forgejodb:
+  forgejo_db:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -57,7 +57,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    container_name: forgejodb
+    container_name: forgejo_db
     environment:
       POSTGRES_DB: ${db_name:-forgejo}
       POSTGRES_PASSWORD: ${db_pass:?}
