@@ -15,10 +15,8 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  database:
+  immich_postgres:
     <<: *common-settings
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
-    container_name: immich_postgres
     cap_drop:
       - ALL
     cap_add:
@@ -27,74 +25,85 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    networks:
-      default: null
-    shm_size: 128mb
+    container_name: immich_postgres
     environment:
       POSTGRES_DB: ${db_name:-immich}
       POSTGRES_INITDB_ARGS: '--data-checksums'
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_user:-immich}
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    labels:
+      kuma.__docker:
+    networks:
+      default: null
+    shm_size: 128mb
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   immich_keydb:
     <<: *common-settings
-    image: eqalpha/keydb:${keydb_version:-latest}
-    container_name: immich_keydb
     cap_drop:
       - ALL
     cap_add:
       - SETGID
       - SETUID
+    container_name: immich_keydb
+    healthcheck:
+      test: redis-cli ping || exit 1
+    image: eqalpha/keydb:${keydb_version:-latest}
+    labels:
+      kuma.__docker:
     networks:
       default: null
     volumes:
       - ${data:-.}/keydb:/data
-    healthcheck:
-      test: redis-cli ping || exit 1
-  immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
-    container_name: immich_machine_learning
+  immich_machine_learning:
+    <<: *common-settings
     cap_drop:
       - ALL
-    networks:
-      default: null
+    container_name: immich_machine_learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-immich}
       TZ: ${timezone:-UTC}
+    healthcheck:
+      disable: false
+    image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
+    labels:
+      kuma.__docker:
+    networks:
+      default: null
     volumes:
       - ${data:-.}/model-cache:/cache
-    healthcheck:
-      disable: false
-  immich-server:
+  immich_server:
     <<: *common-settings
-    image: ghcr.io/immich-app/immich-server:${immich_version:-release}
-    container_name: immich_server
     cap_drop:
       - ALL
+    container_name: immich_server
     depends_on:
-      - database
+      - immich_postgres
       - immich_keydb
-      - immich-machine-learning
-    networks:
-      proxy: null
-      default: null
-    healthcheck:
-      disable: false
+      - immich_machine_learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-immich}
       REDIS_HOSTNAME: immich_keydb
       TZ: ${timezone:-UTC}
-    volumes:
-      - ${data:-.}/app:/data
-      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      disable: false
+    image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
+      kuma.__docker:
+      kuma.__web: '"im.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"
       traefik.http.routers.immich.rule: "Host(`im.${domain:?}`)"
       traefik.http.services.immich.loadbalancer.server.url: "http://immich_server:2283"
+    networks:
+      proxy: null
+      default: null
+    volumes:
+      - ${data:-.}/app:/data
+      - /etc/localtime:/etc/localtime:ro

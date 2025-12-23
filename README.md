@@ -23,3 +23,6 @@ The stacks will always have this layout:
   - Providing an initial configuration file
   - Setting up folder with specific permissions
 
+Enrollment of services into uptimekuma's monitoring system is provided by `autokuma` from the `docs` stack.
+Containers have labels attached that use autokuma's snippets to setup monitors for containers and web endpoints,
+along with integration with `ntfy` for downtime notifications.

@@ -17,11 +17,9 @@ x-common-settings: &common-settings
 services:
   gitea:
     <<: *common-settings
-    image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
-    container_name: gitea
-    user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
+    container_name: gitea
     depends_on:
       - giteadb
     environment:
@@ -33,23 +31,25 @@ services:
       GITEA__database__USER: ${db_user:-gitea}
       GITEA__server__DISABLE_SSH: true
       GITEA__server__ROOT_URL: https://git.${domain:?}/
+    image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"git.${domain:?}", "443"'
+      traefik.enable: "true"
+      traefik.http.routers.gitea.entryPoints: "https"
+      traefik.http.routers.gitea.rule: "Host(`git.${domain:?}`)"
+      traefik.http.services.gitea.loadbalancer.server.url: "http://gitea:3000"
     networks:
       proxy: null
       default: null
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/data:/var/lib/gitea:rw
       - ${data:-.}/config:/etc/gitea:rw
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.gitea.entryPoints: "https"
-      traefik.http.routers.gitea.rule: "Host(`git.${domain:?}`)"
-      traefik.http.services.gitea.loadbalancer.server.url: "http://gitea:3000"
   giteadb:
     <<: *common-settings
-    image: postgres:${postgres_version:-14}
-    container_name: gitea_db
     cap_drop:
       - ALL
     cap_add:
@@ -58,22 +58,25 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    container_name: gitea_db
     environment:
       POSTGRES_DB: ${db_name:-gitea}
       POSTGRES_USER: ${db_user:-gitea}
       POSTGRES_PASSWORD: ${db_pass:?}
+    image: postgres:${postgres_version:-14}
+    labels:
+      kuma.__docker:
     networks:
       default: null
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   runner:
     <<: *common-settings
-    image: gitea/act_runner:${runner_version:-nightly}
-    container_name: gitea_runner
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
+    container_name: gitea_runner
     depends_on:
       - gitea
     environment:
@@ -85,6 +88,9 @@ services:
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
       GITEA_RUNNER_NAME: gitea_runner
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
+    image: gitea/act_runner:${runner_version:-nightly}
+    labels:
+      kuma.__docker:
     networks:
       default: null
     volumes:

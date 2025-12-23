@@ -16,45 +16,49 @@ x-common-settings: &common-settings
 services:
   garage:
     <<: *common-settings
-    image: dxflrs/garage:${garage_version:-v2.1.0}
-    container_name: garage
     cap_drop:
       - ALL
-    networks:
-      proxy:
-    ports:
-      - "3900:3900/tcp" ## s3 api
-      - "3901:3901/tcp" ## rpc
+    container_name: garage
     environment:
       TZ: ${timezone:-UTC}
-    volumes:
-      - ${data:-.}/garage.toml:/etc/garage.toml:ro
-      - ${data:-.}/metadata:/var/lib/garage/meta
-      - ${data:-.}/storage:/var/lib/garage/data
+    image: dxflrs/garage:${garage_version:-v2.1.0}
     labels:
+      kuma.__docker:
+      kuma.__web: '"s3.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"
       traefik.http.routers.garage.rule: "Host(`s3.${domain:?}`)"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
-  garage-webui:
-    <<: *common-settings
-    image: khairul169/garage-webui:${garage_webui_version:-latest}
-    container_name: garage-webui
-    cap_drop:
-      - ALL
-    depends_on:
-      - garage
     networks:
       proxy:
+    ports:
+      - "3900:3900/tcp" ## s3 api
+      - "3901:3901/tcp" ## rpc
     volumes:
       - ${data:-.}/garage.toml:/etc/garage.toml:ro
+      - ${data:-.}/metadata:/var/lib/garage/meta
+      - ${data:-.}/storage:/var/lib/garage/data
+  garage-webui:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: garage-webui
+    depends_on:
+      - garage
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
+    image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"garage.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.garage-webui.entryPoints: "https"
       traefik.http.routers.garage-webui.middlewares: "localonly@file"
       traefik.http.routers.garage-webui.rule: "Host(`garage.${domain:?}`)"
       traefik.http.services.garage-webui.loadbalancer.server.url: "http://garage-webui:3909"
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/garage.toml:/etc/garage.toml:ro

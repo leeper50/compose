@@ -17,14 +17,11 @@ x-common-settings: &common-settings
 services:
   autokuma:
     <<: *common-settings
-    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
-    container_name: autokuma
     cap_drop:
       - ALL
+    container_name: autokuma
     depends_on:
       - uptimekuma
-    networks:
-      proxy: null
     environment:
       AUTOKUMA__DEFAULT_SETTINGS: |- 
          docker.docker_container: {{container_name}}
@@ -42,9 +39,7 @@ services:
          {{container_name}}_docker.docker.docker_host_name: local
          {{container_name}}_docker.docker.name: docker_{{container_name}}
          {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
-    volumes:
-      - ${data:-.}/autokuma:/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       kuma.local.docker_host.name: 'Local Docker Socket'
       kuma.local.docker_host.connection_type: 'socket'
@@ -60,17 +55,18 @@ services:
           "ntfytopic": "UptimeKuma",
           "type": "ntfy"
         }
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/autokuma:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   bookstack:
     <<: *common-settings
-    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
-    container_name: bookstack
     cap_drop:
       - ALL
+    container_name: bookstack
     depends_on:
       - bookstack_db
-    networks:
-      bookstack: null
-      proxy: null
     environment:
       APP_KEY: ${app_key:?}
       APP_URL: https://wiki.${domain:?}
@@ -78,9 +74,7 @@ services:
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-bookstack}
-    volumes:
-      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
-      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
+    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     labels:
       kuma.__docker:
       kuma.__web: '"wiki.${domain:?}", "443"'
@@ -89,37 +83,37 @@ services:
       traefik.http.routers.bookstack.middlewares: "localonly@file"
       traefik.http.routers.bookstack.rule: "Host(`wiki.${domain:?}`)"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
+    networks:
+      bookstack: null
+      proxy: null
+    volumes:
+      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
+      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
     <<: *common-settings
     image: mysql:${mysql_version:-9.2}
     container_name: bookstack_db
-    networks:
-      bookstack: null
     environment:
       MYSQL_DATABASE: ${db_name:-bookstack}
       MYSQL_PASSWORD: ${db_pass:?}
       MYSQL_ROOT_PASSWORD: ${root_pass:?}
       MYSQL_USER: ${db_user:-bookstack}
-    volumes:
-      - ${data:-.}/bookstack/db:/var/lib/mysql:rw
     labels:
       kuma.__docker:
+    networks:
+      bookstack: null
+    volumes:
+      - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   grafana:
     <<: *common-settings
-    image: grafana/grafana:${grafana_version:-latest}
-    container_name: grafana
-    user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
+    container_name: grafana
     depends_on:
       - prometheus
-    networks:
-      proxy: null
     environment:
       GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
-    volumes:
-      - ${data:-.}/grafana:/var/lib/grafana
-      - /etc/timezone:/etc/timezone:ro
+    image: grafana/grafana:${grafana_version:-latest}
     labels:
       kuma.__docker:
       kuma.__web: '"gf.${domain:?}", "443"'
@@ -128,27 +122,19 @@ services:
       traefik.http.routers.grafana.middlewares: "localonly@file"
       traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
       traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
-  ntfy:
-    image: binwiederhier/ntfy:${ntfy_version:-latest}
-    container_name: ntfy
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
-    init: true
-    command:
-      - serve
     networks:
       proxy: null
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1",
-        ]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/grafana:/var/lib/grafana
+      - /etc/timezone:/etc/timezone:ro
+  ntfy:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    command:
+      - serve
+    container_name: ntfy
     environment:
       NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
@@ -159,8 +145,18 @@ services:
       NTFY_ENABLE_LOGIN: true
       NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
       TZ: ${timezone:-UTC}
-    volumes:
-      - ${data:-.}/ntfy/data:/var/lib/ntfy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1",
+        ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    image: binwiederhier/ntfy:${ntfy_version:-latest}
+    init: true
     labels:
       kuma.__docker:
       kuma.__web: '"n.${domain:?}", "443"'
@@ -169,18 +165,17 @@ services:
       traefik.http.routers.ntfy.middlewares: "localonly@file"
       traefik.http.routers.ntfy.rule: "Host(`n.${domain:?}`)"
       traefik.http.services.ntfy.loadbalancer.server.url: "http://ntfy:80"
-  prometheus:
-    <<: *common-settings
-    image: prom/prometheus:${prometheus_version:-latest}
-    container_name: prometheus
-    cap_drop:
-      - ALL
     networks:
       proxy: null
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ${data:-.}/prometheus/data:/prometheus
-      - /etc/timezone:/etc/timezone:ro
+      - ${data:-.}/ntfy/data:/var/lib/ntfy
+  prometheus:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: prometheus
+    image: prom/prometheus:${prometheus_version:-latest}
     labels:
       kuma.__docker:
       kuma.__web: '"pm.${domain:?}", "443"'
@@ -189,20 +184,26 @@ services:
       traefik.http.routers.prometheus.middlewares: "localonly@file"
       traefik.http.routers.prometheus.rule: "Host(`pm.${domain:?}`)"
       traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
-  uptimekuma:
-    <<: *common-settings
-    image: louislam/uptime-kuma:${uptimekuma_version:-2}
-    container_name: uptimekuma
-    cap_drop:
-      - ALL
     networks:
       proxy: null
     volumes:
-      - ${data:-.}/uptime:/app/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${data:-.}/prometheus/data:/prometheus
+      - /etc/timezone:/etc/timezone:ro
+  uptimekuma:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: uptimekuma
+    image: louislam/uptime-kuma:${uptimekuma_version:-2}
     labels:
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"
       traefik.http.routers.uptimekuma.middlewares: "localonly@file"
       traefik.http.routers.uptimekuma.rule: "Host(`up.${domain:?}`)"
       traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/uptime:/app/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro

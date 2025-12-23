@@ -17,31 +17,13 @@ x-common-settings: &common-settings
 services:
   paperlessngx:
     <<: *common-settings
-    image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
-    container_name: paperlessngx
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    networks:
-      proxy: null
-      default: null
-    depends_on:
-      - paperlessngx_db
-      - paperlessngx_broker
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.paperlessngx.entryPoints: "https"
-      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain:?}`)"
-      traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
-    volumes:
-      - ${data:-.}/app/data:/usr/src/paperless/data
-      - ${data:-.}/app/media:/usr/src/paperless/media
-      - ${data:-.}/app/export:/usr/src/paperless/export
-      - ${data:-.}/app/consume:/usr/src/paperless/consume
+    container_name: paperlessngx
     environment:
       PAPERLESS_DBHOST: paperlessngx_db
       PAPERLESS_DBNAME: ${db_name:-paperless}
@@ -57,23 +39,43 @@ services:
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
       PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout
+    depends_on:
+      - paperlessngx_db
+      - paperlessngx_broker
+    image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"paper.${domain:?}", "443"'
+      traefik.enable: "true"
+      traefik.http.routers.paperlessngx.entryPoints: "https"
+      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain:?}`)"
+      traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
+    networks:
+      proxy: null
+      default: null
+    volumes:
+      - ${data:-.}/app/data:/usr/src/paperless/data
+      - ${data:-.}/app/media:/usr/src/paperless/media
+      - ${data:-.}/app/export:/usr/src/paperless/export
+      - ${data:-.}/app/consume:/usr/src/paperless/consume
   paperlessngx_broker:
     <<: *common-settings
-    image: eqalpha/keydb:${keydb_version:-latest}
-    container_name: paperlessngx_broker
     cap_drop:
       - ALL
     cap_add:
       - SETGID
       - SETUID
+    container_name: paperlessngx_broker
+    image: eqalpha/keydb:${keydb_version:-latest}
+    labels:
+      kuma.__docker:
     networks:
       default: null
     volumes:
       - ${data:-.}/keydb:/data
   paperlessngx_db:
     <<: *common-settings
-    image: docker.io/library/postgres:${postgres_version:-16}
-    container_name: paperlessngx_db
     cap_drop:
       - ALL
     cap_add:
@@ -82,11 +84,15 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    networks:
-      default: null
-    volumes:
-      - ${data:-.}/db:/var/lib/postgresql/data
+    container_name: paperlessngx_db
     environment:
       POSTGRES_DB: ${db_name:-paperless}
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_user:-paperless}
+    image: docker.io/library/postgres:${postgres_version:-16}
+    labels:
+      kuma.__docker:
+    networks:
+      default: null
+    volumes:
+      - ${data:-.}/db:/var/lib/postgresql/data

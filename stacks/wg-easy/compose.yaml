@@ -16,32 +16,34 @@ x-common-settings: &common-settings
 services:
   wgeasy:
     <<: *common-settings
-    image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
-    container_name: wgeasy
     cap_drop:
       - ALL
     cap_add:
       - NET_ADMIN
       - NET_RAW
       - SYS_MODULE
+    container_name: wgeasy
+    environment:
+      INSECURE: false
+    image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"vpn.${domain:?}", "443"'
+      traefik.enable: "true"
+      traefik.http.routers.wgeasy.entryPoints: "https"
+      traefik.http.routers.wgeasy.middlewares: "localonly@file"
+      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain:?}`)"
+      traefik.http.services.wgeasy.loadbalancer.server.url: "http://wgeasy:51821"
+    networks:
+      proxy:
+    ports:
+      - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
       - net.ipv6.conf.all.disable_ipv6=0
       - net.ipv6.conf.all.forwarding=1
       - net.ipv6.conf.default.forwarding=1
-    networks:
-      proxy:
-    ports:
-      - 51820:51820/udp
-    environment:
-      INSECURE: false
     volumes:
       - ${data:-.}/wg-easy:/etc/wireguard
       - /lib/modules:/lib/modules:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.wgeasy.entryPoints: "https"
-      traefik.http.routers.wgeasy.middlewares: "localonly@file"
-      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain:?}`)"
-      traefik.http.services.wgeasy.loadbalancer.server.url: "http://wgeasy:51821"

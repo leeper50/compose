@@ -17,25 +17,11 @@ x-common-settings: &common-settings
 services:
   copyparty:
     <<: *common-settings
-    image: copyparty/iv:${copyparty_version:-latest}
-    container_name: copyparty
-    user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
-    networks:
-      proxy:
+    container_name: copyparty
     environment:
       LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
-    volumes:
-      - ${data:-.}/copyparty/conf:/cfg
-      - ${data:-.}/copyparty/files:/w
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.copyparty.entryPoints: "https"
-      traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
-      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
-    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     healthcheck:
       # hide it from logs with "/._" so it matches the default --lf-url filter
       test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
@@ -43,42 +29,55 @@ services:
       timeout: 2s
       retries: 5
       start_period: 15s
+    image: copyparty/iv:${copyparty_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"c.${domain:?}", "443"'
+      traefik.enable: "true"
+      traefik.http.routers.copyparty.entryPoints: "https"
+      traefik.http.routers.copyparty.middlewares: "localonly@file"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
+      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
+    networks:
+      proxy:
+    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/copyparty/conf:/cfg
+      - ${data:-.}/copyparty/files:/w
   freshrss:
     <<: *common-settings
-    image: freshrss/freshrss:${freshrss_version:-latest}
-    container_name: freshrss
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
+    container_name: freshrss
     depends_on:
       - freshrssdb
-    networks:
-      proxy:
-      freshrss:
-    logging:
-      options:
-        max-size: 10m
-    volumes:
-      - ${data:-.}/rss/data:/var/www/FreshRSS/data
-      - ${data:-.}/rss/extensions:/var/www/FreshRSS/extensions
     environment:
       TZ: ${timezone:-UTC}
       TRUSTED_PROXY: 0
       LISTEN: 0.0.0.0:80
       CRON_MIN: "1,31"
+    image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"fr.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.freshrss.rule: "Host(`fr.${domain:?}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
+    networks:
+      freshrss:
+      proxy:
+    volumes:
+      - ${data:-.}/rss/data:/var/www/FreshRSS/data
+      - ${data:-.}/rss/extensions:/var/www/FreshRSS/extensions
   freshrssdb:
     <<: *common-settings
-    image: postgres:${postgres_version:-16}
-    container_name: freshrssdb
     cap_drop:
       - ALL
     cap_add:
@@ -87,73 +86,83 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    networks:
-      freshrss:
-    volumes:
-      - ${data:-.}/rss/db:/var/lib/postgresql/data
+    container_name: freshrssdb
     environment:
       POSTGRES_DB: ${db_name:-freshrss}
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_user:-freshrss}
+    image: postgres:${postgres_version:-16}
+    labels:
+      kuma.__docker:
+    networks:
+      freshrss:
+    volumes:
+      - ${data:-.}/rss/db:/var/lib/postgresql/data
   homepage:
     <<: *common-settings
-    image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
-    container_name: homepage
     cap_drop:
       - ALL
-    networks:
-      proxy:
+    container_name: homepage
     environment:
       TZ: ${timezone:-UTC}
       HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
-    volumes:
-      - ${data:-.}/homepage:/app/config:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+    image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"home.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
       traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
-  mywebsite:
-    <<: *common-settings
-    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
-    container_name: mywebsite
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
     networks:
       proxy:
     volumes:
-      - ${data:-.}/newweb/db:/app/db
+      - ${data:-.}/homepage:/app/config:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  mywebsite:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: mywebsite
+    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
       traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
-  vaultwarden:
-    <<: *common-settings
-    image: vaultwarden/server:${vaultwarden_version:-latest}
-    container_name: vaultwarden
-    cap_drop:
-      - ALL
     networks:
       proxy:
-    environment:
-      DOMAIN: https://vault.${domain:?}
-      ADMIN_TOKEN: "${vaultwarden_admin_token:?}"
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/vault/data:/data
+      - ${data:-.}/newweb/db:/app/db
+  vaultwarden:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: vaultwarden
+    environment:
+      ADMIN_TOKEN: "${vaultwarden_admin_token:?}"
+      DOMAIN: https://vault.${domain:?}
+    image: vaultwarden/server:${vaultwarden_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"vw.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
-      traefik.http.routers.vaultwarden.rule: "Host(`vault.${domain:?}`)"
       traefik.http.routers.vaultwarden.priority: 30
+      traefik.http.routers.vaultwarden.rule: "Host(`vw.${domain:?}`)"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
       # Block admin page with authelia
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
       traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.vaultwarden-admin.priority: 50
-      traefik.http.routers.vaultwarden-admin.rule: Host(`vault.${domain:?}`) && PathPrefix(`/admin`)
+      traefik.http.routers.vaultwarden-admin.rule: Host(`vw.${domain:?}`) && PathPrefix(`/admin`)
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/vault/data:/data

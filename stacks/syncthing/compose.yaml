@@ -16,25 +16,27 @@ x-common-settings: &common-settings
 services:
   syncthing:
     <<: *common-settings
-    image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
-    container_name: syncthing
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    network_mode: host
+    container_name: syncthing
     environment:
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
       UMASK: ${umask:-0220}
-    volumes:
-      - ${syncthingFolder:?}/Syncthing:/data1:rw
-      - ${data:-.}/sync:/config:rw
+    image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"sync.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"
       traefik.http.routers.syncthing.rule: "Host(`sync.${domain:?}`)"
       traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"
+    network_mode: host
+    volumes:
+      - ${data:-.}/sync:/config:rw
+      - ${syncthingFolder:?}/Syncthing:/data1:rw

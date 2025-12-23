@@ -17,99 +17,105 @@ x-common-settings: &common-settings
 services:
   convertx:
     <<: *common-settings
-    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
-    container_name: convertx
     cap_drop:
       - ALL
-    networks:
-      proxy: null
+    container_name: convertx
     environment:
       HIDE_HISTORY: true
       JWT_SECRET: ${convertx_jwt:?}
-    volumes:
-      - ${data:-.}/convertx:/app/data
+    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"cx.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
       traefik.http.routers.convertx.rule: "Host(`cx.${domain:?}`)"
       traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"
-  ittools:
-    <<: *common-settings
-    image: "sharevb/it-tools:${ittools_version:-latest}"
-    container_name: ittools
-    cap_drop:
-      - ALL
     networks:
       proxy: null
+    volumes:
+      - ${data:-.}/convertx:/app/data
+  ittools:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: ittools
+    image: "sharevb/it-tools:${ittools_version:-latest}"
     labels:
+      kuma.__docker:
+      kuma.__web: '"it.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
-  libretranslate:
-    <<: *common-settings
-    image: libretranslate/libretranslate:${libretranslate_version:-latest}
-    container_name: libretranslate
-    cap_drop:
-      - ALL
     networks:
       proxy: null
+  libretranslate:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: libretranslate
+    image: libretranslate/libretranslate:${libretranslate_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"lt.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
       traefik.http.routers.libretranslate.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.libretranslate.rule: "Host(`lt.${domain:?}`)"
       traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
-  myspeed:
-    <<: *common-settings
-    image: germannewsmaker/myspeed:${myspeed_version:-latest}
-    container_name: myspeed
-    cap_drop:
-      - ALL
-    volumes:
-      - "${data:-.}/myspeed:/myspeed/data"
     networks:
       proxy: null
+  myspeed:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: myspeed
+    image: germannewsmaker/myspeed:${myspeed_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"speed.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.myspeed.entryPoints: "https"
       traefik.http.routers.myspeed.middlewares: "localonly@file"
       traefik.http.routers.myspeed.rule: "Host(`speed.${domain:?}`)"
       traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
-  privatebin:
-    <<: *common-settings
-    image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
-    container_name: privatebin
-    user: ${uid:-1000}:${gid:-1000}
-    cap_drop:
-      - ALL
-    read_only: true
     networks:
       proxy: null
     volumes:
-      - ${data:-.}/privatebin/data:/srv/data
-      - ${data:-.}/privatebin/tmp:/tmp
-      - ${data:-.}/privatebin/run:/run
-      - ${data:-.}/privatebin/nginx:/var/lib/nginx/tmp
+      - "${data:-.}/myspeed:/myspeed/data"
+  privatebin:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: privatebin
+    image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     labels:
+      kuma.__docker:
+      kuma.__web: '"pb.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain:?}`)"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
+    networks:
+      proxy: null
+    read_only: true
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/privatebin/data:/srv/data
+      - ${data:-.}/privatebin/tmp:/tmp
+      - ${data:-.}/privatebin/run:/run
+      - ${data:-.}/privatebin/nginx:/var/lib/nginx/tmp
   send:
     <<: *common-settings
-    image: registry.gitlab.com/timvisee/send:${send_version:-latest}
-    container_name: send
     cap_drop:
       - ALL
+    container_name: send
     depends_on:
       - send_keydb
-    networks:
-      proxy:
-      send: null
     environment:
       BASE_URL: https://send.${domain:?}
       DEFAULT_EXPIRE_SECONDS: 3600
@@ -120,36 +126,40 @@ services:
       MAX_FILE_SIZE: 10737418240
       NODE_ENV: production
       REDIS_HOST: send_keydb
-    volumes:
-      - ${data:-.}/send/app:/uploads
+    image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"send.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file,authelia@file"
       traefik.http.routers.send.rule: "Host(`send.${domain:?}`)"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
+    networks:
+      proxy:
+      send: null
+    volumes:
+      - ${data:-.}/send/app:/uploads
   send_keydb:
     <<: *common-settings
-    image: eqalpha/keydb:${keydb_version:-latest}
-    container_name: send_keydb
     cap_drop:
       - ALL
     cap_add:
       - SETGID
       - SETUID
+    container_name: send_keydb
+    image: eqalpha/keydb:${keydb_version:-latest}
+    labels:
+      kuma.__docker:
     networks:
       send: null
     volumes:
       - ${data:-.}/send/keydb:/data
   slink:
     <<: *common-settings
-    image: anirdev/slink:${slink_version:-latest}
-    container_name: slink
-    user: ${uid:-1000}:${gid:-1000}
     cap_drop:
       - ALL
-    networks:
-      proxy: null
+    container_name: slink
     environment:
       IMAGE_COMPRESSION_QUALITY: 100
       IMAGE_MAX_SIZE: 50M
@@ -161,10 +171,10 @@ services:
       USER_APPROVAL_REQUIRED: true
       USER_PASSWORD_MIN_LENGTH: 8
       USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
-    volumes:
-      - ${data:-.}/slink/db:/app/var/data
-      - ${data:-.}/slink/images:/app/slink/images
+    image: anirdev/slink:${slink_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"sl.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file,authelia@file"
@@ -175,3 +185,9 @@ services:
       traefik.http.routers.slink-images.entrypoints: "https"
       traefik.http.routers.slink-images.priority: 50
       traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"
+    networks:
+      proxy: null
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/slink/db:/app/var/data
+      - ${data:-.}/slink/images:/app/slink/images

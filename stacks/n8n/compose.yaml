@@ -19,9 +19,9 @@ services:
   n8n:
     <<: *common-settings
     image: docker.n8n.io/n8nio/n8n:${n8n_version:-latest}
-    container_name: n8n
     cap_drop:
       - ALL
+    container_name: n8n
     environment:
       GENERIC_TIMEZONE: ${timezone:-UTC}
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
@@ -33,12 +33,9 @@ services:
       NODE_ENV: production
       TZ: ${timezone:-UTC}
       WEBHOOK_URL: https://n8n.${domain:?}/
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/n8n/config:/home/node/.n8n:rw
-      - ${data:-.}/n8n/files:/files:rw
     labels:
+      kuma.__docker:
+      kuma.__web: '"n8n.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.middlewares.n8n.headers.browserXSSFilter: true
       traefik.http.middlewares.n8n.headers.contentTypeNosniff: true
@@ -52,3 +49,8 @@ services:
       traefik.http.routers.n8n.middlewares: "n8n@docker"
       traefik.http.routers.n8n.rule: "Host(`n8n.${domain:?}`)"
       traefik.http.services.n8n.loadbalancer.server.url: "http://n8n:5678"
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/n8n/config:/home/node/.n8n:rw
+      - ${data:-.}/n8n/files:/files:rw

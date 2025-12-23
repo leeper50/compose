@@ -16,12 +16,9 @@ x-common-settings: &common-settings
 services:
   handbrake:
     <<: *common-settings
-    image: jlesage/handbrake:${handbrake_version:-latest}
-    container_name: handbrake
     cap_drop:
       - ALL
-    networks:
-      proxy: null
+    container_name: handbrake
     environment:
       AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
       AUTOMATED_CONVERSION_PRESET: ${custom_profile:-General/Very Fast 1080p30}
@@ -29,15 +26,20 @@ services:
       GROUP_ID: ${gid:-1000}
       TZ: ${timezone:-UTC}
       USER_ID: ${uid:-1000}
+    image: jlesage/handbrake:${handbrake_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"hb.${domain:?}", "443"'
+      traefik.enable: 'true'
+      traefik.http.routers.handbrake.entryPoints: 'https'
+      traefik.http.routers.handbrake.middlewares: 'localonly@file'
+      traefik.http.routers.handbrake.rule: 'Host(`hb.${domain:?}`)'
+      traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'
+    networks:
+      proxy: null
     volumes:
       - $data/handbrake:/config:rw
       - $data/trash:/trash:rw
       - $media/HandBrake/storage:/storage:rw
       - $media/HandBrake/watch:/watch:rw
       - $media/HandBrake/output:/output:rw
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.handbrake.entryPoints: 'https'
-      traefik.http.routers.handbrake.middlewares: 'localonly@file'
-      traefik.http.routers.handbrake.rule: 'Host(`hb.${domain:?}`)'
-      traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'

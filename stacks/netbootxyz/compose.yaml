@@ -16,31 +16,33 @@ x-common-settings: &common-settings
 services:
   netbootxyz:
     <<: *common-settings
-    image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
-    container_name: netbootxyz
     cap_drop:
       - ALL
-    networks:
-      proxy: null
+    container_name: netbootxyz
+    environment:
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
+      WEB_APP_PORT: 3000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 2s
       timeout: 2s
       retries: 10
       start_period: 3s
-    environment:
-      PGID: ${gid:-1000}
-      PUID: ${uid:-1000}
-      TZ: ${timezone:-UTC}
-      WEB_APP_PORT: 3000
-    ports:
-      - "69:69/udp"
-    volumes:
-      - ${data:-.}/netbootxyz/config:/config:rw
-      - ${data:-.}/netbootxyz/assets:/assets:rw
+    image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"nb.${domain:?}", "443"'
       traefik.enable: "true"
       traefik.http.routers.netbootxyz.entryPoints: "https"
       traefik.http.routers.netbootxyz.middlewares: "localonly@file"
       traefik.http.routers.netbootxyz.rule: "Host(`nb.${domain:?}`)"
       traefik.http.services.netbootxyz.loadbalancer.server.url: "http://netbootxyz:3000"
+    networks:
+      proxy: null
+    ports:
+      - "69:69/udp"
+    volumes:
+      - ${data:-.}/netbootxyz/config:/config:rw
+      - ${data:-.}/netbootxyz/assets:/assets:rw
