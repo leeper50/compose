@@ -1,14 +1,15 @@
 networks:
-  default:
+  default: null
   proxy:
     external: true
 x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -16,56 +17,54 @@ x-common-settings: &common-settings
 services:
   authelia:
     <<: *common-settings
-    image: authelia/authelia:${authelia_version:-latest}
-    container_name: authelia
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
+    container_name: authelia
     depends_on:
       - lldap
-    networks:
-      proxy:
     environment:
       TZ: ${timezone:-UTC}
       X_AUTHELIA_CONFIG_FILTERS: template
       X_AUTHELIA_CONFIG: /config/configuration.yml
-    volumes:
-      - ${data:-.}/authelia/config:/config
+    image: authelia/authelia:${authelia_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"auth.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.rule: "Host(`auth.${domain}`)"
-  crowdsec:
-    <<: *common-settings
-    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
-    container_name: crowdsec
-    restart: unless-stopped
-    cap_drop:
-      - ALL
+      traefik.http.routers.authelia.rule: "Host(`auth.${domain:?}`)"
     networks:
       proxy:
+    volumes:
+      - ${data:-.}/authelia/config:/config
+  crowdsec:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: crowdsec
     environment:
       GID: ${gid:-1000}
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
+    labels:
+      kuma.__docker:
+    networks:
+      proxy:
     volumes:
       - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
       - ${data:-.}/crowdsec/config:/etc/crowdsec/
       - ${data:-.}/logs/crowdsec:/var/log:ro
   geoipfilter:
     <<: *common-settings
-    image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
-    container_name: geoipfilter
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
-    networks:
-      proxy:
+    container_name: geoipfilter
     environment:
       MAXMIND_ID: ${maxmind_id:?}
       MAXMIND_KEY: ${maxmind_key:?}
@@ -73,53 +72,64 @@ services:
       COUNTRY_CODES: ${country_codes:-US}
       BLOCK_STATUS_CODE: ${block_status_code:-418}
       EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+    image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
+    labels:
+      kuma.__docker:
+    networks:
+      proxy:
     volumes:
       - ${data:-.}/geoip:/geoip
   lldap:
     <<: *common-settings
-    image: lldap/lldap:${lldap_version:-stable}
     container_name: lldap
-    restart: unless-stopped
-    networks:
-      proxy:
     environment:
       UID: ${uid:-1000}
       GID: ${gid:-1000}
       TZ: ${timezone:-UTC}
-      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET}"
-      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED}"
-      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain},dc=${tld}"
-    volumes:
-      - ${data:-.}/lldap:/data
+      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET:?}"
+      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED:?}"
+      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain:?},dc=${tld:?}"
+    image: lldap/lldap:${lldap_version:-stable}
     labels:
+      kuma.__docker:
       traefik.enable: "true"
       traefik.http.routers.lldap.entryPoints: "https"
       traefik.http.routers.lldap.middlewares: "localonly@file"
-      traefik.http.routers.lldap.rule: "Host(`lldap.${domain}`)"
+      traefik.http.routers.lldap.rule: "Host(`lldap.${domain:?}`)"
       traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/lldap:/data
   traefik:
     <<: *common-settings
-    image: traefik:${traefik_version:-v3.6}
-    container_name: traefik
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: traefik
     depends_on:
       - authelia
       - crowdsec
       - geoipfilter
+    environment:
+      CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
+    image: traefik:${traefik_version:-v3.6}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"tf.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.traefik.entryPoints: "https"
+      traefik.http.routers.traefik.middlewares: "localonly@file"
+      traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
+      traefik.http.routers.traefik.service: "api@internal"
+      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
     networks:
       proxy:
     ports:
-      # Web Ports
       - "80:80/tcp"
       - "443:443/tcp"
       - "443:443/udp"
-      # Non Web Ports
       - "25565:25565/tcp"
-    environment:
-      CF_DNS_API_TOKEN: ${cf_dns_api_token}
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -127,25 +137,19 @@ services:
       - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
       - ${data:-.}/traefik/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.traefik.entryPoints: "https"
-      traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.rule: "Host(`tf.${domain}`)"
-      traefik.http.routers.traefik.service: "api@internal"
-      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
   vector:
     <<: *common-settings
-    image: timberio/vector:${vector_version:-latest-alpine}
-    container_name: vector
-    restart: unless-stopped
     cap_drop:
       - ALL
+    command: ["--config", "/etc/vector/vector.yaml"]
+    container_name: vector
     depends_on:
       - crowdsec
+    image: timberio/vector:${vector_version:-latest-alpine}
+    labels:
+      kuma.__docker:
     networks:
       default:
-    command: ["--config", "/etc/vector/vector.yaml"]
     volumes:
       - ${data:-.}/logs:/var/log
       - ${data:-.}/vector:/etc/vector:ro

@@ -1,14 +1,15 @@
 networks:
+  mqtt: null
   proxy:
     external: true
-  ha_mqtt:
 x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -16,93 +17,97 @@ x-common-settings: &common-settings
 services:
   homeassistant:
     <<: *common-settings
-    image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
-    container_name: homeassistant
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: homeassistant
     depends_on:
-      - zwave-js-ui
+      - zwave_js_ui
       - zigbee2mqtt
-    networks:
-      proxy: null
-      ha_mqtt: null
-    volumes:
-      - ${data:-.}/homeassistant:/config # Local storage
-      - /etc/localtime:/etc/localtime:ro # Timezone synchronization
-      - /run/dbus:/run/dbus:ro # Bluetooth connection
+    image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
+      kuma.__docker:
+      kuma.__web: '"ha.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
       traefik.http.routers.homeassistant.middlewares: "localonly@file"
-      traefik.http.routers.homeassistant.rule: "Host(`ha.${domain}`)"
+      traefik.http.routers.homeassistant.rule: "Host(`ha.${domain:?}`)"
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
-  zwave-js-ui:
-    <<: *common-settings
-    image: zwavejs/zwave-js-ui:${zwave_version:-latest}
-    container_name: zwave-js-ui
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    tty: true
-    stop_signal: SIGINT
     networks:
-      proxy:
-    environment:
-      SESSION_SECRET: ${key:?change_me}
-      TZ: ${timezone:-UTC}
+      proxy: null
+      mqtt: null
     volumes:
-      - ${data:-.}/zwave-config:/usr/src/app/store
-    devices:
-      - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.zwave.entryPoints: "https"
-      traefik.http.routers.zwave.middlewares: "localonly@file"
-      traefik.http.routers.zwave.rule: "Host(`zw.${domain}`)"
-      traefik.http.services.zwave.loadbalancer.server.url: "http://zwave-js-ui:8091"
-  zigbee2mqtt:
-    <<: *common-settings
-    container_name: zigbee2mqtt
-    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    depends_on:
-      - mqtt
-    networks:
-      proxy:
-      ha_mqtt:
-    environment:
-      TZ: ${timezone:-UTC}
-      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
-      ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
-    volumes:
-      - ${data:-.}/zigbee2mqtt:/app/data
-      - /run/udev:/run/udev:ro
-    devices:
-      - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.zigbee2mqtt.entryPoints: "https"
-      traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
-      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.${domain}`)"
-      traefik.http.services.zigbee2mqtt.loadbalancer.server.url: "http://zigbee2mqtt:8080"
+      - ${data:-.}/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro # Bluetooth connection
   mqtt:
     <<: *common-settings
-    container_name: mqtt
-    image: eclipse-mosquitto:${mqtt_version:-latest}
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    networks:
-      ha_mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"
+    container_name: mqtt
+    image: eclipse-mosquitto:${mqtt_version:-latest}
+    labels:
+      kuma.__docker:
+    networks:
+      mqtt:
     volumes:
       - ${data:-.}/mqtt/config:/mosquitto/config
       - ${data:-.}/mqtt/data:/mosquitto/data
       - ${data:-.}/mqtt/log:/mosquitto/log
+  zigbee2mqtt:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: zigbee2mqtt
+    depends_on:
+      - mqtt
+    devices:
+      - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
+    environment:
+      TZ: ${timezone:-UTC}
+      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
+      ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
+    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"zb.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.zigbee2mqtt.entryPoints: "https"
+      traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
+      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.${domain:?}`)"
+      traefik.http.services.zigbee2mqtt.loadbalancer.server.url: "http://zigbee2mqtt:8080"
+    networks:
+      proxy:
+      mqtt:
+    volumes:
+      - ${data:-.}/zigbee2mqtt:/app/data
+      - /run/udev:/run/udev:ro
+  zwave_js_ui:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: zwave_js_ui
+    devices:
+      - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
+    environment:
+      SESSION_SECRET: ${key:?}
+      TZ: ${timezone:-UTC}
+    image: zwavejs/zwave-js-ui:${zwave_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"zw.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.zwave.entryPoints: "https"
+      traefik.http.routers.zwave.middlewares: "localonly@file"
+      traefik.http.routers.zwave.rule: "Host(`zw.${domain:?}`)"
+      traefik.http.services.zwave.loadbalancer.server.url: "http://zwave_js_ui:8091"
+    networks:
+      proxy:
+    stop_signal: SIGINT
+    tty: true
+    volumes:
+      - ${data:-.}/zwave-config:/usr/src/app/store

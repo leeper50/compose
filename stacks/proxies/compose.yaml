@@ -6,55 +6,59 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
   tty: false
 services:
-  gluetun-proxy:
+  gluetun_proxy:
     <<: *common-settings
-    image: qmcgaw/gluetun:${gluetun_version:-v3.40}
-    container_name: gluetun-proxy
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-    ports:
-      - "1080:1080/tcp" # socks5 proxy
-    environment:
-      TZ: ${timezone:-UTC}
-      VPN_SERVICE_PROVIDER: ${provider}
-      VPN_TYPE: wireguard
-      WIREGUARD_PRIVATE_KEY: ${wgkey}
-      SERVER_CITIES: ${cities:-Stockholm}
-    volumes:
-      - ${data:-.}/gluetun-proxy:/gluetun:rw
+    container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
+    environment:
+      SERVER_CITIES: ${cities:-Stockholm}
+      TZ: ${timezone:-UTC}
+      VPN_SERVICE_PROVIDER: ${provider:?}
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${wgkey:?}
+    image: qmcgaw/gluetun:${gluetun_version:-v3.40}
+    labels:
+      kuma.__docker:
+    ports:
+      - "1080:1080/tcp"
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    volumes:
+      - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
     <<: *common-settings
-    image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
+    cap_drop:
+      - ALL
     container_name: socks5proxy
-    network_mode: service:gluetun-proxy
-    restart: unless-stopped
-    cap_drop:
-      - ALL
     environment:
-      REQUIRE_AUTH: ${enable_auth}
-      PROXY_USER: ${proxy_user}
-      PROXY_PASS: ${proxy_pass}
-  tor-privoxy:
+      PROXY_PASS: ${proxy_pass:?}
+      PROXY_USER: ${proxy_user:?}
+      REQUIRE_AUTH: ${enable_auth:-true}
+    image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
+    labels:
+      kuma.__docker:
+    network_mode: service:gluetun_proxy
+  tor_privoxy:
     <<: *common-settings
-    image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
-    container_name: tor-privoxy
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: tor_privoxy
+    image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
+    labels:
+      kuma.__docker:
     ports:
       - "9050:9050/tcp"

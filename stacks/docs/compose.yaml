@@ -6,69 +6,146 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
   tty: false
 services:
-  # Wiki service
-  bookstack:
+  autokuma:
     <<: *common-settings
-    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
-    container_name: bookstack
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: autokuma
+    depends_on:
+      - uptimekuma
+    environment:
+      AUTOKUMA__DEFAULT_SETTINGS: |- 
+         docker.docker_container: {{container_name}}
+         http.max_redirects: 10
+         *.max_retries: 3
+      AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^temp_;^[a-f0-9]{12}_.*_" # Excludes test containers and temporary stack containers.
+      AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
+      AUTOKUMA__KUMA__URL: http://uptimekuma:3001
+      AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
+      AUTOKUMA__SNIPPETS__DOCKER: |- 
+         {{container_name}}_docker.docker.docker_container: {{container_name}}
+         {{container_name}}_docker.docker.docker_host_name: local
+         {{container_name}}_docker.docker.name: docker_{{container_name}}
+         {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
+      AUTOKUMA__SNIPPETS__WEB: |- 
+         {{container_name}}_http.http.name: web_{{container_name}}
+         {{container_name}}_http.http.url: https://{{ args[0] }}
+         {{container_name}}_http.http.notification_name_list: ["ntfy"]
+    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
+    labels:
+      kuma.local.docker_host.name: 'Local Docker Socket'
+      kuma.local.docker_host.connection_type: 'socket'
+      kuma.local.docker_host.path: '/var/run/docker.sock'
+      kuma.ntfy.notification.name: 'NTFY'
+      kuma.ntfy.notification.active: 'true'
+      kuma.ntfy.notification.config: |
+        {
+          "ntfyAuthenticationMethod": "accessToken",
+          "ntfyPriority": 2,
+          "ntfyaccesstoken": "${ntfy_token:?}",
+          "ntfyserverurl": "http://ntfy:80",
+          "ntfytopic": "UptimeKuma",
+          "type": "ntfy"
+        }
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/autokuma:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  bookstack:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: bookstack
     depends_on:
       - bookstack_db
-    networks:
-      bookstack: null
-      proxy: null
     environment:
-      APP_URL: https://wiki.${domain}
-      APP_KEY: ${app_key}
+      APP_KEY: ${app_key:?}
+      APP_URL: https://wiki.${domain:?}
+      DB_DATABASE: ${db_name:-bookstack}
       DB_HOST: bookstack_db:3306
-      DB_DATABASE: bookstack
-      DB_USERNAME: bookstack
-      DB_PASSWORD: ${db_pass}
-    volumes:
-      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
-      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
+      DB_PASSWORD: ${db_pass:?}
+      DB_USERNAME: ${db_user:-bookstack}
+    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     labels:
+      kuma.__docker:
+      kuma.__web: '"wiki.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
-      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain}`)"
+      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain:?}`)"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
+    networks:
+      bookstack: null
+      proxy: null
+    volumes:
+      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
+      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
     <<: *common-settings
     image: mysql:${mysql_version:-9.2}
     container_name: bookstack_db
-    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${db_name:-bookstack}
+      MYSQL_PASSWORD: ${db_pass:?}
+      MYSQL_ROOT_PASSWORD: ${root_pass:?}
+      MYSQL_USER: ${db_user:-bookstack}
+    labels:
+      kuma.__docker:
     networks:
       bookstack: null
-    environment:
-      MYSQL_ROOT_PASSWORD: ${root_pass}
-      MYSQL_DATABASE: bookstack
-      MYSQL_USER: bookstack
-      MYSQL_PASSWORD: ${db_pass}
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
-  ntfy:
-    image: binwiederhier/ntfy:${ntfy_version:-latest}
-    container_name: ntfy
-    user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
+  grafana:
+    <<: *common-settings
     cap_drop:
       - ALL
-    init: true
-    command:
-      - serve
+    container_name: grafana
+    depends_on:
+      - prometheus
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+    image: grafana/grafana:${grafana_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"gf.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.grafana.entryPoints: "https"
+      traefik.http.routers.grafana.middlewares: "localonly@file"
+      traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
+      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
     networks:
       proxy: null
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/grafana:/var/lib/grafana
+      - /etc/timezone:/etc/timezone:ro
+  ntfy:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    command:
+      - serve
+    container_name: ntfy
+    environment:
+      NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_BASE_URL: https://n.${domain:?}
+      NTFY_BEHIND_PROXY: true
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_ENABLE_LOGIN: true
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+      TZ: ${timezone:-UTC}
     healthcheck:
       test:
         [
@@ -79,83 +156,55 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    environment:
-      TZ: ${timezone:-UTC}
-      NTFY_BASE_URL: https://n.${domain}
-      NTFY_AUTH_DEFAULT_ACCESS: deny-all
-      NTFY_BEHIND_PROXY: true
-      NTFY_ENABLE_LOGIN: true
-      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
-      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
-      NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
-      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
-    volumes:
-      - ${data:-.}/ntfy/data:/var/lib/ntfy
+    image: binwiederhier/ntfy:${ntfy_version:-latest}
+    init: true
     labels:
+      kuma.__docker:
+      kuma.__web: '"n.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
-      traefik.http.routers.ntfy.rule: "Host(`n.${domain}`)"
+      traefik.http.routers.ntfy.rule: "Host(`n.${domain:?}`)"
       traefik.http.services.ntfy.loadbalancer.server.url: "http://ntfy:80"
-  # Metrics service
-  grafana:
-    <<: *common-settings
-    image: grafana/grafana:${grafana_version:-latest}
-    container_name: grafana
-    user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    depends_on:
-      - prometheus
     networks:
       proxy: null
-    environment:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/grafana:/var/lib/grafana
-      - /etc/timezone:/etc/timezone:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.grafana.entryPoints: "https"
-      traefik.http.routers.grafana.middlewares: "localonly@file"
-      traefik.http.routers.grafana.rule: "Host(`gf.${domain}`)"
-      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
+      - ${data:-.}/ntfy/data:/var/lib/ntfy
   prometheus:
     <<: *common-settings
-    image: prom/prometheus:${prometheus_version:-latest}
-    container_name: prometheus
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: prometheus
+    image: prom/prometheus:${prometheus_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"pm.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.prometheus.entryPoints: "https"
+      traefik.http.routers.prometheus.middlewares: "localonly@file"
+      traefik.http.routers.prometheus.rule: "Host(`pm.${domain:?}`)"
+      traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
     networks:
       proxy: null
     volumes:
       - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ${data:-.}/prometheus/data:/prometheus
       - /etc/timezone:/etc/timezone:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.prometheus.entryPoints: "https"
-      traefik.http.routers.prometheus.middlewares: "localonly@file"
-      traefik.http.routers.prometheus.rule: "Host(`pm.${domain}`)"
-      traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
-  # Uptime service
   uptimekuma:
     <<: *common-settings
-    image: louislam/uptime-kuma:${uptimekuma_version:-2}
-    container_name: uptimekuma
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: uptimekuma
+    image: louislam/uptime-kuma:${uptimekuma_version:-2}
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.uptimekuma.entryPoints: "https"
+      traefik.http.routers.uptimekuma.middlewares: "localonly@file"
+      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain:?}`)"
+      traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"
     networks:
       proxy: null
     volumes:
       - ${data:-.}/uptime:/app/data:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.uptimekuma.entryPoints: "https"
-      traefik.http.routers.uptimekuma.middlewares: "localonly@file"
-      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain}`)"
-      traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"

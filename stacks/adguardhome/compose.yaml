@@ -6,9 +6,10 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -16,40 +17,42 @@ x-common-settings: &common-settings
 services:
   adguardhome:
     <<: *common-settings
-    image: adguard/adguardhome:${adguard_version:-latest}
-    container_name: adguardhome
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - NET_ADMIN
       - NET_BIND_SERVICE
-    networks:
-      default: null
-      proxy: null
-    volumes:
-      - ${data:-.}/adguardhome/work:/opt/adguardhome/work
-      - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
+    container_name: adguardhome
+    image: adguard/adguardhome:${adguard_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"ad.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"
-      traefik.http.routers.adguardhome.rule: "Host(`ad.${domain}`)"
+      traefik.http.routers.adguardhome.rule: "Host(`ad.${domain:?}`)"
       traefik.http.services.adguardhome.loadbalancer.server.url: "http://adguardhome:3000"
-  adguardhome-sync:
-    <<: *common-settings
-    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
-    container_name: adguardhome-sync
-    restart: unless-stopped
-    cap_drop:
-      - ALL
     networks:
       default: null
+      proxy: null
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - ${data:-.}/adguardhome/work:/opt/adguardhome/work
+      - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
+  adguardhome-sync:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: adguardhome-sync
+    command: run --config /config/adguardhome-sync.yml
     environment:
       LOG_LEVEL: ${log_level:-warn}
-    command: run --config /config/adguardhome-sync.yml
+    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
+    labels:
+      kuma.__docker:
+    networks:
+      default: null
     volumes:
       - ${data:-.}/adguardhome/adguardhome-sync.yml:/config/adguardhome-sync.yml

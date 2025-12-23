@@ -5,9 +5,10 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -15,41 +16,39 @@ x-common-settings: &common-settings
 services:
   forgejo:
     <<: *common-settings
-    image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
-    container_name: forgejo
-    user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
+    container_name: forgejo
     environment:
-      USER_UID: ${uid:-1000}
-      USER_GID: ${gid:-1000}
       FORGEJO__database__DB_TYPE: postgres
-      FORGEJO__database__HOST: forgejodb:5432
-      FORGEJO__database__NAME: forgejo
-      FORGEJO__database__USER: forgejo
-      FORGEJO__database__PASSWD: ${db_pass:-forgejo}
+      FORGEJO__database__HOST: forgejo_db:5432
+      FORGEJO__database__NAME: ${db_name:-forgejo}
+      FORGEJO__database__PASSWD: ${db_pass:?}
+      FORGEJO__database__USER: ${db_user:-forgejo}
       FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
+      USER_GID: ${gid:-1000}
+      USER_UID: ${uid:-1000}
     depends_on:
-      - forgejodb
+      - forgejo_db
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
     labels:
+      kuma.__docker:
+      kuma.__web: '"fj.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"
-      traefik.http.routers.forgejo.rule: "Host(`fj.${domain}`)"
+      traefik.http.routers.forgejo.rule: "Host(`fj.${domain:?}`)"
       traefik.http.services.forgejo.loadbalancer.server.url: "http://forgejo:3000"
     networks:
       default:
       proxy:
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/app/data:/var/lib/gitea
       - ${data:-.}/app/conf:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-  forgejodb:
+  forgejo_db:
     <<: *common-settings
-    image: postgres:${postgres_version:-14}
-    container_name: forgejodb
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
@@ -58,34 +57,39 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    container_name: forgejo_db
     environment:
-      POSTGRES_USER: forgejo
-      POSTGRES_PASSWORD: ${db_pass:-forgejo}
-      POSTGRES_DB: forgejo
+      POSTGRES_DB: ${db_name:-forgejo}
+      POSTGRES_PASSWORD: ${db_pass:?}
+      POSTGRES_USER: ${db_user:-forgejo}
+    image: postgres:${postgres_version:-14}
+    labels:
+      kuma.__docker:
     networks:
       default:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
-  runner:
+  forgejo_runner:
     <<: *common-settings
-    image: gitea/act_runner:${runner_version:-nightly}
-    container_name: forgejo_runner
-    restart: unless-stopped
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
+    container_name: forgejo_runner
     depends_on:
       - forgejo
     environment:
-      GITEA_INSTANCE_URL: https://fj.${domain}/
-      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
-      GITEA_RUNNER_NAME: forgejo_runner
+      GITEA_INSTANCE_URL: https://fj.${domain:?}/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
         ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\
         ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04,\
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
+      GITEA_RUNNER_NAME: forgejo_runner
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
+    image: gitea/act_runner:${runner_version:-nightly}
+    labels:
+      kuma.__docker:
     networks:
       default: null
     volumes:

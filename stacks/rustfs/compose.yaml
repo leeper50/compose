@@ -5,9 +5,10 @@ x-common-settings: &common-settings
   logging:
     driver: local
     options:
-      max-size: "10m"
-      max-file: "3"
       compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
   security_opt:
     - no-new-privileges:true
   stdin_open: false
@@ -15,30 +16,35 @@ x-common-settings: &common-settings
 services:
   rustfs:
     <<: *common-settings
-    image: rustfs/rustfs:${rustfs_version:-latest}
-    container_name: rustfs
-    user: ${uid:-1000}:${gid:-1000}
-    restart: unless-stopped
     cap_drop:
       - ALL
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data
-    networks:
-      proxy:
+    container_name: rustfs
     environment:
       RUSTFS_ACCESS_KEY: ${default_access_key:?}
       RUSTFS_SECRET_KEY: ${default_secret_key:?}
-    volumes:
-      - ${data:-.}/data:/data
+    image: rustfs/rustfs:${rustfs_version:-latest}
     labels:
+      kuma.__docker:
+      kuma.__web: '"rs.${domain:?}/rustfs/console"'
+      kuma.rustfs_s3.port.hostname: rustfs
+      kuma.rustfs_s3.port.name: port_rustfs_s3
+      kuma.rustfs_s3.port.notification_name_list: '["ntfy"]'
+      kuma.rustfs_s3.port.port: 9000
       traefik.enable: "true"
       traefik.http.routers.rustfs.entryPoints: "https"
       traefik.http.routers.rustfs.middlewares: "localonly@file"
-      traefik.http.routers.rustfs.rule: "Host(`rs.${domain}`)"
+      traefik.http.routers.rustfs.rule: "Host(`rs.${domain:?}`)"
       traefik.http.routers.rustfs.service: "rustfs"
       traefik.http.services.rustfs.loadbalancer.server.url: "http://rustfs:9001"
       # S3 entrypoint
       traefik.http.routers.rustfs-s3.entryPoints: "https"
       traefik.http.routers.rustfs-s3.middlewares: "localonly@file"
-      traefik.http.routers.rustfs-s3.rule: "Host(`r3.${domain}`)"
+      traefik.http.routers.rustfs-s3.rule: "Host(`r3.${domain:?}`)"
       traefik.http.routers.rustfs-s3.service: "rustfs-s3"
       traefik.http.services.rustfs-s3.loadbalancer.server.url: "http://rustfs:9000"
+    networks:
+      proxy:
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/data:/data
