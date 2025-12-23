@@ -24,7 +24,6 @@ services:
     image: dxflrs/garage:${garage_version:-v2.1.0}
     labels:
       kuma.__docker:
-      kuma.__web: '"s3.${domain:?}"'
       kuma.garage_s3.port.hostname: garage
       kuma.garage_s3.port.name: port_garage_s3
       kuma.garage_s3.port.notification_name_list: '["ntfy"]'
