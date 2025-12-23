@@ -27,7 +27,7 @@ services:
       ACCESS_TOKEN_SECRET: ${access_token:?}
       CHROME_TOKEN: ${chrome_token:?}
       CHROME_URL: wss://printer.${domain:?}
-      DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@postgres:5432/${db_name:-rxresume}
+      DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
       MAIL_FROM: noreply@example.com
       NODE_ENV: production
       PORT: 3000
