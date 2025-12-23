@@ -27,6 +27,7 @@ services:
          docker.docker_container: {{container_name}}
          http.max_redirects: 10
          *.max_retries: 3
+      AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^temp_;^[a-f0-9]{12}_.*_" # Excludes test containers and temporary stack containers.
       AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
       AUTOKUMA__KUMA__URL: http://uptimekuma:3001
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
