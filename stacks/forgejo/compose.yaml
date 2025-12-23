@@ -33,7 +33,7 @@ services:
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
     labels:
       kuma.__docker:
-      kuma.__web: "fj.${domain:?}"
+      kuma.__web: '"fj.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"
       traefik.http.routers.forgejo.rule: "Host(`fj.${domain:?}`)"

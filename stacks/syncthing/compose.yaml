@@ -30,7 +30,7 @@ services:
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: "sync.${domain:?}"
+      kuma.__web: '"sync.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"

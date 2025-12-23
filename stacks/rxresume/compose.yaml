@@ -93,7 +93,7 @@ services:
     image: amruthpillai/reactive-resume:${rxresume_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: "rx.${domain:?}"
+      kuma.__web: '"rx.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"
       traefik.http.routers.rxresume.middlewares: "allowedIPs@file,authelia@file"

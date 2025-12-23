@@ -33,7 +33,7 @@ services:
     image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
     labels:
       kuma.__docker:
-      kuma.__web: "nb.${domain:?}"
+      kuma.__web: '"nb.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.netbootxyz.entryPoints: "https"
       traefik.http.routers.netbootxyz.middlewares: "localonly@file"
