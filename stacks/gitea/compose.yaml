@@ -25,7 +25,7 @@ services:
     environment:
       GITEA__actions__ENABLED: true
       GITEA__database__DB_TYPE: postgres
-      GITEA__database__HOST: giteadb:5432
+      GITEA__database__HOST: gitea_db:5432
       GITEA__database__NAME: ${db_name:-gitea}
       GITEA__database__PASSWD: ${db_pass:?}
       GITEA__database__USER: ${db_user:-gitea}

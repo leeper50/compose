@@ -86,6 +86,7 @@ services:
       - immich_machine_learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
+      DB_HOSTNAME: immich_postgres
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-immich}
       REDIS_HOSTNAME: immich_keydb
