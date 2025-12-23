@@ -15,6 +15,45 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
+  rxresume:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: rxresume
+    depends_on:
+      - rxresume_chrome
+      - rxresume_postgres
+    environment:
+      ACCESS_TOKEN_SECRET: ${access_token:?}
+      CHROME_TOKEN: ${chrome_token:?}
+      CHROME_URL: wss://printer.${domain:?}
+      DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@postgres:5432/${db_name:-rxresume}
+      MAIL_FROM: noreply@example.com
+      NODE_ENV: production
+      PORT: 3000
+      PUBLIC_URL: https://rx.${domain:?}
+      REFRESH_TOKEN_SECRET: ${refresh_token:?}
+      STORAGE_ACCESS_KEY: ${s3_access_key:?}
+      STORAGE_BUCKET: rxresume
+      STORAGE_ENDPOINT: garage
+      STORAGE_PORT: 3900
+      STORAGE_REGION: garage
+      STORAGE_SECRET_KEY: ${s3_secret_key:?}
+      STORAGE_SKIP_BUCKET_CHECK: "false"
+      STORAGE_URL: https://s3.${domain:?}
+      STORAGE_USE_SSL: "false"
+    image: amruthpillai/reactive-resume:${rxresume_version:-latest}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"rx.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.rxresume.entrypoints: "https"
+      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.rxresume.rule: "Host(`rx.${domain:?}`)"
+      traefik.http.services.rxresume.loadbalancer.server.url: 'http://rxresume:3000'
+    networks:
+      default: null
+      proxy: null
   rxresume_postgres:
     <<: *common-settings
     cap_drop:
@@ -63,42 +102,3 @@ services:
       traefik.http.services.printer.loadbalancer.server.url: 'http://chrome:3000'
     networks:
       default: null
-  rxresume:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: rxresume
-    depends_on:
-      - rxresume_chrome
-      - rxresume_postgres
-    environment:
-      ACCESS_TOKEN_SECRET: ${access_token:?}
-      CHROME_TOKEN: ${chrome_token:?}
-      CHROME_URL: wss://printer.${domain:?}
-      DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@postgres:5432/${db_name:-rxresume}
-      MAIL_FROM: noreply@example.com
-      NODE_ENV: production
-      PORT: 3000
-      PUBLIC_URL: https://rx.${domain:?}
-      REFRESH_TOKEN_SECRET: ${refresh_token:?}
-      STORAGE_ACCESS_KEY: ${s3_access_key:?}
-      STORAGE_BUCKET: rxresume
-      STORAGE_ENDPOINT: garage
-      STORAGE_PORT: 3900
-      STORAGE_REGION: garage
-      STORAGE_SECRET_KEY: ${s3_secret_key:?}
-      STORAGE_SKIP_BUCKET_CHECK: "false"
-      STORAGE_URL: https://s3.${domain:?}
-      STORAGE_USE_SSL: "false"
-    image: amruthpillai/reactive-resume:${rxresume_version:-latest}
-    labels:
-      kuma.__docker:
-      kuma.__web: '"rx.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.rxresume.entrypoints: "https"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,authelia@file"
-      traefik.http.routers.rxresume.rule: "Host(`rx.${domain:?}`)"
-      traefik.http.services.rxresume.loadbalancer.server.url: 'http://rxresume:3000'
-    networks:
-      default: null
-      proxy: null

@@ -15,13 +15,13 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  gluetun-proxy:
+  gluetun_proxy:
     <<: *common-settings
     cap_drop:
       - ALL
     cap_add:
       - NET_ADMIN
-    container_name: gluetun-proxy
+    container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
     environment:
@@ -51,12 +51,12 @@ services:
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     labels:
       kuma.__docker:
-    network_mode: service:gluetun-proxy
-  tor-privoxy:
+    network_mode: service:gluetun_proxy
+  tor_privoxy:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: tor-privoxy
+    container_name: tor_privoxy
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
     labels:
       kuma.__docker:

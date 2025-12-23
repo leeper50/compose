@@ -75,11 +75,11 @@ services:
       default: null
     volumes:
       - ${data:-.}/model-cache:/cache
-  immich_server:
+  immich:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: immich_server
+    container_name: immich
     depends_on:
       - immich_postgres
       - immich_keydb
@@ -101,7 +101,7 @@ services:
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"
       traefik.http.routers.immich.rule: "Host(`im.${domain:?}`)"
-      traefik.http.services.immich.loadbalancer.server.url: "http://immich_server:2283"
+      traefik.http.services.immich.loadbalancer.server.url: "http://immich:2283"
     networks:
       proxy: null
       default: null
