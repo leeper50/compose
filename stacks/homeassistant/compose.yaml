@@ -21,7 +21,7 @@ services:
       - ALL
     container_name: homeassistant
     depends_on:
-      - zwave-js-ui
+      - zwave_js_ui
       - zigbee2mqtt
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
