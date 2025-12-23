@@ -96,7 +96,7 @@ services:
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
       kuma.__docker:
-      kuma.__web: '"im.${domain:?}", "443"'
+      kuma.__web: "im.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"

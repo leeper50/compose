@@ -33,7 +33,7 @@ services:
     image: authelia/authelia:${authelia_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"auth.${domain:?}", "443"'
+      kuma.__web: "auth.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.authelia.entryPoints: "https"
       traefik.http.routers.authelia.rule: "Host(`auth.${domain:?}`)"
@@ -116,7 +116,7 @@ services:
     image: traefik:${traefik_version:-v3.6}
     labels:
       kuma.__docker:
-      kuma.__web: '"tf.${domain:?}", "443"'
+      kuma.__web: "tf.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.traefik.entryPoints: "https"
       traefik.http.routers.traefik.middlewares: "localonly@file"

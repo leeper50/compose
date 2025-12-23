@@ -34,7 +34,7 @@ services:
     image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
     labels:
       kuma.__docker:
-      kuma.__web: '"git.${domain:?}", "443"'
+      kuma.__web: "git.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.gitea.entryPoints: "https"
       traefik.http.routers.gitea.rule: "Host(`git.${domain:?}`)"

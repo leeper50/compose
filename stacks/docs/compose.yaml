@@ -31,15 +31,15 @@ services:
       AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
       AUTOKUMA__KUMA__URL: http://uptimekuma:3001
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
-      AUTOKUMA__SNIPPETS__WEB: |- 
-         {{container_name}}_http.http.name: web_{{container_name}}
-         {{container_name}}_http.http.url: https://{{ args[0] }}:{{ args[1] }}
-         {{container_name}}_http.http.notification_name_list: ["ntfy"]
       AUTOKUMA__SNIPPETS__DOCKER: |- 
          {{container_name}}_docker.docker.docker_container: {{container_name}}
          {{container_name}}_docker.docker.docker_host_name: local
          {{container_name}}_docker.docker.name: docker_{{container_name}}
          {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
+      AUTOKUMA__SNIPPETS__WEB: |- 
+         {{container_name}}_http.http.name: web_{{container_name}}
+         {{container_name}}_http.http.url: https://{{ args[0] }}
+         {{container_name}}_http.http.notification_name_list: ["ntfy"]
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       kuma.local.docker_host.name: 'Local Docker Socket'
@@ -78,7 +78,7 @@ services:
     image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     labels:
       kuma.__docker:
-      kuma.__web: '"wiki.${domain:?}", "443"'
+      kuma.__web: "wiki.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
@@ -117,7 +117,7 @@ services:
     image: grafana/grafana:${grafana_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"gf.${domain:?}", "443"'
+      kuma.__web: "gf.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.grafana.entryPoints: "https"
       traefik.http.routers.grafana.middlewares: "localonly@file"
@@ -160,7 +160,7 @@ services:
     init: true
     labels:
       kuma.__docker:
-      kuma.__web: '"n.${domain:?}", "443"'
+      kuma.__web: "n.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
@@ -179,7 +179,7 @@ services:
     image: prom/prometheus:${prometheus_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"pm.${domain:?}", "443"'
+      kuma.__web: "pm.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.prometheus.entryPoints: "https"
       traefik.http.routers.prometheus.middlewares: "localonly@file"

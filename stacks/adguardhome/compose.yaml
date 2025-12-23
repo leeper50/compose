@@ -26,7 +26,7 @@ services:
     image: adguard/adguardhome:${adguard_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"ad.${domain:?}", "443"'
+      kuma.__web: "ad.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"

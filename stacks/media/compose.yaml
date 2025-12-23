@@ -30,7 +30,7 @@ services:
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"books.${domain:?}", "443"'
+      kuma.__web: "books.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.calibre.entryPoints: "https"
       traefik.http.routers.calibre.middlewares: "allowedIPs@file"
@@ -60,7 +60,7 @@ services:
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"jf.${domain:?}", "443"'
+      kuma.__web: "jf.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.jellyfin.entryPoints: "https"
       traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
@@ -93,7 +93,7 @@ services:
     init: true
     labels:
       kuma.__docker:
-      kuma.__web: '"js.${domain:?}", "443"'
+      kuma.__web: "js.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entryPoints: "https"
       traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
@@ -115,7 +115,7 @@ services:
     image: deluan/navidrome:${navidrome_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"nav.${domain:?}", "443"'
+      kuma.__web: "nav.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
       traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@file"

@@ -24,7 +24,7 @@ services:
     image: dxflrs/garage:${garage_version:-v2.1.0}
     labels:
       kuma.__docker:
-      kuma.__web: '"s3.${domain:?}", "443"'
+      kuma.__web: "s3.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"
@@ -52,7 +52,7 @@ services:
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"garage.${domain:?}", "443"'
+      kuma.__web: "garage.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.garage-webui.entryPoints: "https"
       traefik.http.routers.garage-webui.middlewares: "localonly@file"

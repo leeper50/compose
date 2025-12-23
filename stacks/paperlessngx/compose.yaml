@@ -45,7 +45,7 @@ services:
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"paper.${domain:?}", "443"'
+      kuma.__web: "paper.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.paperlessngx.entryPoints: "https"
       traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@file"

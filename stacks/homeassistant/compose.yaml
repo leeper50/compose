@@ -26,7 +26,7 @@ services:
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
       kuma.__docker:
-      kuma.__web: '"ha.${domain:?}", "443"'
+      kuma.__web: "ha.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
       traefik.http.routers.homeassistant.middlewares: "localonly@file"
@@ -74,7 +74,7 @@ services:
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"zb.${domain:?}", "443"'
+      kuma.__web: "zb.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
       traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
@@ -99,7 +99,7 @@ services:
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"zw.${domain:?}", "443"'
+      kuma.__web: "zw.${domain:?}"
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"
       traefik.http.routers.zwave.middlewares: "localonly@file"
