@@ -56,11 +56,11 @@ services:
       default: null
     volumes:
       - ${data:-.}/keydb:/data
-  immich_machine_learning:
+  immich-machine-learning:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: immich_machine_learning
+    container_name: immich-machine-learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_PASSWORD: ${db_pass:?}
