@@ -83,7 +83,7 @@ services:
     depends_on:
       - immich_postgres
       - immich_keydb
-      - immich_machine_learning
+      - immich-machine-learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_HOSTNAME: immich_postgres
