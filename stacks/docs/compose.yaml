@@ -49,9 +49,9 @@ services:
       kuma.ntfy.notification.active: 'true'
       kuma.ntfy.notification.config: |
         {
+          "ntfyaccesstoken": "${ntfy_token:?}",
           "ntfyAuthenticationMethod": "accessToken",
           "ntfyPriority": 2,
-          "ntfyaccesstoken": "${ntfy_token:?}",
           "ntfyserverurl": "http://ntfy:80",
           "ntfytopic": "UptimeKuma",
           "type": "ntfy"
