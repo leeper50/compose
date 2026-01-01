@@ -59,7 +59,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"
       traefik.http.routers.garage_webui.middlewares: "localonly@file"
-      traefik.http.routers.garage_webui.rule: "Host(`garage.${domain:?}`)"
+      traefik.http.routers.garage_webui.rule: "Host(`g.${domain:?}`)"
       traefik.http.services.garage_webui.loadbalancer.server.url: "http://garage_webui:3909"
     networks:
       proxy:
