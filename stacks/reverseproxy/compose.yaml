@@ -15,32 +15,6 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  authelia:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: authelia
-    depends_on:
-      - lldap
-    environment:
-      TZ: ${timezone:-UTC}
-      X_AUTHELIA_CONFIG_FILTERS: template
-      X_AUTHELIA_CONFIG: /config/configuration.yml
-    image: authelia/authelia:${authelia_version:-latest}
-    labels:
-      kuma.__docker:
-      kuma.__web: '"temp.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.rule: "Host(`temp.${domain:?}`)"
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/authelia/config:/config
   crowdsec:
     <<: *common-settings
     cap_drop:
@@ -79,28 +53,6 @@ services:
       proxy:
     volumes:
       - ${data:-.}/geoip:/geoip
-  lldap:
-    <<: *common-settings
-    container_name: lldap
-    environment:
-      UID: ${uid:-1000}
-      GID: ${gid:-1000}
-      TZ: ${timezone:-UTC}
-      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET:?}"
-      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED:?}"
-      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain:?},dc=${tld:?}"
-    image: lldap/lldap:${lldap_version:-stable}
-    labels:
-      kuma.__docker:
-      traefik.enable: "true"
-      traefik.http.routers.lldap.entryPoints: "https"
-      traefik.http.routers.lldap.middlewares: "localonly@file"
-      traefik.http.routers.lldap.rule: "Host(`lldap.${domain:?}`)"
-      traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/lldap:/data
   pocketid:
     <<: *common-settings
     cap_drop:
@@ -138,6 +90,8 @@ services:
     cap_drop:
       - ALL
     container_name: tinyauth
+    depends_on:
+      - pocketid
     environment:
       APP_URL: https://auth.${domain}
       OAUTH_AUTO_REDIRECT: pocketid
@@ -154,7 +108,6 @@ services:
       kuma.__docker:
       kuma.__web: '"auth.${domain:?}"'
       traefik.enable: "true"
-      traefik.http.middlewares.tinyauth.forwardauth.address: http://tinyauth:3000/api/auth/traefik
       traefik.http.routers.tinyauth.entryPoints: "https"
       traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
     networks:

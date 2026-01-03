@@ -2,9 +2,7 @@
 
 This project contains a reverse proxy, an intrusion prevention service, and a single sign-on application.
 
-Authelia is used to provide SSO functionality to applications that support OAuth or OIDC.
-The LLDAP container is the source of truth for all accounts in authelia, and can
-be used to provide SSO for apps that only support LDAP.
+PocketID is used to provide SSO functionality to applications that support OAuth or OIDC.
 
 Crowdsec is an intrusion prevention software and this stack includes a
 bouncer that allows traefik to take action based on decisions made by crowdsec.
@@ -14,7 +12,7 @@ This is used to filter out traffic that you may not want from areas where you do
 
 Traefik is used to serve the web apps in this repository. As configured, it uses various middlewares to limit traffic by
 filter with `geoipfilter`, allow only specific ip addresses with `allowedIPs` and `localonly`, and restrict access
-to routes with `authelia` forward authentication.
+to routes with `tinyauth` forward authentication middleware.
 
 Vector is a tool that can transform and filter data. It is used here to filter out geoip blocked and private ranges
 in traefik's access log. This is done to prevent those logs from reaching crowdsec and using up the free plan's quota on
@@ -28,20 +26,6 @@ So it would be `${data:-.}/logs/crowdsec:/var/log/:ro`.
 
 
 ## Extra info
-
-### Authelia
-
-Authelia is a very configurable piece of software, and I can not offer a suitable default configuration for general use.
-
-Please refer to the official [documentation](https://www.authelia.com/configuration/prologue/introduction/) for Authelia when building out your own `config/configuration.yml` file.
-
-A sample configuration file is provided on the authelia github repository [here](https://github.com/authelia/authelia/blob/master/config.template.yml).
-
-Some useful commands to create secure secrets for openID clients are locate [here](https://www.authelia.com/integration/openid-connect/frequently-asked-questions/#how-do-i-generate-a-client-identifier-or-client-secret) in the documentation.
-
-Pasted for ease of use:
-Generate a compliant client ID: `docker run --rm authelia/authelia:latest authelia crypto rand --length 72 --charset rfc3986`
-Generate a compliant client secret: `docker run --rm authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986`
 
 ### Crowdsec
 
@@ -72,12 +56,6 @@ To enroll the crowdsec engine to Crowdsec's web console, you must have an accoun
 4. Check that the engine is showing up on the dashboard and is providng metrics.
 5. Restart the crowdsec container. `docker restart crowdsec`
 
-### LLDAP
-
-`lldap` acts as the single source of truth for authelia's users.
-LLDAP accounts should contain least 1 special character, 1 number, 1 lowercase letter, and 1 uppercase letter.
-Some services like calibre-web expect users to meet some or all of these requirements and will not work without them.
-
 ### Geoip Filter
 
 This stack integrates a container that allows traefik to use MaxMind GeoIP data to filter traffic from specific countries or regions.
@@ -87,6 +65,29 @@ You will need to create a license key and provide your account id when setting u
 
 You may change the http response code given when a user is geo-blocked. I have this set to code 418 which is unused in normal HTTP operations.
 This allows me to ignore logging traffic geo-blocked, which lowers my usage for crowdsec's free plan.
+
+### PocketID & Tinyauth
+
+PocketID is a very simple and secure OpenID and OAuth provider that uses passkeys instead of passwords.
+Tinyauth can restrict access to routes using PocketID's access controls.
+
+The official guide on how to integrate tinyauth with PocketID is available [here](https://tinyauth.app/docs/guides/pocket-id/).
+
+PocketID maintains a list of example configurations for applications [here](https://pocket-id.org/docs/client-examples).
+
+Apps you may want to integrate that are presenting in this repository include:
+- [Bookstack](https://pocket-id.org/docs/client-examples/bookstack) from the `docs` stack.
+- [Forgejo](https://pocket-id.org/docs/client-examples/forgejo) from the `forgejo` stack.
+- [FreshRSS](https://pocket-id.org/docs/client-examples/freshrss) from the `website` stack.
+- [Gitea](https://pocket-id.org/docs/client-examples/gitea) from the `gitea` stack.
+- [Grafana](https://pocket-id.org/docs/client-examples/grafana) from the `docs` stack.
+- [Immich](https://pocket-id.org/docs/client-examples/immich) from the `media` stack.
+- [Jellyfin](https://pocket-id.org/docs/client-examples/jellyfin) from the `media` stack.
+- [N8N (Formerly Node-RED)](https://pocket-id.org/docs/client-examples/node-red) from the `n8n` stack.
+- [Nextcloud](https://pocket-id.org/docs/client-examples/nextcloud) from the `nextcloud` stack.
+- [Paperless-ngx](https://pocket-id.org/docs/client-examples/paperless-ngx) from the `paperlessngx` stack.
+- [Vaulwarden](https://pocket-id.org/docs/client-examples/vaultwarden) from the `website` stack.
+
 
 ### Traefik
 
