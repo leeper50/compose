@@ -105,6 +105,10 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     container_name: pocketid
     environment:
       APP_URL: https://auth.${domain}
