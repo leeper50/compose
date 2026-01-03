@@ -38,6 +38,15 @@ http:
     localonly:
       ipAllowList:
         <<: *localIPs
+    oidc-auth:
+      plugin:
+        traefik-oidc-auth:
+          Secret: "<YourSecureSecret>" # Please change this secret for your setup
+          Provider:
+            Url: "https://auth.yourdomain.com"
+            ClientId: "<YourClientId>"
+            ClientSecret: "<YourClientSecret>"
+          Scopes: ["openid", "profile", "email"]
 tcp:
   middlewares:
     allowedIPs:

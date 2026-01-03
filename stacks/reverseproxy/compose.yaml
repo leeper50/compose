@@ -33,10 +33,10 @@ services:
     image: authelia/authelia:${authelia_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"auth.${domain:?}"'
+      kuma.__web: '"temp.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.rule: "Host(`auth.${domain:?}`)"
+      traefik.http.routers.authelia.rule: "Host(`temp.${domain:?}`)"
     networks:
       proxy:
     volumes:
@@ -101,15 +101,43 @@ services:
       proxy:
     volumes:
       - ${data:-.}/lldap:/data
+  pocketid:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: pocketid
+    environment:
+      APP_URL: https://auth.${domain}
+      ENCRYPTION_KEY: ${pocketid_enc_key:?}
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TRUST_PROXY: true
+    healthcheck:
+      interval: 1m30s
+      retries: 2
+      start_period: 10s
+      test: [ "CMD", "/app/pocket-id", "healthcheck" ]
+      timeout: 5s
+    image: ghcr.io/pocket-id/pocket-id:v2
+    labels:
+      kuma.__docker:
+      kuma.__web: '"auth.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.pocketid.entryPoints: "https"
+      traefik.http.routers.pocketid.rule: "Host(`auth.${domain:?}`)"
+    networks:
+      proxy:
+    volumes:
+      - ${data:-.}/pocketid:/app/data
   traefik:
     <<: *common-settings
     cap_drop:
       - ALL
     container_name: traefik
     depends_on:
-      - authelia
       - crowdsec
       - geoipfilter
+      - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
