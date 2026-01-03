@@ -111,7 +111,7 @@ services:
       - SETUID
     container_name: pocketid
     environment:
-      APP_URL: https://auth.${domain}
+      APP_URL: https://id.${domain}
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
@@ -125,10 +125,10 @@ services:
     image: ghcr.io/pocket-id/pocket-id:v2
     labels:
       kuma.__docker:
-      kuma.__web: '"auth.${domain:?}"'
+      kuma.__web: '"id.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.pocketid.entryPoints: "https"
-      traefik.http.routers.pocketid.rule: "Host(`auth.${domain:?}`)"
+      traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
     networks:
       proxy:
     volumes:
