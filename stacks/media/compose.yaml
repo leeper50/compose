@@ -96,7 +96,7 @@ services:
       kuma.__web: '"js.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.entryPoints: "https"
-      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,tinyauth@file"
       traefik.http.routers.jellyseerr.rule: "Host(`js.${domain:?}`)"
       traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
     networks:
@@ -118,7 +118,7 @@ services:
       kuma.__web: '"nav.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, authelia@file"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
       traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.${domain:?}`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"

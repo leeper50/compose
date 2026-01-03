@@ -35,7 +35,7 @@ services:
       PAPERLESS_URL: https://paper.${domain:?}
       USERMAP_GID: ${gid:-1000}
       USERMAP_UID: ${uid:-1000}
-      # Authelia Header SSO
+      # Tinyauth Header SSO
       PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
       PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
       PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout
@@ -48,7 +48,7 @@ services:
       kuma.__web: '"paper.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.paperlessngx.entryPoints: "https"
-      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,tinyauth@file"
       traefik.http.routers.paperlessngx.rule: "Host(`paper.${domain:?}`)"
       traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
     networks:

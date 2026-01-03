@@ -67,7 +67,7 @@ services:
       kuma.__web: '"fr.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
-      traefik.http.routers.freshrss.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.freshrss.middlewares: "allowedIPs@file,tinyauth@file"
       traefik.http.routers.freshrss.rule: "Host(`fr.${domain:?}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
     networks:
@@ -157,9 +157,9 @@ services:
       traefik.http.routers.vaultwarden.priority: 30
       traefik.http.routers.vaultwarden.rule: "Host(`vw.${domain:?}`)"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
-      # Block admin page with authelia
+      # Block admin page with tinyauth
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
-      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,authelia@file"
+      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,tinyauth@file"
       traefik.http.routers.vaultwarden-admin.priority: 50
       traefik.http.routers.vaultwarden-admin.rule: Host(`vw.${domain:?}`) && PathPrefix(`/admin`)
     networks:

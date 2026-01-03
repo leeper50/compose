@@ -15,32 +15,6 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  authelia:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: authelia
-    depends_on:
-      - lldap
-    environment:
-      TZ: ${timezone:-UTC}
-      X_AUTHELIA_CONFIG_FILTERS: template
-      X_AUTHELIA_CONFIG: /config/configuration.yml
-    image: authelia/authelia:${authelia_version:-latest}
-    labels:
-      kuma.__docker:
-      kuma.__web: '"auth.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.authelia.entryPoints: "https"
-      traefik.http.routers.authelia.rule: "Host(`auth.${domain:?}`)"
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/authelia/config:/config
   crowdsec:
     <<: *common-settings
     cap_drop:
@@ -79,37 +53,74 @@ services:
       proxy:
     volumes:
       - ${data:-.}/geoip:/geoip
-  lldap:
+  pocketid:
     <<: *common-settings
-    container_name: lldap
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    container_name: pocketid
     environment:
-      UID: ${uid:-1000}
-      GID: ${gid:-1000}
-      TZ: ${timezone:-UTC}
-      LLDAP_JWT_SECRET: "${LLDAP_JWT_SECRET:?}"
-      LLDAP_KEY_SEED: "${LLDAP_KEY_SEED:?}"
-      LLDAP_LDAP_BASE_DN: "dc=${second_level_domain:?},dc=${tld:?}"
-    image: lldap/lldap:${lldap_version:-stable}
+      APP_URL: https://id.${domain}
+      ENCRYPTION_KEY: ${pocketid_enc_key:?}
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TRUST_PROXY: true
+    healthcheck:
+      interval: 1m30s
+      retries: 2
+      start_period: 10s
+      test: [ "CMD", "/app/pocket-id", "healthcheck" ]
+      timeout: 5s
+    image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
     labels:
       kuma.__docker:
+      kuma.__web: '"id.${domain:?}"'
       traefik.enable: "true"
-      traefik.http.routers.lldap.entryPoints: "https"
-      traefik.http.routers.lldap.middlewares: "localonly@file"
-      traefik.http.routers.lldap.rule: "Host(`lldap.${domain:?}`)"
-      traefik.http.services.lldap.loadbalancer.server.url: 'http://lldap:17170'
+      traefik.http.routers.pocketid.entryPoints: "https"
+      traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
     networks:
       proxy:
     volumes:
-      - ${data:-.}/lldap:/data
+      - ${data:-.}/pocketid:/app/data
+  tinyauth:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: tinyauth
+    depends_on:
+      - pocketid
+    environment:
+      APP_URL: https://auth.${domain}
+      OAUTH_AUTO_REDIRECT: pocketid
+      PROVIDERS_POCKETID_AUTH_URL: https://id.${domain}/authorize
+      PROVIDERS_POCKETID_CLIENT_ID: ${tinyauth_id}
+      PROVIDERS_POCKETID_CLIENT_SECRET: ${tinyauth_secret}
+      PROVIDERS_POCKETID_NAME: Pocket ID
+      PROVIDERS_POCKETID_REDIRECT_URL: https://auth.${domain}/api/oauth/callback/pocketid
+      PROVIDERS_POCKETID_SCOPES: openid email profile groups
+      PROVIDERS_POCKETID_TOKEN_URL: https://id.${domain}/api/oidc/token
+      PROVIDERS_POCKETID_USER_INFO_URL: https://id.${domain}/api/oidc/userinfo
+    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v4}
+    labels:
+      kuma.__docker:
+      kuma.__web: '"auth.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.tinyauth.entryPoints: "https"
+      traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
+    networks:
+      proxy:
   traefik:
     <<: *common-settings
     cap_drop:
       - ALL
     container_name: traefik
     depends_on:
-      - authelia
       - crowdsec
       - geoipfilter
+      - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
