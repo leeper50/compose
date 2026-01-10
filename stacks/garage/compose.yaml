@@ -55,7 +55,7 @@ services:
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"garage.${domain:?}"'
+      kuma.__web: '"g.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"
       traefik.http.routers.garage_webui.middlewares: "localonly@file"
