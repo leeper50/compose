@@ -112,6 +112,8 @@ services:
       traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
     networks:
       proxy:
+    volumes:
+      - ${data:.}/tinyauth:/data
   traefik:
     <<: *common-settings
     cap_drop:
