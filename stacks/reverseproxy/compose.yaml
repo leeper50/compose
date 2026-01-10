@@ -113,7 +113,7 @@ services:
     networks:
       proxy:
     volumes:
-      - ${data:.}/tinyauth:/data
+      - ${data:-.}/tinyauth:/data
   traefik:
     <<: *common-settings
     cap_drop:
