@@ -1,7 +1,7 @@
 networks:
   default:
     driver: bridge
-    enable_ipv6: false
+    enable_ipv6: true
 x-common-settings: &common-settings
   logging:
     driver: local
