@@ -56,6 +56,10 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     container_name: tor_privoxy
     image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
     labels:
