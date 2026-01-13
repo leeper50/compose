@@ -21,6 +21,7 @@ services:
       - ALL
     cap_add:
       - NET_ADMIN
+      - NET_RAW
     container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
