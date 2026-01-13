@@ -78,7 +78,7 @@ services:
     image: solidnerd/bookstack:${bookstack_version:-25.11.6}
     labels:
       kuma.__docker:
-      kuma.__web: '"wiki.${domain:?}"'
+      # kuma.__web: '"wiki.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
@@ -117,7 +117,7 @@ services:
     image: grafana/grafana:${grafana_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"gf.${domain:?}"'
+      # kuma.__web: '"gf.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.grafana.entryPoints: "https"
       traefik.http.routers.grafana.middlewares: "localonly@file"
@@ -160,7 +160,7 @@ services:
     init: true
     labels:
       kuma.__docker:
-      kuma.__web: '"n.${domain:?}"'
+      # kuma.__web: '"n.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
@@ -179,7 +179,7 @@ services:
     image: prom/prometheus:${prometheus_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"pm.${domain:?}"'
+      # kuma.__web: '"pm.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.prometheus.entryPoints: "https"
       traefik.http.routers.prometheus.middlewares: "localonly@file"

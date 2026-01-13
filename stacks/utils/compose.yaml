@@ -26,7 +26,7 @@ services:
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"cx.${domain:?}"'
+      # kuma.__web: '"cx.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
@@ -44,7 +44,7 @@ services:
     image: "sharevb/it-tools:${ittools_version:-latest}"
     labels:
       kuma.__docker:
-      kuma.__web: '"it.${domain:?}"'
+      # kuma.__web: '"it.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file,tinyauth@file"
@@ -60,7 +60,7 @@ services:
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"lt.${domain:?}"'
+      # kuma.__web: '"lt.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
       traefik.http.routers.libretranslate.middlewares: "allowedIPs@file,tinyauth@file"
@@ -76,7 +76,7 @@ services:
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"speed.${domain:?}"'
+      # kuma.__web: '"speed.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.myspeed.entryPoints: "https"
       traefik.http.routers.myspeed.middlewares: "localonly@file"
@@ -94,7 +94,7 @@ services:
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     labels:
       kuma.__docker:
-      kuma.__web: '"pb.${domain:?}"'
+      # kuma.__web: '"pb.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file,tinyauth@file"
@@ -129,7 +129,7 @@ services:
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"send.${domain:?}"'
+      # kuma.__web: '"send.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file,tinyauth@file"
@@ -174,7 +174,7 @@ services:
     image: anirdev/slink:${slink_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"sl.${domain:?}"'
+      # kuma.__web: '"sl.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file,tinyauth@file"

@@ -35,7 +35,7 @@ services:
       WEBHOOK_URL: https://n8n.${domain:?}/
     labels:
       kuma.__docker:
-      kuma.__web: '"n8n.${domain:?}"'
+      # kuma.__web: '"n8n.${domain:?}"'
       traefik.enable: "true"
       traefik.http.middlewares.n8n.headers.browserXSSFilter: true
       traefik.http.middlewares.n8n.headers.contentTypeNosniff: true

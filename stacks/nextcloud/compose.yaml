@@ -138,7 +138,7 @@ services:
       - nextcloud_app
     labels:
       kuma.__docker:
-      kuma.__web: '"next.${domain:?}"'
+      # kuma.__web: '"next.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entryPoints: "https"
       traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"

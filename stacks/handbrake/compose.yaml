@@ -29,7 +29,7 @@ services:
     image: jlesage/handbrake:${handbrake_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"hb.${domain:?}"'
+      # kuma.__web: '"hb.${domain:?}"'
       traefik.enable: 'true'
       traefik.http.routers.handbrake.entryPoints: 'https'
       traefik.http.routers.handbrake.middlewares: 'localonly@file'
