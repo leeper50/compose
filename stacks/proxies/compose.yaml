@@ -1,7 +1,7 @@
 networks:
   default:
     driver: bridge
-    enable_ipv6: true
+    enable_ipv6: false
 x-common-settings: &common-settings
   logging:
     driver: local
@@ -21,6 +21,7 @@ services:
       - ALL
     cap_add:
       - NET_ADMIN
+      - NET_RAW
     container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
@@ -52,13 +53,3 @@ services:
     labels:
       kuma.__docker:
     network_mode: service:gluetun_proxy
-  tor_privoxy:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: tor_privoxy
-    image: dockage/tor-privoxy:${tor_privoxy_version:-latest}
-    labels:
-      kuma.__docker:
-    ports:
-      - "9050:9050/tcp"

@@ -28,7 +28,7 @@ services:
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     labels:
       kuma.__docker:
-      kuma.__web: '"vpn.${domain:?}"'
+      # kuma.__web: '"vpn.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.wgeasy.entryPoints: "https"
       traefik.http.routers.wgeasy.middlewares: "localonly@file"

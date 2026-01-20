@@ -18,7 +18,7 @@ x-common-settings: &common-settings
 services:
   n8n:
     <<: *common-settings
-    image: docker.n8n.io/n8nio/n8n:${n8n_version:-latest}
+    image: docker.n8n.io/n8nio/n8n:${n8n_version:-stable}
     cap_drop:
       - ALL
     container_name: n8n
@@ -35,7 +35,7 @@ services:
       WEBHOOK_URL: https://n8n.${domain:?}/
     labels:
       kuma.__docker:
-      kuma.__web: '"n8n.${domain:?}"'
+      # kuma.__web: '"n8n.${domain:?}"'
       traefik.enable: "true"
       traefik.http.middlewares.n8n.headers.browserXSSFilter: true
       traefik.http.middlewares.n8n.headers.contentTypeNosniff: true

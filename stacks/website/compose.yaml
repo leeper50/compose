@@ -32,7 +32,7 @@ services:
     image: copyparty/iv:${copyparty_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"c.${domain:?}"'
+      # kuma.__web: '"c.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
@@ -64,7 +64,7 @@ services:
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"fr.${domain:?}"'
+      # kuma.__web: '"fr.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file,tinyauth@file"
@@ -109,7 +109,7 @@ services:
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"home.${domain:?}"'
+      # kuma.__web: '"home.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
@@ -128,7 +128,7 @@ services:
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"${domain:?}"'
+      # kuma.__web: '"${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
@@ -150,7 +150,7 @@ services:
     image: vaultwarden/server:${vaultwarden_version:-latest}
     labels:
       kuma.__docker:
-      kuma.__web: '"vw.${domain:?}"'
+      # kuma.__web: '"vw.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
