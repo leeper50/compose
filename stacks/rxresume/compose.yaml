@@ -21,12 +21,11 @@ services:
       - ALL
     container_name: rxresume
     depends_on:
-      - rxresume_chrome
+      - rxresume_gotenburg
       - rxresume_postgres
     environment:
-      ACCESS_TOKEN_SECRET: ${access_token:?}
-      CHROME_TOKEN: ${chrome_token:?}
-      CHROME_URL: wss://printer.${domain:?}
+      APP_URL: rx.${domain:?}
+      AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
       MAIL_FROM: noreply@example.com
       NODE_ENV: production
@@ -42,7 +41,7 @@ services:
       STORAGE_SKIP_BUCKET_CHECK: "false"
       STORAGE_URL: https://s3.${domain:?}
       STORAGE_USE_SSL: "false"
-    image: amruthpillai/reactive-resume:${rxresume_version:-latest}
+    image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.0}
     labels:
       kuma.__docker:
       # kuma.__web: '"rx.${domain:?}"'
@@ -81,24 +80,24 @@ services:
       default: null
     volumes:
       - $data/db:/var/lib/postgresql/data
-  rxresume_chrome:
+  rxresume_gotenburg:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: rxresume_chrome
+    container_name: rxresume_gotenburg
     environment:
-      HEALTH: "true"
-      TOKEN: "${chrome_token:?}"
-      PROXY_HOST: "printer.${domain:?}"
-      PROXY_PORT: 443
-      PROXY_SSL: "true"
-    image: ghcr.io/browserless/chromium:${chrome_version:-latest}
+      CHROMIUM_AUTO_START: true
+      LIBREOFFICE_DISABLE_ROUTES: true
+      PROMETHEUS_DISABLE_COLLECT: true
+      WEBHOOK_DISABLE: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    image: gotenberg/gotenberg:${gotenburg_version:-8}
     labels:
       kuma.__docker:
-      traefik.enable: "true"
-      traefik.http.routers.printer.entrypoints: "https"
-      traefik.http.routers.printer.middlewares: "localonly@file"
-      traefik.http.routers.printer.rule: "Host(`printer.${domain:?}`)"
-      traefik.http.services.printer.loadbalancer.server.url: 'http://chrome:3000'
     networks:
       default: null
