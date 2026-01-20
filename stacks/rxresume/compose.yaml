@@ -24,7 +24,7 @@ services:
       - rxresume_gotenburg
       - rxresume_postgres
     environment:
-      APP_URL: rx.${domain:?}
+      APP_URL: https://rx.${domain:?}
       AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
       GOTENBERG_ENDPOINT: http://rxresume_gotenberg:3000
