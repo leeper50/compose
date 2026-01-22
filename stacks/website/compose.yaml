@@ -64,11 +64,11 @@ services:
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"fr.${domain:?}"'
+      # kuma.__web: '"rss.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file,tinyauth@file"
-      traefik.http.routers.freshrss.rule: "Host(`fr.${domain:?}`)"
+      traefik.http.routers.freshrss.rule: "Host(`rss.${domain:?}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
     networks:
       freshrss:
