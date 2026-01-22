@@ -29,7 +29,7 @@ services:
       PAPERLESS_DBNAME: ${db_name:-paperless}
       PAPERLESS_DBPASS: ${db_pass:?}
       PAPERLESS_DBUSER: ${db_user:-paperless}
-      PAPERLESS_REDIS: redis://paperlessngx_broker:6379
+      PAPERLESS_REDIS: redis://paperlessngx_keydb:6379
       PAPERLESS_SECRET_KEY: ${secret_key:?}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_URL: https://paper.${domain:?}
@@ -41,7 +41,7 @@ services:
       PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout
     depends_on:
       - paperlessngx_db
-      - paperlessngx_broker
+      - paperlessngx_keydb
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
       kuma.__docker:
@@ -59,14 +59,15 @@ services:
       - ${data:-.}/app/media:/usr/src/paperless/media
       - ${data:-.}/app/export:/usr/src/paperless/export
       - ${data:-.}/app/consume:/usr/src/paperless/consume
-  paperlessngx_broker:
+  paperlessngx_keydb:
     <<: *common-settings
     cap_drop:
       - ALL
     cap_add:
+      - CHOWN
       - SETGID
       - SETUID
-    container_name: paperlessngx_broker
+    container_name: paperlessngx_keydb
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
       kuma.__docker:
