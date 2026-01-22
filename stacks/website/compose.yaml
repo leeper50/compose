@@ -57,10 +57,17 @@ services:
     depends_on:
       - freshrssdb
     environment:
-      TZ: ${timezone:-UTC}
-      TRUSTED_PROXY: 0
-      LISTEN: 0.0.0.0:80
       CRON_MIN: "1,31"
+      LISTEN: 0.0.0.0:80
+      OIDC_CLIENT_ID: ${client_id:?}
+      OIDC_CLIENT_SECRET: ${client_secret:?}
+      OIDC_ENABLED: 1
+      OIDC_PROVIDER_METADATA_URL: https://id.${domain:?}/.well-known/openid-configuration
+      OIDC_REMOTE_USER_CLAIM: preferred_username
+      OIDC_SCOPES: openid email profile
+      OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
+      TRUSTED_PROXY: 0
+      TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
       kuma.__docker:
