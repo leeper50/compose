@@ -55,7 +55,7 @@ services:
       - SETUID
     container_name: freshrss
     depends_on:
-      - freshrssdb
+      - freshrss_postgres
     environment:
       CRON_MIN: "1,31"
       LISTEN: 0.0.0.0:80
@@ -83,7 +83,7 @@ services:
     volumes:
       - ${data:-.}/rss/data:/var/www/FreshRSS/data
       - ${data:-.}/rss/extensions:/var/www/FreshRSS/extensions
-  freshrssdb:
+  freshrss_postgres:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -93,7 +93,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    container_name: freshrssdb
+    container_name: freshrss_postgres
     environment:
       POSTGRES_DB: ${db_name:-freshrss}
       POSTGRES_PASSWORD: ${db_pass:?}
