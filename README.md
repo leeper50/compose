@@ -5,7 +5,7 @@ This repo contains standardized docker compose stacks to be deployed using [Komo
 The heart of this project is the `stacks/reverseproxy` folder.
 It provides:
 - Traefik for declarative https routing for web facing services.
-- Authelia & LLDAP for OAUTH, OIDC, and LDAP support for universal login and route protection.
+- PocketID & TinyAuth for OAUTH, OIDC, and LDAP support for universal login and route protection.
 - Crowdsec, a MaxMind(TM) geoipfilter, and Vector for intrusion prevention and security.
 
 All web facing stacks depend on an external network called `proxy`. 
