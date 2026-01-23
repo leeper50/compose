@@ -29,19 +29,17 @@ services:
       PAPERLESS_DBNAME: ${db_name:-paperless}
       PAPERLESS_DBPASS: ${db_pass:?}
       PAPERLESS_DBUSER: ${db_user:-paperless}
-      PAPERLESS_REDIS: redis://paperlessngx_broker:6379
+      PAPERLESS_REDIS: redis://paperlessngx_keydb:6379
       PAPERLESS_SECRET_KEY: ${secret_key:?}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_URL: https://paper.${domain:?}
       USERMAP_GID: ${gid:-1000}
       USERMAP_UID: ${uid:-1000}
-      # Tinyauth Header SSO
-      PAPERLESS_ENABLE_HTTP_REMOTE_USER: true
-      PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
-      PAPERLESS_LOGOUT_REDIRECT_URL: https://auth.${domain:?}/logout
+      PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"pocket-id","name":"Pocket-ID","client_id":"${client_id:?}","secret":"${client_secret:?}","settings":{"server_url":"https://id.${domain:?}"}}]}}'
     depends_on:
       - paperlessngx_db
-      - paperlessngx_broker
+      - paperlessngx_keydb
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
       kuma.__docker:
@@ -59,14 +57,15 @@ services:
       - ${data:-.}/app/media:/usr/src/paperless/media
       - ${data:-.}/app/export:/usr/src/paperless/export
       - ${data:-.}/app/consume:/usr/src/paperless/consume
-  paperlessngx_broker:
+  paperlessngx_keydb:
     <<: *common-settings
     cap_drop:
       - ALL
     cap_add:
+      - CHOWN
       - SETGID
       - SETUID
-    container_name: paperlessngx_broker
+    container_name: paperlessngx_keydb
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
       kuma.__docker:

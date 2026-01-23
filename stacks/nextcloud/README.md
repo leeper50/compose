@@ -4,12 +4,8 @@ The stack uses the fpm version of nextcloud which relies on an external web serv
 Nginx is the reverse proxy used here, and it must have a configuration file set up.
 An example file is provided in the `examples` folder and must be mounted to the nginx container.
 
-## Authelia
-It may integrate with authelia through an external plugin with directions provided [here](https://www.authelia.com/integration/openid-connect/clients/nextcloud/#openid-connect-user-backend-app). Below are commands you may use to generate the required client ID and secret.
-
-Generate a compliant client ID: `docker run --rm authelia/authelia:latest authelia crypto rand --length 72 --charset rfc3986`
-Generate a compliant client secret: `docker run --rm authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986`
-
+## PocketID
+Nextcloud may integrate with pocketid through an external plugin with directions provided [here](https://pocket-id.org/docs/client-examples/nextcloud).
 After editing the config.php file in the config folder, make sure the file is still owned by either user & group 33 or www-data. If it is not, run the command `chown 33:33 config.php`.
 
 ## S3
@@ -18,7 +14,10 @@ The provided configuration is designed to work with the `garage` stack and is qu
 2. Create a user with a key and save the access and secret key.
 3. Create a nextcloud bucket in the garage webui.
 4. Under permissions, click allow key and give full permissions to your nextcloud key.
-5. Generate a secure encryption key for nextcloud to use with the command: `docker run --rm authelia/authelia:latest authelia crypto rand --length 32 --charset rfc3986`
+5. Generate a secure encryption key for nextcloud to use. 
+This [website](https://it-tools.tech/token-generator) provides a secure,client-side token generator.
+Remember that some symbols can intefere with yaml variable interpolation.
+I recommend avoid the symbols and generating a 64 character long string of just numbers and upper/lower case characters.
 6. Populate the environment variables in this stack with your values.
  - s3_access_key=`access_key from step 2`
  - s3_enc_key=`key from step 5`

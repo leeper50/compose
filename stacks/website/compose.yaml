@@ -55,20 +55,27 @@ services:
       - SETUID
     container_name: freshrss
     depends_on:
-      - freshrssdb
+      - freshrss_postgres
     environment:
-      TZ: ${timezone:-UTC}
-      TRUSTED_PROXY: 0
-      LISTEN: 0.0.0.0:80
       CRON_MIN: "1,31"
+      LISTEN: 0.0.0.0:80
+      OIDC_CLIENT_ID: ${client_id:?}
+      OIDC_CLIENT_SECRET: ${client_secret:?}
+      OIDC_ENABLED: 1
+      OIDC_PROVIDER_METADATA_URL: https://id.${domain:?}/.well-known/openid-configuration
+      OIDC_REMOTE_USER_CLAIM: preferred_username
+      OIDC_SCOPES: openid email profile
+      OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
+      TRUSTED_PROXY: 0
+      TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"fr.${domain:?}"'
+      # kuma.__web: '"rss.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
-      traefik.http.routers.freshrss.middlewares: "allowedIPs@file,tinyauth@file"
-      traefik.http.routers.freshrss.rule: "Host(`fr.${domain:?}`)"
+      traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
+      traefik.http.routers.freshrss.rule: "Host(`rss.${domain:?}`)"
       traefik.http.services.freshrss.loadbalancer.server.url: "http://freshrss:80"
     networks:
       freshrss:
@@ -76,7 +83,7 @@ services:
     volumes:
       - ${data:-.}/rss/data:/var/www/FreshRSS/data
       - ${data:-.}/rss/extensions:/var/www/FreshRSS/extensions
-  freshrssdb:
+  freshrss_postgres:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -86,7 +93,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    container_name: freshrssdb
+    container_name: freshrss_postgres
     environment:
       POSTGRES_DB: ${db_name:-freshrss}
       POSTGRES_PASSWORD: ${db_pass:?}

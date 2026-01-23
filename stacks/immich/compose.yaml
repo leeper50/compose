@@ -44,6 +44,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
+      - CHOWN
       - SETGID
       - SETUID
     container_name: immich_keydb
