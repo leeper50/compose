@@ -38,6 +38,8 @@ services:
       - ALL
     cap_add:
       - CHOWN
+      - SETGID
+      - SETUID
     container_name: geoipfilter
     environment:
       MAXMIND_ID: ${maxmind_id:?}
