@@ -1,0 +1,71 @@
+networks:
+  default:
+  proxy:
+    external: true
+x-common-settings: &common-settings
+  logging:
+    driver: local
+    options:
+      compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
+services:
+  ollama:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: ollama
+    environment:
+       OLLAMA_HOST: 0.0.0.0:11434
+    image: ollama/ollama:${ollama_version:-main}
+    labels:
+      kuma.__docker:
+    networks:
+      default:
+    volumes:
+       - ${data:-.}/ollama_data:/root/.ollama
+  openwebui:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: openwebui
+    depends_on:
+      - ollama
+    environment:
+      DEFAULT_USER_ROLE: user
+      ENABLE_OAUTH_GROUP_CREATION: true
+      ENABLE_OAUTH_GROUP_MANAGEMENT: true
+      ENABLE_OAUTH_ROLE_MANAGEMENT: true
+      ENABLE_OAUTH_SIGNUP: true
+      OAUTH_ADMIN_ROLES: admins
+      OAUTH_ALLOWED_ROLES: users,admins
+      OAUTH_CLIENT_ID: ${client_id:?}
+      OAUTH_CLIENT_SECRET: ${client_secret:?}
+      OAUTH_MERGE_ACCOUNTS_BY_EMAIL: true
+      OAUTH_PROVIDER_NAME: Pocket ID
+      OAUTH_ROLES_CLAIM: groups
+      OAUTH_SCOPES: openid email profile groups
+      OAUTH_UPDATE_PICTURE_ON_LOGIN: true
+      OLLAMA_BASE_URL: http://ollama:11434
+      OPENID_PROVIDER_URL: https://id.${domain:?}/.well-known/openid-configuration
+      WEBUI_URL: https://ai.${domain:?}
+    image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
+    labels:
+      kuma.__docker:
+      traefik.enable: "true"
+      # kuma.__web: '"ai.${domain:?}"'
+      traefik.http.routers.openwebui.entryPoints: "https"
+      traefik.http.routers.openwebui.middlewares: "localonly@file"
+      traefik.http.routers.openwebui.rule: "Host(`ai.${domain:?}`)"
+      traefik.http.routers.openwebui.tls.certresolver: "cloudflare"
+      traefik.http.services.openwebui.loadbalancer.server.url: "http://openwebui:8080"
+    networks:
+      default:
+      proxy:
+    volumes:
+      - ${data:-.}/openwebui:/app/backend/data
