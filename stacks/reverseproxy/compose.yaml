@@ -144,6 +144,7 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
       - "443:443/udp"
+      - "7777:7777/tcp"
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
