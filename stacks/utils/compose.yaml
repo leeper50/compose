@@ -158,12 +158,12 @@ services:
       - ${data:-.}/send/keydb:/data
   slink:
     <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - CHOWN
+    #   - SETGID
+    #   - SETUID
     container_name: slink
     environment:
       IMAGE_COMPRESSION_QUALITY: 100
