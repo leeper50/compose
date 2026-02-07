@@ -21,14 +21,15 @@ services:
       - ALL
     container_name: rxresume
     depends_on:
-      - rxresume_gotenburg
       - rxresume_postgres
+      - rxresume_printer
     environment:
       APP_URL: https://rx.${domain:?}
       AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
-      GOTENBERG_ENDPOINT: http://rxresume_gotenberg:3000
+      NODE_ENV: production
       PRINTER_APP_URL: https://rx.${domain:?}
+      PRINTER_ENDPOINT: ws://rxresume_printer:3000?token=${printer_token:?}
       STORAGE_ACCESS_KEY: ${s3_access_key:?}
       STORAGE_BUCKET: rxresume
       STORAGE_ENDPOINT: garage
@@ -38,7 +39,7 @@ services:
       STORAGE_SKIP_BUCKET_CHECK: "false"
       STORAGE_URL: https://s3.${domain:?}
       STORAGE_USE_SSL: "false"
-    image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.0}
+    image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.5}
     labels:
       kuma.__docker:
       # kuma.__web: '"rx.${domain:?}"'
@@ -77,24 +78,24 @@ services:
       default: null
     volumes:
       - $data/db:/var/lib/postgresql/data
-  rxresume_gotenburg:
+  rxresume_printer:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: rxresume_gotenburg
+    container_name: rxresume_printer
     environment:
-      CHROMIUM_AUTO_START: true
-      LIBREOFFICE_DISABLE_ROUTES: true
-      PROMETHEUS_DISABLE_COLLECT: true
-      WEBHOOK_DISABLE: true
+      QUEUED: 10
+      HEALTH: true
+      CONCURRENT: 5
+      TOKEN: ${printer_token:?}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      start_period: 10s
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    image: gotenberg/gotenberg:${gotenburg_version:-8}
+      test:
+        ["CMD", "curl", "-f", "http://localhost:3000/pressure?token=${printer_token:?}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    image: ghcr.io/browserless/chromium:${chromium_version:-latest}
     labels:
       kuma.__docker:
     networks:
-      default: null
+      proxy: null
