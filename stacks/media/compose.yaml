@@ -110,6 +110,7 @@ services:
       - ALL
     container_name: navidrome
     environment:
+      ND_ENABLEINSIGHTSCOLLECTOR: ${navi_analytics:-true}
       ND_ENABLEUSEREDITING: false
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     image: deluan/navidrome:${navidrome_version:-latest}
