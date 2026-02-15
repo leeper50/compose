@@ -73,7 +73,7 @@ services:
       - ${media}/TV:/data/tvshows:rw
       - ${media}/Movies:/data/movies:rw
       - ${media}/Music:/data/music:rw
-  jellyseerr:
+  seerr:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -81,29 +81,26 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: jellyseerr
+    container_name: seerr
     environment:
       LOG_LEVEL: ${log_level:-warn}
-      PGID: ${gid:-1000}
-      PUID: ${uid:-1000}
       TZ: ${timezone:-UTC}
     depends_on:
       - jellyfin
-    image: fallenbagel/jellyseerr:${jellyseerr_version:-latest}
+    image: ghcr.io/seerr-team/seerr:${seerr_version:-latest}
     init: true
     labels:
       kuma.__docker:
-      # kuma.__web: '"js.${domain:?}"'
+      # kuma.__web: '"se.${domain:?}"'
       traefik.enable: "true"
-      traefik.http.routers.jellyseerr.entryPoints: "https"
-      traefik.http.routers.jellyseerr.middlewares: "allowedIPs@file,tinyauth@file"
-      traefik.http.routers.jellyseerr.rule: "Host(`js.${domain:?}`)"
-      traefik.http.services.jellyseerr.loadbalancer.server.url: "http://jellyseerr:5055"
+      traefik.http.routers.seerr.entryPoints: "https"
+      traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.seerr.rule: "Host(`se.${domain:?}`)"
+      traefik.http.services.seerr.loadbalancer.server.url: "http://seer:5055"
     networks:
       proxy: null
-    user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/jellyseerr:/app/config/:rw
+      - ${data:-.}/seerr:/app/config/:rw
   navidrome:
     <<: *common-settings
     cap_drop:
