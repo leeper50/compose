@@ -96,7 +96,7 @@ services:
       traefik.http.routers.seerr.entryPoints: "https"
       traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
       traefik.http.routers.seerr.rule: "Host(`se.${domain:?}`)"
-      traefik.http.services.seerr.loadbalancer.server.url: "http://seer:5055"
+      traefik.http.services.seerr.loadbalancer.server.url: "http://seerr:5055"
     networks:
       proxy: null
     volumes:
