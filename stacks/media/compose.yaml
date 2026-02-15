@@ -57,6 +57,12 @@ services:
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
       TZ: ${timezone:-UTC}
+    healthcheck:
+      interval: 15s
+      retries: 3
+      start_period: 20s
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      timeout: 3s
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     labels:
       kuma.__docker:
