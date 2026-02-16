@@ -31,7 +31,7 @@ services:
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
-    image: qmcgaw/gluetun:${gluetun_version:-v3.40}
+    image: qmcgaw/gluetun:${gluetun_version:-v3.41}
     labels:
       kuma.__docker:
     ports:

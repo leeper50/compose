@@ -75,7 +75,7 @@ services:
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-bookstack}
-    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
+    image: solidnerd/bookstack:${bookstack_version:-25.12.3}
     labels:
       kuma.__docker:
       # kuma.__web: '"wiki.${domain:?}"'

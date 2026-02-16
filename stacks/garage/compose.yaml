@@ -21,7 +21,7 @@ services:
     container_name: garage
     environment:
       TZ: ${timezone:-UTC}
-    image: dxflrs/garage:${garage_version:-v2.1.0}
+    image: dxflrs/garage:${garage_version:-v2.2.0}
     labels:
       kuma.__docker:
       kuma.garage_s3.port.hostname: garage
