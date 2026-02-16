@@ -30,7 +30,7 @@ services:
       USER_UID: ${uid:-1000}
     depends_on:
       - forgejo_db
-    image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-14-rootless}
     labels:
       kuma.__docker:
       # kuma.__web: '"fj.${domain:?}"'
