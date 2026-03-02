@@ -148,7 +148,7 @@ services:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/newweb/db:/app/db
+      - ${data:-.}/newweb/db:/app/data
   vaultwarden:
     <<: *common-settings
     cap_drop:
