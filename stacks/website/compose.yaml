@@ -140,7 +140,7 @@ services:
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
       traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
-      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:8080"
+      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
     networks:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
