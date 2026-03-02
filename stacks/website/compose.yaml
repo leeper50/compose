@@ -132,6 +132,9 @@ services:
     cap_drop:
       - ALL
     container_name: mywebsite
+    environment:
+      BETTER_AUTH_SECRET: ${auth_secret:?}
+      ORIGIN: https://www.${domain:?}
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
       kuma.__docker:
@@ -139,7 +142,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-      traefik.http.routers.mywebsite.rule: "Host(`${domain:?}`) || Host(`www.${domain:?}`)"
+      traefik.http.routers.mywebsite.rule: "Host(`www.${domain:?}`)"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
     networks:
       proxy:
