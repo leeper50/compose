@@ -134,6 +134,7 @@ services:
     container_name: mywebsite
     environment:
       BETTER_AUTH_SECRET: ${auth_secret:?}
+      BETTER_AUTH_URL: https://www.${domain:?}
       ORIGIN: https://www.${domain:?}
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
