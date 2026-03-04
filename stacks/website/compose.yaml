@@ -136,7 +136,7 @@ services:
       BETTER_AUTH_SECRET: ${auth_secret:?}
       BETTER_AUTH_URL: https://www.${domain:?}
       ORIGIN: https://www.${domain:?}
-    image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
+    image: fj.dellhplaptop.xyz/wleeper13/newwebsite:${mywebsite_version:-latest}
     labels:
       kuma.__docker:
       # kuma.__web: '"${domain:?}"'
