@@ -18,6 +18,11 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - OWNER
+      - SETGID
+      - SETUID
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data
     container_name: rustfs
     environment:
@@ -45,6 +50,5 @@ services:
       traefik.http.services.rustfs-s3.loadbalancer.server.url: "http://rustfs:9000"
     networks:
       proxy:
-    user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/data:/data
