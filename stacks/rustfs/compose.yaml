@@ -20,7 +20,7 @@ services:
       - ALL
     cap_add:
       - CHOWN
-      - OWNER
+      - FOWNER
       - SETGID
       - SETUID
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data
