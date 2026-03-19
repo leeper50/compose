@@ -44,7 +44,7 @@ services:
       # - DNS_SERVER_FORWARDER_PROTOCOL=Tcp #Forwarder protocol options: Udp, Tcp, Tls, Https, HttpsJson.
       # - DNS_SERVER_LOG_USING_LOCAL_TIME=true #Enable this option to use local time instead of UTC for logging.
     hostname: technitium
-    image: technitium/dns-server:${technitium:-latest}
+    image: technitium/dns-server:${technitium_version:-latest}
     labels:
       kuma.__docker:
       # kuma.__web: '"dns.${domain:?}"'
@@ -63,4 +63,4 @@ services:
     sysctls:
       - net.ipv4.ip_local_port_range=1024 65535
     volumes:
-      - ${data:-.}/technitium:/etc/dns
+      - ${data:-.}/config:/etc/dns
