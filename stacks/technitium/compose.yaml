@@ -52,7 +52,7 @@ services:
       traefik.http.routers.technitium.entryPoints: "https"
       traefik.http.routers.technitium.middlewares: "localonly@file"
       traefik.http.routers.technitium.rule: "Host(`dns.${domain:?}`)"
-      traefik.http.services.technitium.loadbalancer.server.url: "https://technitium:53443"
+      traefik.http.services.technitium.loadbalancer.server.url: "http://technitium:5380"
     networks:
       proxy:
     ports:
