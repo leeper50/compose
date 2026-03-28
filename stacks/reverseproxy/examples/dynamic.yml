@@ -32,6 +32,8 @@ http:
     tinyauth:
       forwardAuth:
         address: http://tinyauth:3000/api/auth/traefik
+        authResponseHeaders: remote-user
+        maxResponseBodySize: 104857600
 tcp:
   middlewares:
     allowedIPs:
