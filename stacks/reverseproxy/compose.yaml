@@ -95,17 +95,17 @@ services:
     depends_on:
       - pocketid
     environment:
-      APP_URL: https://auth.${domain}
-      OAUTH_AUTO_REDIRECT: pocketid
-      PROVIDERS_POCKETID_AUTH_URL: https://id.${domain}/authorize
-      PROVIDERS_POCKETID_CLIENT_ID: ${tinyauth_id}
-      PROVIDERS_POCKETID_CLIENT_SECRET: ${tinyauth_secret}
-      PROVIDERS_POCKETID_NAME: Pocket ID
-      PROVIDERS_POCKETID_REDIRECT_URL: https://auth.${domain}/api/oauth/callback/pocketid
-      PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      PROVIDERS_POCKETID_TOKEN_URL: https://id.${domain}/api/oidc/token
-      PROVIDERS_POCKETID_USER_INFO_URL: https://id.${domain}/api/oidc/userinfo
-    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v4}
+      TINYAUTH_APPURL: https://auth.${domain}
+      TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.${domain}/authorize
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.${domain}/api/oauth/callback/pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
+    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
       # kuma.__web: '"auth.${domain:?}"'
