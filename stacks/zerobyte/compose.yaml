@@ -1,0 +1,43 @@
+networks:
+  proxy:
+    external: true
+x-common-settings: &common-settings
+  logging:
+    driver: local
+    options:
+      compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
+services:
+  zerobyte:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: zerobyte
+    environment:
+      APP_SECRET: ${app_secret:?}
+      BASE_URL: https://z.${domain:?}
+      TRUST_PROXY: true
+      TRUSTED_ORIGINS: https://z.${domain:?}
+      TZ: ${timezone:-UTC}
+    image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
+    labels:
+      kuma.__docker:
+      # kuma.__web: '"z.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.zerobyte.entryPoints: "https"
+      traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"
+      traefik.http.routers.zerobyte.rule: "Host(`z.${domain:?}`)"
+      traefik.http.services.zerobyte.loadbalancer.server.url: "http://zerobyte:4096"
+    networks:
+      proxy:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${data:?}/app:/var/lib/zerobyte
+      - ${data:?}/rclone:/root/.config/rclone:ro
+      - ${backup:?}:/mnt/data1:ro
