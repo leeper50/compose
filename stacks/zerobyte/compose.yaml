@@ -16,6 +16,8 @@ x-common-settings: &common-settings
 services:
   zerobyte:
     <<: *common-settings
+    cap_add:
+      - SYS_ADMIN
     cap_drop:
       - ALL
     container_name: zerobyte
