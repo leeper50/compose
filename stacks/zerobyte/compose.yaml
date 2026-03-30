@@ -16,10 +16,10 @@ x-common-settings: &common-settings
 services:
   zerobyte:
     <<: *common-settings
-    cap_add:
-      - SYS_ADMIN
     cap_drop:
       - ALL
+    cap_add:
+      - SYS_ADMIN
     container_name: zerobyte
     environment:
       APP_SECRET: ${app_secret:?}
