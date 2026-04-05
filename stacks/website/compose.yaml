@@ -157,7 +157,7 @@ services:
     container_name: vaultwarden
     environment:
       ADMIN_TOKEN: "${vaultwarden_admin_token:?}"
-      DOMAIN: https://vault.${domain:?}
+      DOMAIN: https://vw.${domain:?}
     image: vaultwarden/server:${vaultwarden_version:-latest}
     labels:
       kuma.__docker:
