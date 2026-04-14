@@ -43,8 +43,7 @@ services:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/app/data:/var/lib/gitea
-      - ${data:-.}/app/conf:/etc/gitea
+      - ${data:-.}/app/data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   forgejo_db:
