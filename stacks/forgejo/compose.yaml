@@ -41,6 +41,8 @@ services:
     networks:
       default:
       proxy:
+    ports:
+      - "2222:2222/tcp" # Rootless ssh port
     user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/app/data:/var/lib/gitea
