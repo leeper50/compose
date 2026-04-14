@@ -92,13 +92,13 @@ services:
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
     <<: *common-settings
-    image: mysql:${mysql_version:-9.2}
+    image: mariadb:${mariadb_version:-12}
     container_name: bookstack_db
     environment:
-      MYSQL_DATABASE: ${db_name:-bookstack}
-      MYSQL_PASSWORD: ${db_pass:?}
-      MYSQL_ROOT_PASSWORD: ${root_pass:?}
-      MYSQL_USER: ${db_user:-bookstack}
+      MARIADB_DATABASE: ${db_name:-bookstack}
+      MARIADB_PASSWORD: ${db_pass:?}
+      MARIADB_ROOT_PASSWORD: ${root_pass:?}
+      MARIADB_USER: ${db_user:-bookstack}
     labels:
       kuma.__docker:
     networks:
