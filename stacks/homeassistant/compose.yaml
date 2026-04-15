@@ -90,6 +90,8 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
+    cap_add:
+      - SYS_RAWIO
     container_name: zwave_js_ui
     devices:
       - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
