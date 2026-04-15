@@ -96,6 +96,8 @@ services:
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
+    group_add:
+      - dialout
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     labels:
       kuma.__docker:
