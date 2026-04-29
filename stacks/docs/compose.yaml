@@ -106,6 +106,26 @@ services:
       bookstack: null
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
+  dozzle:
+    <<: *common-settings
+    container_name: dozzle
+    environment:
+      DOZZLE_AUTH_PROVIDER: forward-proxy
+    image: amir20/dozzle:${dozzle_version:-latest}
+    labels:
+      kuma.__docker:
+      # kuma.__web: '"dz.${domain:?}"'
+      traefik.enable: 'true'
+      traefik.http.routers.dozzle.entryPoints: 'https'
+      traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
+      traefik.http.routers.dozzle.rule: 'Host(`dz.${domain}`)'
+      traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
+      traefik.http.services.dozzle.loadbalancer.server.port: 8080
+    networks:
+      proxy:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${data:-.}/dozzle:/data
   ntfy:
     <<: *common-settings
     cap_drop:
