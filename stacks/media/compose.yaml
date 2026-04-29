@@ -68,6 +68,8 @@ services:
       traefik.http.services.jellyfin.loadbalancer.server.url: "http://jellyfin:8096"
     networks:
       proxy: null
+    ports:
+      - "7359:7359/udp" # Client Discovery
     volumes:
       - ${data:-.}/jellyfin:/config:rw
       - ${media}/TV:/data/tvshows:rw
