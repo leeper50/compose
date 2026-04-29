@@ -15,46 +15,6 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  crowdsec:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: crowdsec
-    environment:
-      GID: ${gid:-1000}
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
-    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
-    labels:
-      kuma.__docker:
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
-      - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs/crowdsec:/var/log:ro
-  geoipfilter:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: geoipfilter
-    environment:
-      MAXMIND_ID: ${maxmind_id:?}
-      MAXMIND_KEY: ${maxmind_key:?}
-      FILTER_TYPE: ${filter:-allow}
-      COUNTRY_CODES: ${country_codes:-US}
-      BLOCK_STATUS_CODE: ${block_status_code:-418}
-      EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
-    image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
-    labels:
-      kuma.__docker:
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/geoip:/geoip
   pocketid:
     <<: *common-settings
     cap_drop:
@@ -122,8 +82,6 @@ services:
       - ALL
     container_name: traefik
     depends_on:
-      - crowdsec
-      - geoipfilter
       - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
@@ -153,19 +111,3 @@ services:
       - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
       - ${data:-.}/traefik/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
-  vector:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    command: ["--config", "/etc/vector/vector.yaml"]
-    container_name: vector
-    depends_on:
-      - crowdsec
-    image: timberio/vector:${vector_version:-latest-alpine}
-    labels:
-      kuma.__docker:
-    networks:
-      default:
-    volumes:
-      - ${data:-.}/logs:/var/log
-      - ${data:-.}/vector:/etc/vector:ro
