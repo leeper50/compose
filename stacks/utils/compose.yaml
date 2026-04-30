@@ -68,24 +68,24 @@ services:
       traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
     networks:
       proxy: null
-  myspeed:
+  speedtest:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: myspeed
+    container_name: speedtest
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"speed.${domain:?}"'
+      # kuma.__web: '"sp.${domain:?}"'
       traefik.enable: "true"
-      traefik.http.routers.myspeed.entryPoints: "https"
-      traefik.http.routers.myspeed.middlewares: "localonly@file"
-      traefik.http.routers.myspeed.rule: "Host(`speed.${domain:?}`)"
-      traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
+      traefik.http.routers.speedtest.entryPoints: "https"
+      traefik.http.routers.speedtest.middlewares: "localonly@file"
+      traefik.http.routers.speedtest.rule: "Host(`sp.${domain:?}`)"
+      traefik.http.services.speedtest.loadbalancer.server.url: "http://speedtest:5216"
     networks:
       proxy: null
     volumes:
-      - "${data:-.}/myspeed:/myspeed/data"
+      - "${data:-.}/speedtest:/myspeed/data"
   privatebin:
     <<: *common-settings
     cap_drop:
