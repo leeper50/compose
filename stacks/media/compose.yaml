@@ -30,11 +30,11 @@ services:
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"books.${domain:?}"'
+      # kuma.__web: '"cb.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.calibre.entryPoints: "https"
       traefik.http.routers.calibre.middlewares: "allowedIPs@file"
-      traefik.http.routers.calibre.rule: "Host(`books.${domain:?}`)"
+      traefik.http.routers.calibre.rule: "Host(`cb.${domain:?}`)"
       traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
     networks:
       proxy: null

@@ -70,7 +70,7 @@ services:
       - bookstack_db
     environment:
       APP_KEY: ${app_key:?}
-      APP_URL: https://wiki.${domain:?}
+      APP_URL: https://bs.${domain:?}
       DB_DATABASE: ${db_name:-bookstack}
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
@@ -78,11 +78,11 @@ services:
     image: solidnerd/bookstack:${bookstack_version:-25.12.3}
     labels:
       kuma.__docker:
-      # kuma.__web: '"wiki.${domain:?}"'
+      # kuma.__web: '"bs.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
-      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain:?}`)"
+      traefik.http.routers.bookstack.rule: "Host(`bs.${domain:?}`)"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
     networks:
       bookstack: null
