@@ -31,7 +31,7 @@ services:
       # kuma.__web: '"ab.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.actualbudget.entryPoints: "https"
-      traefik.http.routers.actualbudget.middlewares: "localonly@file"
+      traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
       traefik.http.routers.actualbudget.rule: "Host(`ab.${domain:?}`)"
       traefik.http.services.actualbudget.loadbalancer.server.url: "http://actualbudget:5006"
     networks:
