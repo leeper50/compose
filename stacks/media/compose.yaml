@@ -77,6 +77,38 @@ services:
       - ${media}/TV:/data/tvshows:rw
       - ${media}/Movies:/data/movies:rw
       - ${media}/Music:/data/music:rw
+  navidrome:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: navidrome
+    environment:
+      ND_ENABLEINSIGHTSCOLLECTOR: ${navi_analytics:-true}
+      ND_ENABLEUSEREDITING: false
+      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
+    image: deluan/navidrome:${navidrome_version:-latest}
+    labels:
+      release_notes: "https://github.com/navidrome/navidrome/releases"
+      kuma.__docker:
+      # kuma.__web: '"nav.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.navidrome.entryPoints: "https"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
+      traefik.http.routers.navidrome.priority: 30
+      traefik.http.routers.navidrome.rule: "Host(`nav.${domain:?}`)"
+      traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
+      # App specific auth with basic-auth
+      traefik.http.routers.navidrome-subsonic.entrypoints: "https"
+      traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
+      traefik.http.routers.navidrome-subsonic.priority: 50
+      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain:?}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+    networks:
+      proxy: null
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/navidrome:/data:rw
+      - ${media}/Music:/music:ro
+
   seerr:
     <<: *common-settings
     cap_drop:
@@ -112,34 +144,3 @@ services:
       proxy: null
     volumes:
       - ${data:-.}/seerr:/app/config/:rw
-  navidrome:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: navidrome
-    environment:
-      ND_ENABLEINSIGHTSCOLLECTOR: ${navi_analytics:-true}
-      ND_ENABLEUSEREDITING: false
-      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
-    image: deluan/navidrome:${navidrome_version:-latest}
-    labels:
-      release_notes: "https://github.com/navidrome/navidrome/releases"
-      kuma.__docker:
-      # kuma.__web: '"nav.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
-      traefik.http.routers.navidrome.priority: 30
-      traefik.http.routers.navidrome.rule: "Host(`nav.${domain:?}`)"
-      traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
-      # App specific auth with basic-auth
-      traefik.http.routers.navidrome-subsonic.entrypoints: "https"
-      traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
-      traefik.http.routers.navidrome-subsonic.priority: 50
-      traefik.http.routers.navidrome-subsonic.rule: Host(`nav.${domain:?}`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
-    networks:
-      proxy: null
-    user: ${uid:-1000}:${gid:-1000}
-    volumes:
-      - ${data:-.}/navidrome:/data:rw
-      - ${media}/Music:/music:ro
