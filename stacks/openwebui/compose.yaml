@@ -24,6 +24,7 @@ services:
        OLLAMA_HOST: 0.0.0.0:11434
     image: ollama/ollama:${ollama_version:-main}
     labels:
+      release_notes: "https://github.com/ollama/ollama/releases"
       kuma.__docker:
     networks:
       default:
@@ -56,6 +57,7 @@ services:
       WEBUI_URL: https://ai.${domain:?}
     image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
     labels:
+      release_notes: "https://github.com/open-webui/open-webui/releases"
       kuma.__docker:
       traefik.enable: "true"
       # kuma.__web: '"ai.${domain:?}"'

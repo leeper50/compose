@@ -46,6 +46,7 @@ services:
     hostname: technitium
     image: technitium/dns-server:${technitium_version:-latest}
     labels:
+      release_notes: "https://github.com/TechnitiumSoftware/DnsServer/releases"
       kuma.__docker:
       # kuma.__web: '"dns.${domain:?}"'
       traefik.enable: "true"

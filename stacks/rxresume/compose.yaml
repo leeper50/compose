@@ -41,6 +41,7 @@ services:
       STORAGE_USE_SSL: "false"
     image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.5}
     labels:
+      release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
       kuma.__docker:
       # kuma.__web: '"rx.${domain:?}"'
       traefik.enable: "true"
@@ -73,6 +74,7 @@ services:
       timeout: 5s
     image: postgres:${postgres_version:-16-alpine}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default: null
@@ -95,6 +97,7 @@ services:
       timeout: 5s
     image: ghcr.io/browserless/chromium:${chromium_version:-latest}
     labels:
+      release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
       kuma.__docker:
     networks:
       proxy: null

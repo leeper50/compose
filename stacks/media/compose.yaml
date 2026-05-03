@@ -29,6 +29,7 @@ services:
       TZ: ${timezone:-UTC}
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     labels:
+      release_notes: "https://docs.linuxserver.io/images/docker-calibre-web/#versions"
       kuma.__docker:
       # kuma.__web: '"cb.${domain:?}"'
       traefik.enable: "true"
@@ -59,6 +60,7 @@ services:
       TZ: ${timezone:-UTC}
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     labels:
+      release_notes: "https://docs.linuxserver.io/images/docker-jellyfin/#versions"
       kuma.__docker:
       # kuma.__web: '"jf.${domain:?}"'
       traefik.enable: "true"
@@ -98,6 +100,7 @@ services:
     image: ghcr.io/seerr-team/seerr:${seerr_version:-latest}
     init: true
     labels:
+      release_notes: "https://github.com/seerr-team/seerr/releases"
       kuma.__docker:
       # kuma.__web: '"se.${domain:?}"'
       traefik.enable: "true"
@@ -120,6 +123,7 @@ services:
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     image: deluan/navidrome:${navidrome_version:-latest}
     labels:
+      release_notes: "https://github.com/navidrome/navidrome/releases"
       kuma.__docker:
       # kuma.__web: '"nav.${domain:?}"'
       traefik.enable: "true"

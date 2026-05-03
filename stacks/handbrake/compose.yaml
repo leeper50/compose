@@ -28,6 +28,7 @@ services:
       USER_ID: ${uid:-1000}
     image: jlesage/handbrake:${handbrake_version:-latest}
     labels:
+      release_notes: "https://github.com/jlesage/docker-handbrake/releases"
       kuma.__docker:
       # kuma.__web: '"hb.${domain:?}"'
       traefik.enable: 'true'

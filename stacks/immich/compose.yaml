@@ -33,6 +33,7 @@ services:
       POSTGRES_USER: ${db_user:-immich}
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default: null
@@ -52,6 +53,7 @@ services:
       test: redis-cli ping || exit 1
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
+      release_notes: "https://github.com/Snapchat/KeyDB/releases"
       kuma.__docker:
     networks:
       default: null
@@ -71,6 +73,7 @@ services:
       disable: false
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
     labels:
+      release_notes: "https://github.com/immich-app/immich/releases"
       kuma.__docker:
     networks:
       default: null
@@ -96,6 +99,7 @@ services:
       disable: false
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
+      release_notes: "https://github.com/immich-app/immich/releases"
       kuma.__docker:
       # kuma.__web: '"im.${domain:?}/auth/login"'
       traefik.enable: "true"

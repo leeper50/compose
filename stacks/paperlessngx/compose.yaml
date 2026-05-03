@@ -42,6 +42,7 @@ services:
       - paperlessngx_keydb
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
+      release_notes: "https://github.com/paperless-ngx/paperless-ngx/releases"
       kuma.__docker:
       # kuma.__web: '"pl.${domain:?}"'
       traefik.enable: "true"
@@ -68,6 +69,7 @@ services:
     container_name: paperlessngx_keydb
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
+      release_notes: "https://github.com/Snapchat/KeyDB/releases"
       kuma.__docker:
     networks:
       default: null
@@ -90,6 +92,7 @@ services:
       POSTGRES_USER: ${db_user:-paperless}
     image: docker.io/library/postgres:${postgres_version:-16}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default: null

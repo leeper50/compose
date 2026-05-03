@@ -30,6 +30,7 @@ services:
       RUSTFS_SECRET_KEY: ${default_secret_key:?}
     image: rustfs/rustfs:${rustfs_version:-latest}
     labels:
+      release_notes: "https://github.com/RustFS/RustFS/releases"
       kuma.__docker:
       # kuma.__web: '"rs.${domain:?}/rustfs/console"'
       kuma.rustfs_s3.port.hostname: rustfs

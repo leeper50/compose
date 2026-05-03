@@ -33,6 +33,7 @@ services:
       GITEA__server__ROOT_URL: https://git.${domain:?}/
     image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
     labels:
+      release_notes: "https://github.com/go-gitea/gitea/releases"
       kuma.__docker:
       # kuma.__web: '"git.${domain:?}"'
       traefik.enable: "true"
@@ -65,6 +66,7 @@ services:
       POSTGRES_USER: ${db_user:-gitea}
     image: postgres:${postgres_version:-14}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default: null
@@ -90,6 +92,7 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
     image: gitea/act_runner:${runner_version:-nightly}
     labels:
+      release_notes: "https://gitea.com/gitea/runner/releases"
       kuma.__docker:
     networks:
       default: null

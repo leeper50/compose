@@ -31,6 +31,7 @@ services:
       start_period: 15s
     image: copyparty/iv:${copyparty_version:-latest}
     labels:
+      release_notes: "https://github.com/9001/copyparty/releases"
       kuma.__docker:
       # kuma.__web: '"c.${domain:?}"'
       traefik.enable: "true"
@@ -70,6 +71,7 @@ services:
       TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
+      release_notes: "https://github.com/linuxserver/docker-freshrss/releases"
       kuma.__docker:
       # kuma.__web: '"rss.${domain:?}"'
       traefik.enable: "true"
@@ -100,6 +102,7 @@ services:
       POSTGRES_USER: ${db_user:-freshrss}
     image: postgres:${postgres_version:-16}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       freshrss:
@@ -115,6 +118,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
+      release_notes: "https://github.com/gethomepage/homepage/releases"
       kuma.__docker:
       # kuma.__web: '"home.${domain:?}"'
       traefik.enable: "true"
@@ -138,6 +142,7 @@ services:
       ORIGIN: https://www.${domain:?}
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
+      release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
       kuma.__docker:
       # kuma.__web: '"${domain:?}"'
       traefik.enable: "true"
@@ -160,6 +165,7 @@ services:
       DOMAIN: https://vw.${domain:?}
     image: vaultwarden/server:${vaultwarden_version:-latest}
     labels:
+      release_notes: "https://github.com/dani-garcia/vaultwarden/releases"
       kuma.__docker:
       # kuma.__web: '"vw.${domain:?}"'
       traefik.enable: "true"

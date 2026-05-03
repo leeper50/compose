@@ -53,6 +53,7 @@ services:
       OBJECTSTORE_S3_LEGACYAUTH: false
     image: nextcloud:${nextcloud_version:-32-fpm}
     labels:
+      release_notes: "https://github.com/nextcloud/docker/releases"
       kuma.__docker:
     networks:
       default:
@@ -66,6 +67,7 @@ services:
     entrypoint: /cron.sh
     image: nextcloud:${nextcloud_version:-32-fpm}
     labels:
+      release_notes: "https://github.com/nextcloud/docker/releases"
       kuma.__docker:
     networks:
       default:
@@ -95,6 +97,7 @@ services:
       timeout: 5s
     image: postgres:${postgres_version:-17}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default:
@@ -107,6 +110,7 @@ services:
     container_name: nextcloud_imaginary
     image: ghcr.io/nextcloud-releases/aio-imaginary:${imaginary_version:-latest}
     labels:
+      release_notes: "https://github.com/nextcloud/all-in-one/releases"
       kuma.__docker:
     networks:
       default:
@@ -122,6 +126,7 @@ services:
     container_name: nextcloud_keydb
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
+      release_notes: "https://github.com/Snapchat/KeyDB/releases"
       kuma.__docker:
     networks:
       default:
@@ -137,6 +142,7 @@ services:
     depends_on:
       - nextcloud_app
     labels:
+      release_notes: "https://github.com/nginx/nginx/releases"
       kuma.__docker:
       # kuma.__web: '"next.${domain:?}"'
       traefik.enable: "true"

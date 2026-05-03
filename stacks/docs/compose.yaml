@@ -42,6 +42,7 @@ services:
          {{container_name}}_http.http.notification_name_list: ["ntfy"]
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
+      release_notes: "https://github.com/bigboot/autokuma/releases"
       kuma.local.docker_host.name: 'Local Docker Socket'
       kuma.local.docker_host.connection_type: 'socket'
       kuma.local.docker_host.path: '/var/run/docker.sock'
@@ -77,6 +78,7 @@ services:
       DB_USERNAME: ${db_user:-bookstack}
     image: solidnerd/bookstack:${bookstack_version:-25.12.3}
     labels:
+      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       kuma.__docker:
       # kuma.__web: '"bs.${domain:?}"'
       traefik.enable: "true"
@@ -101,6 +103,7 @@ services:
       MARIADB_USER: ${db_user:-bookstack}
       MARIADB_AUTO_UPGRADE: true
     labels:
+      release_notes: "https://mariadb.com/docs/release-notes/community-server"
       kuma.__docker:
     networks:
       bookstack: null
@@ -113,6 +116,7 @@ services:
       DOZZLE_AUTH_PROVIDER: forward-proxy
     image: amir20/dozzle:${dozzle_version:-latest}
     labels:
+      release_notes: "https://github.com/amir20/dozzle/releases"
       kuma.__docker:
       # kuma.__web: '"dz.${domain:?}"'
       traefik.enable: 'true'
@@ -156,6 +160,7 @@ services:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     init: true
     labels:
+      release_notes: "https://github.com/binwiederhier/ntfy/releases"
       kuma.__docker:
       # kuma.__web: '"n.${domain:?}"'
       traefik.enable: "true"
@@ -175,6 +180,7 @@ services:
     container_name: uptimekuma
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
     labels:
+      release_notes: "https://github.com/louislam/uptime-kuma/releases"
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"
       traefik.http.routers.uptimekuma.middlewares: "localonly@file"

@@ -30,6 +30,7 @@ services:
       - "2606:4700:4700::1111"
     image: adguard/adguardhome:${adguard_version:-latest}
     labels:
+      release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
       kuma.__docker:
       # kuma.__web: '"ad.${domain:?}"'
       traefik.enable: "true"
@@ -56,6 +57,7 @@ services:
       LOG_LEVEL: ${log_level:-warn}
     image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
     labels:
+      release_notes: "https://github.com/bakito/adguardhome-sync/releases"
       kuma.__docker:
     networks:
       default: null

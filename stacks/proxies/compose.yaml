@@ -34,6 +34,7 @@ services:
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
     image: qmcgaw/gluetun:${gluetun_version:-v3.41}
     labels:
+      release_notes: "https://github.com/qdm12/gluetun/releases"
       kuma.__docker:
     ports:
       - "1080:1080/tcp"
@@ -53,5 +54,6 @@ services:
       REQUIRE_AUTH: ${enable_auth:-true}
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     labels:
+      release_notes: "https://github.com/serjs/socks5-server/releases"
       kuma.__docker:
     network_mode: service:gluetun_proxy

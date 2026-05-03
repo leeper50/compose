@@ -29,6 +29,7 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
     labels:
+      release_notes: "https://github.com/nicotsx/zerobyte/releases"
       kuma.__docker:
       # kuma.__web: '"z.${domain:?}"'
       traefik.enable: "true"

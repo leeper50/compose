@@ -27,6 +27,7 @@ services:
       start_period: 20s
     image: ghcr.io/actualbudget/actual:${actualbudget_version:-latest}
     labels:
+      release_notes: "https://github.com/actualbudget/actual/releases"
       kuma.__docker:
       # kuma.__web: '"ab.${domain:?}"'
       traefik.enable: "true"
