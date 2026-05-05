@@ -34,6 +34,7 @@ services:
       TZ: ${timezone:-UTC}
       WEBHOOK_URL: https://n8n.${domain:?}/
     labels:
+      release_notes: "https://docs.n8n.io/release-notes/"
       kuma.__docker:
       # kuma.__web: '"n8n.${domain:?}"'
       traefik.enable: "true"

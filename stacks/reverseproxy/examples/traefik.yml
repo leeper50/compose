@@ -49,9 +49,6 @@ entryPoints:
         idleTimeout: 600s
         writeTimeout: 600s
     http:
-      middlewares:
-        - geoipfilter@file
-        - crowdsec@file
       tls:
         certResolver: your-cert-provider
         domains:
@@ -62,12 +59,8 @@ entryPoints:
     address: :8082
   minecraft:
     address: :25565
-
-experimental:
-  plugins:
-    bouncer:
-      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
-      version: v1.4.7
+  terraria:
+    address: :7777
 
 log:
   compress: true

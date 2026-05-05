@@ -42,6 +42,7 @@ services:
          {{container_name}}_http.http.notification_name_list: ["ntfy"]
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
+      release_notes: "https://github.com/bigboot/autokuma/releases"
       kuma.local.docker_host.name: 'Local Docker Socket'
       kuma.local.docker_host.connection_type: 'socket'
       kuma.local.docker_host.path: '/var/run/docker.sock'
@@ -70,19 +71,20 @@ services:
       - bookstack_db
     environment:
       APP_KEY: ${app_key:?}
-      APP_URL: https://wiki.${domain:?}
+      APP_URL: https://bs.${domain:?}
       DB_DATABASE: ${db_name:-bookstack}
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-bookstack}
-    image: solidnerd/bookstack:${bookstack_version:-25.11.6}
+    image: solidnerd/bookstack:${bookstack_version:-25.12.3}
     labels:
+      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       kuma.__docker:
-      # kuma.__web: '"wiki.${domain:?}"'
+      # kuma.__web: '"bs.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
-      traefik.http.routers.bookstack.rule: "Host(`wiki.${domain:?}`)"
+      traefik.http.routers.bookstack.rule: "Host(`bs.${domain:?}`)"
       traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
     networks:
       bookstack: null
@@ -92,43 +94,42 @@ services:
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
     <<: *common-settings
-    image: mysql:${mysql_version:-9.2}
+    image: mariadb:${mariadb_version:-12}
     container_name: bookstack_db
     environment:
-      MYSQL_DATABASE: ${db_name:-bookstack}
-      MYSQL_PASSWORD: ${db_pass:?}
-      MYSQL_ROOT_PASSWORD: ${root_pass:?}
-      MYSQL_USER: ${db_user:-bookstack}
+      MARIADB_DATABASE: ${db_name:-bookstack}
+      MARIADB_PASSWORD: ${db_pass:?}
+      MARIADB_ROOT_PASSWORD: ${root_pass:?}
+      MARIADB_USER: ${db_user:-bookstack}
+      MARIADB_AUTO_UPGRADE: true
     labels:
+      release_notes: "https://mariadb.com/docs/release-notes/community-server"
       kuma.__docker:
     networks:
       bookstack: null
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
-  grafana:
+  dozzle:
     <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: grafana
-    depends_on:
-      - prometheus
+    container_name: dozzle
     environment:
-      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-worldmap-panel,grafana-piechart-panel
-    image: grafana/grafana:${grafana_version:-latest}
+      DOZZLE_AUTH_PROVIDER: forward-proxy
+    image: amir20/dozzle:${dozzle_version:-latest}
     labels:
+      release_notes: "https://github.com/amir20/dozzle/releases"
       kuma.__docker:
-      # kuma.__web: '"gf.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.grafana.entryPoints: "https"
-      traefik.http.routers.grafana.middlewares: "localonly@file"
-      traefik.http.routers.grafana.rule: "Host(`gf.${domain:?}`)"
-      traefik.http.services.grafana.loadbalancer.server.url: "http://grafana:3000"
+      # kuma.__web: '"dz.${domain:?}"'
+      traefik.enable: 'true'
+      traefik.http.routers.dozzle.entryPoints: 'https'
+      traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
+      traefik.http.routers.dozzle.rule: 'Host(`dz.${domain}`)'
+      traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
+      traefik.http.services.dozzle.loadbalancer.server.port: 8080
     networks:
-      proxy: null
-    user: ${uid:-1000}:${gid:-1000}
+      proxy:
     volumes:
-      - ${data:-.}/grafana:/var/lib/grafana
-      - /etc/timezone:/etc/timezone:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${data:-.}/dozzle:/data
   ntfy:
     <<: *common-settings
     cap_drop:
@@ -159,6 +160,7 @@ services:
     image: binwiederhier/ntfy:${ntfy_version:-latest}
     init: true
     labels:
+      release_notes: "https://github.com/binwiederhier/ntfy/releases"
       kuma.__docker:
       # kuma.__web: '"n.${domain:?}"'
       traefik.enable: "true"
@@ -171,26 +173,6 @@ services:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/ntfy/data:/var/lib/ntfy
-  prometheus:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: prometheus
-    image: prom/prometheus:${prometheus_version:-latest}
-    labels:
-      kuma.__docker:
-      # kuma.__web: '"pm.${domain:?}"'
-      traefik.enable: "true"
-      traefik.http.routers.prometheus.entryPoints: "https"
-      traefik.http.routers.prometheus.middlewares: "localonly@file"
-      traefik.http.routers.prometheus.rule: "Host(`pm.${domain:?}`)"
-      traefik.http.services.prometheus.loadbalancer.server.url: "http://prometheus:9090"
-    networks:
-      proxy: null
-    volumes:
-      - ${data:-.}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ${data:-.}/prometheus/data:/prometheus
-      - /etc/timezone:/etc/timezone:ro
   uptimekuma:
     <<: *common-settings
     cap_drop:
@@ -198,6 +180,7 @@ services:
     container_name: uptimekuma
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
     labels:
+      release_notes: "https://github.com/louislam/uptime-kuma/releases"
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"
       traefik.http.routers.uptimekuma.middlewares: "localonly@file"

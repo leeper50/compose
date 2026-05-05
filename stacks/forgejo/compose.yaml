@@ -30,8 +30,9 @@ services:
       USER_UID: ${uid:-1000}
     depends_on:
       - forgejo_db
-    image: codeberg.org/forgejo/forgejo:${forgejo_version:-13-rootless}
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-14-rootless}
     labels:
+      release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
       kuma.__docker:
       # kuma.__web: '"fj.${domain:?}"'
       traefik.enable: "true"
@@ -41,6 +42,8 @@ services:
     networks:
       default:
       proxy:
+    ports:
+      - "2222:2222/tcp" # Rootless ssh port
     user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/app/data:/var/lib/gitea
@@ -64,6 +67,7 @@ services:
       POSTGRES_USER: ${db_user:-forgejo}
     image: postgres:${postgres_version:-14}
     labels:
+      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
     networks:
       default:
@@ -89,6 +93,7 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
     image: gitea/act_runner:${runner_version:-nightly}
     labels:
+      release_notes: "https://gitea.com/gitea/runner/releases"
       kuma.__docker:
     networks:
       default: null

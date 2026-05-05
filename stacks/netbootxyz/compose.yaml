@@ -32,6 +32,7 @@ services:
       start_period: 3s
     image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
     labels:
+      release_notes: "https://netboot.xyz/docs/community/changelog"
       kuma.__docker:
       # kuma.__web: '"nb.${domain:?}"'
       traefik.enable: "true"

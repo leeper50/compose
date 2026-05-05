@@ -29,6 +29,7 @@ services:
       UMASK: ${umask:-0220}
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     labels:
+      release_notes: "https://github.com/syncthing/syncthing/releases"
       kuma.__docker:
       # kuma.__web: '"sync.${domain:?}"'
       traefik.enable: "true"

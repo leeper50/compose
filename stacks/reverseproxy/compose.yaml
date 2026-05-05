@@ -15,44 +15,6 @@ x-common-settings: &common-settings
   stdin_open: false
   tty: false
 services:
-  crowdsec:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    container_name: crowdsec
-    environment:
-      GID: ${gid:-1000}
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
-    image: crowdsecurity/crowdsec:${crowdsec_version:-latest}
-    labels:
-      kuma.__docker:
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/crowdsec/db:/var/lib/crowdsec/data/
-      - ${data:-.}/crowdsec/config:/etc/crowdsec/
-      - ${data:-.}/logs/crowdsec:/var/log:ro
-  geoipfilter:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-    container_name: geoipfilter
-    environment:
-      MAXMIND_ID: ${maxmind_id:?}
-      MAXMIND_KEY: ${maxmind_key:?}
-      FILTER_TYPE: ${filter:-allow}
-      COUNTRY_CODES: ${country_codes:-US}
-      BLOCK_STATUS_CODE: ${block_status_code:-418}
-      EXTRA_IPS: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
-    image: mpdcampbell/traefik-geoip-filter:${geoip_version:-latest}
-    labels:
-      kuma.__docker:
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/geoip:/geoip
   pocketid:
     <<: *common-settings
     cap_drop:
@@ -76,6 +38,7 @@ services:
       timeout: 5s
     image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
     labels:
+      release_notes: "https://pocket-id.org/changelog"
       kuma.__docker:
       # kuma.__web: '"id.${domain:?}"'
       traefik.enable: "true"
@@ -93,18 +56,19 @@ services:
     depends_on:
       - pocketid
     environment:
-      APP_URL: https://auth.${domain}
-      OAUTH_AUTO_REDIRECT: pocketid
-      PROVIDERS_POCKETID_AUTH_URL: https://id.${domain}/authorize
-      PROVIDERS_POCKETID_CLIENT_ID: ${tinyauth_id}
-      PROVIDERS_POCKETID_CLIENT_SECRET: ${tinyauth_secret}
-      PROVIDERS_POCKETID_NAME: Pocket ID
-      PROVIDERS_POCKETID_REDIRECT_URL: https://auth.${domain}/api/oauth/callback/pocketid
-      PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      PROVIDERS_POCKETID_TOKEN_URL: https://id.${domain}/api/oidc/token
-      PROVIDERS_POCKETID_USER_INFO_URL: https://id.${domain}/api/oidc/userinfo
-    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v4}
+      TINYAUTH_APPURL: https://auth.${domain}
+      TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.${domain}/authorize
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.${domain}/api/oauth/callback/pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
+    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
     labels:
+      release_notes: "https://tinyauth.app/docs/reference/changelog/"
       kuma.__docker:
       # kuma.__web: '"auth.${domain:?}"'
       traefik.enable: "true"
@@ -120,14 +84,13 @@ services:
       - ALL
     container_name: traefik
     depends_on:
-      - crowdsec
-      - geoipfilter
       - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
     image: traefik:${traefik_version:-v3.6}
     labels:
+      release_notes: "https://github.com/traefik/traefik/releases"
       kuma.__docker:
       # kuma.__web: '"tf.${domain:?}"'
       traefik.enable: "true"
@@ -142,6 +105,7 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
       - "443:443/udp"
+      - "7777:7777/tcp"
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -150,19 +114,3 @@ services:
       - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
       - ${data:-.}/traefik/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
-  vector:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    command: ["--config", "/etc/vector/vector.yaml"]
-    container_name: vector
-    depends_on:
-      - crowdsec
-    image: timberio/vector:${vector_version:-latest-alpine}
-    labels:
-      kuma.__docker:
-    networks:
-      default:
-    volumes:
-      - ${data:-.}/logs:/var/log
-      - ${data:-.}/vector:/etc/vector:ro

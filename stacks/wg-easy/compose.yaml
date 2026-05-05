@@ -27,6 +27,7 @@ services:
       INSECURE: false
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     labels:
+      release_notes: "https://github.com/wg-easy/wg-easy/releases"
       kuma.__docker:
       # kuma.__web: '"vpn.${domain:?}"'
       traefik.enable: "true"

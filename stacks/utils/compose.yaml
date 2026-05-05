@@ -25,6 +25,7 @@ services:
       JWT_SECRET: ${convertx_jwt:?}
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     labels:
+      release_notes: "https://github.com/C4illin/ConvertX/releases"
       kuma.__docker:
       # kuma.__web: '"cx.${domain:?}"'
       traefik.enable: "true"
@@ -43,11 +44,12 @@ services:
     container_name: ittools
     image: "sharevb/it-tools:${ittools_version:-latest}"
     labels:
+      release_notes: "https://github.com/CorentinTh/it-tools/releases"
       kuma.__docker:
       # kuma.__web: '"it.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
-      traefik.http.routers.ittools.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
     networks:
@@ -59,33 +61,35 @@ services:
     container_name: libretranslate
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     labels:
+      release_notes: "https://github.com/LibreTranslate/LibreTranslate/releases"
       kuma.__docker:
       # kuma.__web: '"lt.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
-      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
       traefik.http.routers.libretranslate.rule: "Host(`lt.${domain:?}`)"
       traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
     networks:
       proxy: null
-  myspeed:
+  speedtest:
     <<: *common-settings
     cap_drop:
       - ALL
-    container_name: myspeed
+    container_name: speedtest
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     labels:
+      release_notes: "https://github.com/gnmyt/MySpeed/releases"
       kuma.__docker:
-      # kuma.__web: '"speed.${domain:?}"'
+      # kuma.__web: '"sp.${domain:?}"'
       traefik.enable: "true"
-      traefik.http.routers.myspeed.entryPoints: "https"
-      traefik.http.routers.myspeed.middlewares: "localonly@file"
-      traefik.http.routers.myspeed.rule: "Host(`speed.${domain:?}`)"
-      traefik.http.services.myspeed.loadbalancer.server.url: "http://myspeed:5216"
+      traefik.http.routers.speedtest.entryPoints: "https"
+      traefik.http.routers.speedtest.middlewares: "localonly@file"
+      traefik.http.routers.speedtest.rule: "Host(`sp.${domain:?}`)"
+      traefik.http.services.speedtest.loadbalancer.server.url: "http://speedtest:5216"
     networks:
       proxy: null
     volumes:
-      - "${data:-.}/myspeed:/myspeed/data"
+      - "${data:-.}/speedtest:/myspeed/data"
   privatebin:
     <<: *common-settings
     cap_drop:
@@ -93,11 +97,12 @@ services:
     container_name: privatebin
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     labels:
+      release_notes: "https://privatebin.info/tag/release.html"
       kuma.__docker:
       # kuma.__web: '"pb.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
-      traefik.http.routers.privatebin.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
       traefik.http.routers.privatebin.rule: "Host(`pb.${domain:?}`)"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
     networks:
@@ -128,11 +133,12 @@ services:
       REDIS_HOST: send_keydb
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
+      release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
       kuma.__docker:
       # kuma.__web: '"send.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
-      traefik.http.routers.send.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.send.middlewares: "allowedIPs@file"
       traefik.http.routers.send.rule: "Host(`send.${domain:?}`)"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
     networks:
@@ -151,6 +157,7 @@ services:
     container_name: send_keydb
     image: eqalpha/keydb:${keydb_version:-latest}
     labels:
+      release_notes: "https://github.com/Snapchat/KeyDB/releases"
       kuma.__docker:
     networks:
       send: null
@@ -158,8 +165,12 @@ services:
       - ${data:-.}/send/keydb:/data
   slink:
     <<: *common-settings
-    cap_drop:
-      - ALL
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - CHOWN
+    #   - SETGID
+    #   - SETUID
     container_name: slink
     environment:
       IMAGE_COMPRESSION_QUALITY: 100
@@ -174,11 +185,12 @@ services:
       USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
     image: anirdev/slink:${slink_version:-latest}
     labels:
+      release_notes: "https://github.com/andrii-kryvoviaz/slink/releases"
       kuma.__docker:
       # kuma.__web: '"sl.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
-      traefik.http.routers.slink.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.slink.middlewares: "allowedIPs@file"
       traefik.http.routers.slink.priority: 30
       traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
       traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"

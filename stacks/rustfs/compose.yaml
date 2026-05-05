@@ -18,6 +18,11 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data
     container_name: rustfs
     environment:
@@ -25,6 +30,7 @@ services:
       RUSTFS_SECRET_KEY: ${default_secret_key:?}
     image: rustfs/rustfs:${rustfs_version:-latest}
     labels:
+      release_notes: "https://github.com/RustFS/RustFS/releases"
       kuma.__docker:
       # kuma.__web: '"rs.${domain:?}/rustfs/console"'
       kuma.rustfs_s3.port.hostname: rustfs
@@ -45,6 +51,5 @@ services:
       traefik.http.services.rustfs-s3.loadbalancer.server.url: "http://rustfs:9000"
     networks:
       proxy:
-    user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/data:/data

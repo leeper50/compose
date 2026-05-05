@@ -1,0 +1,41 @@
+networks:
+  proxy:
+    external: true
+x-common-settings: &common-settings
+  logging:
+    driver: local
+    options:
+      compress: "true"
+      max-file: "3"
+      max-size: "10m"
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  stdin_open: false
+  tty: false
+services:
+  actualbudget:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: actualbudget
+    healthcheck:
+      test: ['CMD-SHELL', 'node src/scripts/health-check.js']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    image: ghcr.io/actualbudget/actual:${actualbudget_version:-latest}
+    labels:
+      release_notes: "https://github.com/actualbudget/actual/releases"
+      kuma.__docker:
+      # kuma.__web: '"ab.${domain:?}"'
+      traefik.enable: "true"
+      traefik.http.routers.actualbudget.entryPoints: "https"
+      traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
+      traefik.http.routers.actualbudget.rule: "Host(`ab.${domain:?}`)"
+      traefik.http.services.actualbudget.loadbalancer.server.url: "http://actualbudget:5006"
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/app:/data

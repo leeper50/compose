@@ -14,24 +14,14 @@ http:
     allowedIPs:
       ipAllowList:
         <<: *allowedIPs
-    crowdsec:
-      plugin:
-        bouncer:
-          enabled: true
-          logLevel: DEBUG
-          LogFilePath: ""
-          crowdsecLapiHost: crowdsec:8080
-          crowdsecLapiScheme: http
-          crowdsecLapiKey: <crowdsec_api_key_here>
-    geoipfilter:
-      forwardAuth:
-        address: http://geoipfilter:8080/traefik
     localonly:
       ipAllowList:
         <<: *localIPs
     tinyauth:
       forwardAuth:
         address: http://tinyauth:3000/api/auth/traefik
+        authResponseHeaders: remote-user
+        maxResponseBodySize: 104857600
 tcp:
   middlewares:
     allowedIPs:

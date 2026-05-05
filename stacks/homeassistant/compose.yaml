@@ -25,6 +25,7 @@ services:
       - zigbee2mqtt
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
+      release_notes: "https://github.com/home-assistant/docker/releases"
       kuma.__docker:
       # kuma.__web: '"ha.${domain:?}"'
       traefik.enable: "true"
@@ -51,6 +52,7 @@ services:
     container_name: mqtt
     image: eclipse-mosquitto:${mqtt_version:-latest}
     labels:
+      release_notes: "https://mosquitto.org/blog/categories/releases/"
       kuma.__docker:
     networks:
       mqtt:
@@ -73,6 +75,7 @@ services:
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
     labels:
+      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       kuma.__docker:
       # kuma.__web: '"zb.${domain:?}"'
       traefik.enable: "true"
@@ -98,6 +101,7 @@ services:
       TZ: ${timezone:-UTC}
     image: zwavejs/zwave-js-ui:${zwave_version:-latest}
     labels:
+      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       kuma.__docker:
       # kuma.__web: '"zw.${domain:?}"'
       traefik.enable: "true"
