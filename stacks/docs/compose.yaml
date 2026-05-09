@@ -67,6 +67,7 @@ services:
       socket-proxy: null
     volumes:
       - ${data:-.}/autokuma:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   bookstack:
     <<: *common-settings
     cap_drop:
@@ -197,3 +198,4 @@ services:
       socket-proxy: null
     volumes:
       - ${data:-.}/uptime:/app/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
