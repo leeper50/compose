@@ -2,6 +2,8 @@ networks:
   default: null
   proxy:
     external: true
+  socket-proxy:
+    external: true
 x-common-settings: &common-settings
   logging:
     driver: local
@@ -82,6 +84,7 @@ services:
     depends_on:
       - gitea
     environment:
+      DOCKER_HOST: tcp://socket-proxy:2375
       GITEA_INSTANCE_URL: https://git.${domain:?}/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
@@ -96,6 +99,6 @@ services:
       kuma.__docker:
     networks:
       default: null
+      socket-proxy: null
     volumes:
       - ${data:-.}/runner/data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
