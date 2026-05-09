@@ -30,6 +30,7 @@ services:
          http.max_redirects: 10
          *.max_retries: 3
       AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^temp_;^[a-f0-9]{12}_.*_" # Excludes test containers and temporary stack containers.
+      AUTOKUMA__DOCKER__HOSTS: '[{"url":"tcp://socket-proxy:2375","tls_verify":false,"tls_cert_path":""}]'
       AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
       AUTOKUMA__KUMA__URL: http://uptimekuma:3001
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
@@ -45,9 +46,6 @@ services:
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
-      kuma.local.docker_host.name: 'Socket Proxy'
-      kuma.local.docker_host.docker_type: 'tcp'
-      kuma.local.docker_host.docker_daemon: 'tcp://socket-proxy:2375'
       kuma.ntfy.notification.name: 'NTFY'
       kuma.ntfy.notification.active: 'true'
       kuma.ntfy.notification.config: |
