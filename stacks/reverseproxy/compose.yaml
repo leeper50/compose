@@ -2,6 +2,8 @@ networks:
   default: null
   proxy:
     external: true
+  socket-proxy:
+    external: true
 x-common-settings: &common-settings
   logging:
     driver: local
@@ -101,6 +103,7 @@ services:
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
     networks:
       proxy:
+      socket-proxy:
     ports:
       - "80:80/tcp"
       - "443:443/tcp"
@@ -109,8 +112,29 @@ services:
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
       - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
       - ${data:-.}/traefik/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
+  socket-proxy:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    container_name: socket-proxy
+    environment:
+      CONTAINERS: 1
+      EVENTS: 1
+      INFO: 1
+      POST: 0
+      TZ: ${timezone:-UTC}
+    image: ghcr.io/tecnativa/docker-socket-proxy:latest:${socket_proxy_version:-latest}
+    labels:
+      release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
+      kuma.__docker:
+    networks:
+      socket-proxy:
+    read_only: true
+    tmpfs:
+      - /run
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

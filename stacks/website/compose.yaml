@@ -2,6 +2,8 @@ networks:
   freshrss: null
   proxy:
     external: true
+  socket-proxy:
+    external: true
 x-common-settings: &common-settings
   logging:
     driver: local
@@ -128,9 +130,9 @@ services:
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
     networks:
       proxy:
+      socket-proxy:
     volumes:
       - ${data:-.}/homepage:/app/config:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
   mywebsite:
     <<: *common-settings
     cap_drop:

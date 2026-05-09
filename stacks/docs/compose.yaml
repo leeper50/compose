@@ -2,6 +2,8 @@ networks:
   bookstack: null
   proxy:
     external: true
+  socket-proxy:
+    external: true
 x-common-settings: &common-settings
   logging:
     driver: local
@@ -114,6 +116,7 @@ services:
     container_name: dozzle
     environment:
       DOZZLE_AUTH_PROVIDER: forward-proxy
+      DOZZLE_REMOTE_HOST: tcp://socket-proxy:2375
     image: amir20/dozzle:${dozzle_version:-latest}
     labels:
       release_notes: "https://github.com/amir20/dozzle/releases"
@@ -127,8 +130,8 @@ services:
       traefik.http.services.dozzle.loadbalancer.server.port: 8080
     networks:
       proxy:
+      socket-proxy:
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${data:-.}/dozzle:/data
   ntfy:
     <<: *common-settings
