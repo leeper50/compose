@@ -127,7 +127,7 @@ services:
       INFO: 1
       POST: 0
       TZ: ${timezone:-UTC}
-    image: ghcr.io/tecnativa/docker-socket-proxy:latest:${socket_proxy_version:-latest}
+    image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
     labels:
       release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
       kuma.__docker:
