@@ -45,9 +45,12 @@ services:
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
-      kuma.local.docker_host.name: 'Socket Proxy'
-      kuma.local.docker_host.connection_type: 'tcp'
-      kuma.local.docker_host.host: 'tcp://socket-proxy:2375'
+      kuma.local.docker_host.name: 'Local Docker Socket'
+      kuma.local.docker_host.connection_type: 'socket'
+      kuma.local.docker_host.path: '/var/run/docker.sock'
+      kuma.proxy.docker_host.name: 'Socket Proxy'
+      kuma.proxy.docker_host.connection_type: 'tcp'
+      kuma.proxy.docker_host.host: 'tcp://socket-proxy:2375'
       kuma.ntfy.notification.name: 'NTFY'
       kuma.ntfy.notification.active: 'true'
       kuma.ntfy.notification.config: |
