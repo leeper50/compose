@@ -133,8 +133,5 @@ services:
       kuma.__docker:
     networks:
       socket-proxy:
-    read_only: true
-    tmpfs:
-      - /run
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
