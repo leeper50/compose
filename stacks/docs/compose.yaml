@@ -35,7 +35,7 @@ services:
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
       AUTOKUMA__SNIPPETS__DOCKER: |- 
          {{container_name}}_docker.docker.docker_container: {{container_name}}
-         {{container_name}}_docker.docker.docker_host_name: local
+         {{container_name}}_docker.docker.docker_host_name: proxy
          {{container_name}}_docker.docker.name: docker_{{container_name}}
          {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
       AUTOKUMA__SNIPPETS__WEB: |- 
@@ -45,9 +45,6 @@ services:
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
-      kuma.local.docker_host.name: 'Local Docker Socket'
-      kuma.local.docker_host.connection_type: 'socket'
-      kuma.local.docker_host.path: '/var/run/docker.sock'
       kuma.proxy.docker_host.name: 'Socket Proxy'
       kuma.proxy.docker_host.connection_type: 'tcp'
       kuma.proxy.docker_host.host: 'tcp://socket-proxy:2375'
@@ -198,4 +195,3 @@ services:
       socket-proxy: null
     volumes:
       - ${data:-.}/uptime:/app/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
