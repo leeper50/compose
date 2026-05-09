@@ -30,6 +30,7 @@ services:
          http.max_redirects: 10
          *.max_retries: 3
       AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^temp_;^[a-f0-9]{12}_.*_" # Excludes test containers and temporary stack containers.
+      AUTOKUMA__DOCKER__HOSTS: tcp://socket-proxy:2375
       AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
       AUTOKUMA__KUMA__URL: http://uptimekuma:3001
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
@@ -45,9 +46,6 @@ services:
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
-      kuma.local.docker_host.name: 'Local Docker Socket'
-      kuma.local.docker_host.connection_type: 'socket'
-      kuma.local.docker_host.path: '/var/run/docker.sock'
       kuma.ntfy.notification.name: 'NTFY'
       kuma.ntfy.notification.active: 'true'
       kuma.ntfy.notification.config: |
@@ -61,9 +59,9 @@ services:
         }
     networks:
       proxy: null
+      socket-proxy: null
     volumes:
       - ${data:-.}/autokuma:/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
   bookstack:
     <<: *common-settings
     cap_drop:
@@ -191,6 +189,6 @@ services:
       traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"
     networks:
       proxy: null
+      socket-proxy: null
     volumes:
       - ${data:-.}/uptime:/app/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
