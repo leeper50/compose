@@ -46,8 +46,8 @@ services:
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
       kuma.local.docker_host.name: 'Socket Proxy'
-      kuma.local.docker_host.connection_type: 'tcp'
-      kuma.local.docker_host.path: 'tcp://socket-proxy:2375'
+      kuma.local.docker_host.docker_type: 'tcp'
+      kuma.local.docker_host.docker_daemon: 'tcp://socket-proxy:2375'
       kuma.ntfy.notification.name: 'NTFY'
       kuma.ntfy.notification.active: 'true'
       kuma.ntfy.notification.config: |
