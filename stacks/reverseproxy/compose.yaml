@@ -127,6 +127,7 @@ services:
       IMAGES: 1
       INFO: 1
       NETWORKS: 1
+      POST: 1
       TZ: ${timezone:-UTC}
       VOLUMES: 1
     image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
