@@ -21,15 +21,15 @@ services:
     depends_on:
       - nextcloud_db
       - nextcloud_imaginary
-      - nextcloud_keydb
+      - nextcloud_valkey
     environment:
       # Database Stuff
       POSTGRES_DB: ${db_name:-nextcloud}
       POSTGRES_HOST: nextcloud_db
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_name:-nextcloud}
-      REDIS_HOST_PASSWORD: ${keydb_pass}
-      REDIS_HOST: nextcloud_keydb
+      REDIS_HOST_PASSWORD: ${valkey_pass}
+      REDIS_HOST: nextcloud_valkey
       # Nextcloud's Config.php stuff
       ENABLE_PREVIEWS: "true"
       NEXTCLOUD_ADMIN_PASSWORD: ${admin_pass:?}
@@ -114,24 +114,6 @@ services:
       kuma.__docker:
     networks:
       default:
-  nextcloud_keydb:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    command: keydb-server --requirepass ${keydb_pass}
-    container_name: nextcloud_keydb
-    image: eqalpha/keydb:${keydb_version:-latest}
-    labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
-      kuma.__docker:
-    networks:
-      default:
-    volumes:
-      - ${data:-.}/keydb:/data
   nextcloud_nginx:
     <<: *common-settings
     container_name: nextcloud_nginx
@@ -166,3 +148,21 @@ services:
     networks:
       default:
       proxy:
+  nextcloud_valkey:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    command: valkey-server --requirepass ${valkey_pass}
+    container_name: nextcloud_valkey
+    image: valkey/valkey:${valkey_version:-9}
+    labels:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
+      kuma.__docker:
+    networks:
+      default:
+    volumes:
+      - ${data:-.}/valkey:/data

@@ -29,7 +29,7 @@ services:
       PAPERLESS_DBNAME: ${db_name:-paperless}
       PAPERLESS_DBPASS: ${db_pass:?}
       PAPERLESS_DBUSER: ${db_user:-paperless}
-      PAPERLESS_REDIS: redis://paperlessngx_keydb:6379
+      PAPERLESS_REDIS: redis://paperlessngx_valkey:6379
       PAPERLESS_SECRET_KEY: ${secret_key:?}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
       PAPERLESS_URL: https://pl.${domain:?}
@@ -39,7 +39,7 @@ services:
       PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"pocket-id","name":"Pocket-ID","client_id":"${client_id:?}","secret":"${client_secret:?}","settings":{"server_url":"https://id.${domain:?}"}}]}}'
     depends_on:
       - paperlessngx_db
-      - paperlessngx_keydb
+      - paperlessngx_valkey
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
       release_notes: "https://github.com/paperless-ngx/paperless-ngx/releases"
@@ -58,23 +58,6 @@ services:
       - ${data:-.}/app/media:/usr/src/paperless/media
       - ${data:-.}/app/export:/usr/src/paperless/export
       - ${data:-.}/app/consume:/usr/src/paperless/consume
-  paperlessngx_keydb:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: paperlessngx_keydb
-    image: eqalpha/keydb:${keydb_version:-latest}
-    labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
-      kuma.__docker:
-    networks:
-      default: null
-    volumes:
-      - ${data:-.}/keydb:/data
   paperlessngx_db:
     <<: *common-settings
     cap_drop:
@@ -98,3 +81,20 @@ services:
       default: null
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
+  paperlessngx_valkey:
+    <<: *common-settings
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    container_name: paperlessngx_valkey
+    image: valkey/valkey:${valkey_version:-9}
+    labels:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
+      kuma.__docker:
+    networks:
+      default: null
+    volumes:
+      - ${data:-.}/valkey:/data

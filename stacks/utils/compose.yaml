@@ -120,7 +120,7 @@ services:
       - ALL
     container_name: send
     depends_on:
-      - send_keydb
+      - send_valkey
     environment:
       BASE_URL: https://send.${domain:?}
       DEFAULT_EXPIRE_SECONDS: 3600
@@ -130,7 +130,7 @@ services:
       MAX_EXPIRE_SECONDS: 31536000
       MAX_FILE_SIZE: 10737418240
       NODE_ENV: production
-      REDIS_HOST: send_keydb
+      REDIS_HOST: send_valkey
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
       release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
@@ -146,7 +146,7 @@ services:
       send: null
     volumes:
       - ${data:-.}/send/app:/uploads
-  send_keydb:
+  send_valkey:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -154,15 +154,15 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: send_keydb
-    image: eqalpha/keydb:${keydb_version:-latest}
+    container_name: send_valkey
+    image: valkey/valkey:${valkey_version:-9}
     labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
+      release_notes: "https://github.com/valkey-io/valkey/releases"
       kuma.__docker:
     networks:
       send: null
     volumes:
-      - ${data:-.}/send/keydb:/data
+      - ${data:-.}/send/valkey:/data
   slink:
     <<: *common-settings
     # cap_drop:
