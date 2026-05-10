@@ -47,24 +47,22 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
-    command: "./garage-ui --garage-toml /etc/garage.toml"
     container_name: garage_webui
     depends_on:
       - garage
     environment:
-      GARAGE_UI_GARAGE_ADMIN_ENDPOINT: "http://garage:3903"
-      GARAGE_UI_GARAGE_ENDPOINT: "garage:3900"
-      GARAGE_UI_SERVER_PORT: 8080
-    image: noooste/garage-ui:${garage_webui_version:-latest}
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+    image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
-      release_notes: "https://github.com/Noooste/garage-ui/releases"
+      release_notes: "https://github.com/khairul169/garage-webui/releases"
       kuma.__docker:
       # kuma.__web: '"g.${domain:?}"'
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"
       traefik.http.routers.garage_webui.middlewares: "localonly@file"
       traefik.http.routers.garage_webui.rule: "Host(`g.${domain:?}`)"
-      traefik.http.services.garage_webui.loadbalancer.server.url: "http://garage_webui:8080"
+      traefik.http.services.garage_webui.loadbalancer.server.url: "http://garage_webui:3909"
     networks:
       proxy:
     volumes:
