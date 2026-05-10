@@ -40,7 +40,7 @@ services:
     shm_size: 128mb
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
-  immich_keydb:
+  immich_valkey:
     <<: *common-settings
     cap_drop:
       - ALL
@@ -48,17 +48,17 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: immich_keydb
+    container_name: immich_valkey
     healthcheck:
-      test: redis-cli ping || exit 1
-    image: eqalpha/keydb:${keydb_version:-latest}
+      test: valkey-cli ping || exit 1
+    image: valkey/valkey:${valkey_version:-9}
     labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
+      release_notes: "https://github.com/valkey-io/valkey/releases"
       kuma.__docker:
     networks:
       default: null
     volumes:
-      - ${data:-.}/keydb:/data
+      - ${data:-.}/valkey:/data
   immich-machine-learning:
     <<: *common-settings
     cap_drop:
@@ -86,14 +86,14 @@ services:
     container_name: immich
     depends_on:
       - immich_postgres
-      - immich_keydb
+      - immich_valkey
       - immich-machine-learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_HOSTNAME: immich_postgres
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-immich}
-      REDIS_HOSTNAME: immich_keydb
+      REDIS_HOSTNAME: immich_valkey
       TZ: ${timezone:-UTC}
     healthcheck:
       disable: false
