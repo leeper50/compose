@@ -33,7 +33,7 @@ services:
       GITEA__database__USER: ${db_user:-gitea}
       GITEA__server__DISABLE_SSH: true
       GITEA__server__ROOT_URL: https://git.${domain:?}/
-    image: docker.gitea.com/gitea:${gitea_version:-1.25-rootless}
+    image: docker.gitea.com/gitea:${gitea_version:-1.26-rootless}
     labels:
       release_notes: "https://github.com/go-gitea/gitea/releases"
       kuma.__docker:

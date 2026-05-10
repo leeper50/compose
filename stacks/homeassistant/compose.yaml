@@ -50,7 +50,7 @@ services:
       - SETUID
     command: "mosquitto -c /mosquitto-no-auth.conf"
     container_name: mqtt
-    image: eclipse-mosquitto:${mqtt_version:-latest}
+    image: eclipse-mosquitto:${mqtt_version:-2}
     labels:
       release_notes: "https://mosquitto.org/blog/categories/releases/"
       kuma.__docker:
@@ -73,7 +73,7 @@ services:
       TZ: ${timezone:-UTC}
       ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
-    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
+    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
     labels:
       release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       kuma.__docker:
@@ -99,7 +99,7 @@ services:
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
-    image: zwavejs/zwave-js-ui:${zwave_version:-latest}
+    image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
     labels:
       release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       kuma.__docker:

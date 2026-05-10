@@ -32,7 +32,7 @@ services:
       USER_UID: ${uid:-1000}
     depends_on:
       - forgejo_db
-    image: codeberg.org/forgejo/forgejo:${forgejo_version:-14-rootless}
+    image: codeberg.org/forgejo/forgejo:${forgejo_version:-15-rootless}
     labels:
       release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
       kuma.__docker:

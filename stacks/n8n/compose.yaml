@@ -18,7 +18,7 @@ x-common-settings: &common-settings
 services:
   n8n:
     <<: *common-settings
-    image: docker.n8n.io/n8nio/n8n:${n8n_version:-stable}
+    image: ghcr.io/n8n-io/n8n:stable:${n8n_version:-stable}
     cap_drop:
       - ALL
     container_name: n8n

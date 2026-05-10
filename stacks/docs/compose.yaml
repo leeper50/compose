@@ -42,7 +42,7 @@ services:
          {{container_name}}_http.http.name: web_{{container_name}}
          {{container_name}}_http.http.url: https://{{ args[0] }}
          {{container_name}}_http.http.notification_name_list: ["ntfy"]
-    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
+    image: ghcr.io/bigboot/autokuma:${autokuma_version:-2}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
       kuma.proxy.docker_host.name: 'Socket Proxy'
@@ -79,7 +79,7 @@ services:
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-bookstack}
-    image: solidnerd/bookstack:${bookstack_version:-25.12.3}
+    image: solidnerd/bookstack:${bookstack_version:-26.3}
     labels:
       release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       kuma.__docker:
@@ -118,7 +118,7 @@ services:
     environment:
       DOZZLE_AUTH_PROVIDER: forward-proxy
       DOZZLE_REMOTE_HOST: tcp://socket-proxy:2375
-    image: amir20/dozzle:${dozzle_version:-latest}
+    image: amir20/dozzle:${dozzle_version:-v10}
     labels:
       release_notes: "https://github.com/amir20/dozzle/releases"
       kuma.__docker:
@@ -161,7 +161,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    image: binwiederhier/ntfy:${ntfy_version:-latest}
+    image: binwiederhier/ntfy:${ntfy_version:-v2}
     init: true
     labels:
       release_notes: "https://github.com/binwiederhier/ntfy/releases"

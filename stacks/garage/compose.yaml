@@ -21,7 +21,7 @@ services:
     container_name: garage
     environment:
       TZ: ${timezone:-UTC}
-    image: dxflrs/garage:${garage_version:-v2.2.0}
+    image: dxflrs/garage:${garage_version:-v2.3.0}
     labels:
       release_notes: "https://git.deuxfleurs.fr/Deuxfleurs/garage/releases"
       kuma.__docker:

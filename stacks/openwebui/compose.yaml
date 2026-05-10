@@ -22,7 +22,7 @@ services:
     container_name: ollama
     environment:
        OLLAMA_HOST: 0.0.0.0:11434
-    image: ollama/ollama:${ollama_version:-main}
+    image: ollama/ollama:${ollama_version:-latest}
     labels:
       release_notes: "https://github.com/ollama/ollama/releases"
       kuma.__docker:

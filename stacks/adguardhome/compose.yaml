@@ -55,7 +55,7 @@ services:
     command: run --config /config/adguardhome-sync.yml
     environment:
       LOG_LEVEL: ${log_level:-warn}
-    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
+    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-main}
     labels:
       release_notes: "https://github.com/bakito/adguardhome-sync/releases"
       kuma.__docker:
