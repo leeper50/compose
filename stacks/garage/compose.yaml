@@ -47,7 +47,7 @@ services:
     <<: *common-settings
     cap_drop:
       - ALL
-    command: ./garage-ui --garage-toml /etc/garage.toml
+    command: "./garage-ui --garage-toml /etc/garage.toml"
     container_name: garage_webui
     depends_on:
       - garage
