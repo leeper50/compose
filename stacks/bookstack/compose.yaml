@@ -21,7 +21,7 @@ services:
       DB_USERNAME: ${db_user:-bookstack}
     image: solidnerd/bookstack:${bookstack_version:-26.3}
     labels:
-      homepage.group: Utils
+      homepage.group: Personal
       homepage.href: https://bs.${domain:?}
       homepage.icon: sh-bookstack.svg
       homepage.name: Bookstack
