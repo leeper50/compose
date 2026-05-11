@@ -1,0 +1,59 @@
+networks:
+  bookstack: null
+  proxy:
+    external: true
+services:
+  bookstack:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: bookstack
+    depends_on:
+      - bookstack_db
+    environment:
+      APP_KEY: ${app_key:?}
+      APP_URL: https://bs.${domain:?}
+      DB_DATABASE: ${db_name:-bookstack}
+      DB_HOST: bookstack_db:3306
+      DB_PASSWORD: ${db_pass:?}
+      DB_USERNAME: ${db_user:-bookstack}
+    image: solidnerd/bookstack:${bookstack_version:-26.3}
+    labels:
+      homepage.group: Utils
+      homepage.href: https://bs.${domain:?}
+      homepage.icon: sh-bookstack.svg
+      homepage.name: Bookstack
+      kuma.__docker:
+      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
+      traefik.enable: "true"
+      traefik.http.routers.bookstack.entryPoints: "https"
+      traefik.http.routers.bookstack.middlewares: "localonly@file"
+      traefik.http.routers.bookstack.rule: "Host(`bs.${domain:?}`)"
+      traefik.http.services.bookstack.loadbalancer.server.url: "http://bookstack:8080"
+    networks:
+      bookstack: null
+      proxy: null
+    volumes:
+      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
+      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
+  bookstack_db:
+    extends:
+      file: ../common.yaml
+      service: base
+    image: mariadb:${mariadb_version:-12}
+    container_name: bookstack_db
+    environment:
+      MARIADB_DATABASE: ${db_name:-bookstack}
+      MARIADB_PASSWORD: ${db_pass:?}
+      MARIADB_ROOT_PASSWORD: ${root_pass:?}
+      MARIADB_USER: ${db_user:-bookstack}
+      MARIADB_AUTO_UPGRADE: true
+    labels:
+      kuma.__docker:
+      release_notes: "https://mariadb.com/docs/release-notes/community-server"
+    networks:
+      bookstack: null
+    volumes:
+      - ${data:-.}/bookstack/db:/var/lib/mysql:rw

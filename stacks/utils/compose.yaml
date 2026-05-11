@@ -25,30 +25,6 @@ services:
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
     networks:
       proxy: null
-  speedtest:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: speedtest
-    image: germannewsmaker/myspeed:${myspeed_version:-latest}
-    labels:
-      homepage.group: Monitoring & Metrics
-      homepage.href: https://sp.${domain:?}
-      homepage.icon: sh-librespeed.svg
-      homepage.name: MySpeed
-      kuma.__docker:
-      release_notes: "https://github.com/gnmyt/MySpeed/releases"
-      traefik.enable: "true"
-      traefik.http.routers.speedtest.entryPoints: "https"
-      traefik.http.routers.speedtest.middlewares: "localonly@file"
-      traefik.http.routers.speedtest.rule: "Host(`sp.${domain:?}`)"
-      traefik.http.services.speedtest.loadbalancer.server.url: "http://speedtest:5216"
-    networks:
-      proxy: null
-    volumes:
-      - "${data:-.}/speedtest:/myspeed/data"
   privatebin:
     extends:
       file: ../common.yaml
