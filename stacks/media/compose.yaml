@@ -1,4 +1,5 @@
 networks:
+  freshrss:
   proxy:
     external: true
 x-common-settings: &common-settings
