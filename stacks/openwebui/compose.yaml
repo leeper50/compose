@@ -57,10 +57,14 @@ services:
       WEBUI_URL: https://ai.${domain:?}
     image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
     labels:
-      release_notes: "https://github.com/open-webui/open-webui/releases"
+      homepage.group: Tools
+      homepage.href: https://ai.${domain:?}
+      homepage.icon: sh-open-webui.svg
+      homepage.name: OpenWebUI
       kuma.__docker:
-      traefik.enable: "true"
       # kuma.__web: '"ai.${domain:?}"'
+      release_notes: "https://github.com/open-webui/open-webui/releases"
+      traefik.enable: "true"
       traefik.http.routers.openwebui.entryPoints: "https"
       traefik.http.routers.openwebui.middlewares: "localonly@file"
       traefik.http.routers.openwebui.rule: "Host(`ai.${domain:?}`)"

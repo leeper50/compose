@@ -29,9 +29,13 @@ services:
       UMASK: ${umask:-0220}
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     labels:
-      release_notes: "https://github.com/syncthing/syncthing/releases"
+      homepage.group: Files & Sharing
+      homepage.href: https://sync.${domain:?}
+      homepage.icon: sh-syncthing.svg
+      homepage.name: Syncthing
       kuma.__docker:
       # kuma.__web: '"sync.${domain:?}"'
+      release_notes: "https://github.com/syncthing/syncthing/releases"
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"

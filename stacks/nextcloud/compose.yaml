@@ -124,9 +124,13 @@ services:
     depends_on:
       - nextcloud_app
     labels:
-      release_notes: "https://github.com/nginx/nginx/releases"
+      homepage.group: Files & Sharing
+      homepage.href: https://next.${domain:?}
+      homepage.icon: sh-nextcloud.webp
+      homepage.name: Nextcloud
       kuma.__docker:
       # kuma.__web: '"next.${domain:?}"'
+      release_notes: "https://github.com/nginx/nginx/releases"
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entryPoints: "https"
       traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"

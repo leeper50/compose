@@ -29,9 +29,13 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
     labels:
-      release_notes: "https://github.com/nicotsx/zerobyte/releases"
+      homepage.group: Access & Security
+      homepage.href: https://z.${domain:?}
+      homepage.icon: sh-zerobyte.svg
+      homepage.name: Zerobyte
       kuma.__docker:
       # kuma.__web: '"z.${domain:?}"'
+      release_notes: "https://github.com/nicotsx/zerobyte/releases"
       traefik.enable: "true"
       traefik.http.routers.zerobyte.entryPoints: "https"
       traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"

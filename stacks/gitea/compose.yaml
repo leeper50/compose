@@ -35,9 +35,13 @@ services:
       GITEA__server__ROOT_URL: https://git.${domain:?}/
     image: docker.gitea.com/gitea:${gitea_version:-1.26-rootless}
     labels:
-      release_notes: "https://github.com/go-gitea/gitea/releases"
+      homepage.group: Development
+      homepage.href: https://git.${domain:?}
+      homepage.icon: sh-gitea.svg
+      homepage.name: Gitea
       kuma.__docker:
       # kuma.__web: '"git.${domain:?}"'
+      release_notes: "https://github.com/go-gitea/gitea/releases"
       traefik.enable: "true"
       traefik.http.routers.gitea.entryPoints: "https"
       traefik.http.routers.gitea.rule: "Host(`git.${domain:?}`)"
@@ -68,8 +72,8 @@ services:
       POSTGRES_USER: ${db_user:-gitea}
     image: postgres:${postgres_version:-14}
     labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
+      release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     volumes:
@@ -95,8 +99,8 @@ services:
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
     image: gitea/act_runner:${runner_version:-nightly}
     labels:
-      release_notes: "https://gitea.com/gitea/runner/releases"
       kuma.__docker:
+      release_notes: "https://gitea.com/gitea/runner/releases"
     networks:
       default: null
       socket-proxy: null

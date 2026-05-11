@@ -29,9 +29,13 @@ services:
       TZ: ${timezone:-UTC}
     image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
     labels:
-      release_notes: "https://docs.linuxserver.io/images/docker-calibre-web/#versions"
+      homepage.group: Media Consumption
+      homepage.href: https://cb.${domain:?}
+      homepage.icon: sh-calibre.svg
+      homepage.name: Calibre
       kuma.__docker:
       # kuma.__web: '"cb.${domain:?}"'
+      release_notes: "https://docs.linuxserver.io/images/docker-calibre-web/#versions"
       traefik.enable: "true"
       traefik.http.routers.calibre.entryPoints: "https"
       traefik.http.routers.calibre.middlewares: "allowedIPs@file"
@@ -60,9 +64,13 @@ services:
       TZ: ${timezone:-UTC}
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     labels:
-      release_notes: "https://docs.linuxserver.io/images/docker-jellyfin/#versions"
+      homepage.group: Media Consumption
+      homepage.href: https://jf.${domain:?}
+      homepage.icon: sh-jellyfin.svg
+      homepage.name: Jellyfin
       kuma.__docker:
       # kuma.__web: '"jf.${domain:?}"'
+      release_notes: "https://docs.linuxserver.io/images/docker-jellyfin/#versions"
       traefik.enable: "true"
       traefik.http.routers.jellyfin.entryPoints: "https"
       traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
@@ -88,9 +96,13 @@ services:
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     image: ghcr.io/navidrome/navidrome:${navidrome_version:-latest}
     labels:
-      release_notes: "https://github.com/navidrome/navidrome/releases"
+      homepage.group: Media Consumption
+      homepage.href: https://nav.${domain:?}
+      homepage.icon: sh-navidrome.svg
+      homepage.name: Navidrome
       kuma.__docker:
       # kuma.__web: '"nav.${domain:?}"'
+      release_notes: "https://github.com/navidrome/navidrome/releases"
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
       traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
@@ -132,9 +144,13 @@ services:
     image: ghcr.io/seerr-team/seerr:${seerr_version:-latest}
     init: true
     labels:
-      release_notes: "https://github.com/seerr-team/seerr/releases"
+      homepage.group: Arr Stack
+      homepage.href: https://se.${domain:?}
+      homepage.icon: sh-seerr.svg
+      homepage.name: Seerr
       kuma.__docker:
       # kuma.__web: '"se.${domain:?}"'
+      release_notes: "https://github.com/seerr-team/seerr/releases"
       traefik.enable: "true"
       traefik.http.routers.seerr.entryPoints: "https"
       traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"

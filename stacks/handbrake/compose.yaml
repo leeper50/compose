@@ -28,9 +28,13 @@ services:
       USER_ID: ${uid:-1000}
     image: ghcr.io/jlesage/handbrake:${handbrake_version:-latest}
     labels:
-      release_notes: "https://github.com/jlesage/docker-handbrake/releases"
+      homepage.group: Tools
+      homepage.href: https://hb.${domain:?}
+      homepage.icon: sh-handbrake.webp
+      homepage.name: Handbrake
       kuma.__docker:
       # kuma.__web: '"hb.${domain:?}"'
+      release_notes: "https://github.com/jlesage/docker-handbrake/releases"
       traefik.enable: 'true'
       traefik.http.routers.handbrake.entryPoints: 'https'
       traefik.http.routers.handbrake.middlewares: 'localonly@file'

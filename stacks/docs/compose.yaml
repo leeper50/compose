@@ -81,9 +81,13 @@ services:
       DB_USERNAME: ${db_user:-bookstack}
     image: solidnerd/bookstack:${bookstack_version:-26.3}
     labels:
-      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
+      homepage.group: Utils
+      homepage.href: https://bs.${domain:?}
+      homepage.icon: sh-bookstack.svg
+      homepage.name: Bookstack
       kuma.__docker:
       # kuma.__web: '"bs.${domain:?}"'
+      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
@@ -106,8 +110,8 @@ services:
       MARIADB_USER: ${db_user:-bookstack}
       MARIADB_AUTO_UPGRADE: true
     labels:
-      release_notes: "https://mariadb.com/docs/release-notes/community-server"
       kuma.__docker:
+      release_notes: "https://mariadb.com/docs/release-notes/community-server"
     networks:
       bookstack: null
     volumes:
@@ -120,9 +124,13 @@ services:
       DOZZLE_REMOTE_HOST: tcp://socket-proxy:2375
     image: amir20/dozzle:${dozzle_version:-v10}
     labels:
-      release_notes: "https://github.com/amir20/dozzle/releases"
+      homepage.group: Monitoring & Metrics
+      homepage.href: https://dz.${domain:?}
+      homepage.icon: sh-dozzle.svg
+      homepage.name: Dozzle
       kuma.__docker:
       # kuma.__web: '"dz.${domain:?}"'
+      release_notes: "https://github.com/amir20/dozzle/releases"
       traefik.enable: 'true'
       traefik.http.routers.dozzle.entryPoints: 'https'
       traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
@@ -164,9 +172,13 @@ services:
     image: binwiederhier/ntfy:${ntfy_version:-v2}
     init: true
     labels:
-      release_notes: "https://github.com/binwiederhier/ntfy/releases"
+      homepage.group: Automation & Notifications
+      homepage.href: https://n.${domain:?}
+      homepage.icon: sh-ntfy.svg
+      homepage.name: Ntfy
       kuma.__docker:
       # kuma.__web: '"n.${domain:?}"'
+      release_notes: "https://github.com/binwiederhier/ntfy/releases"
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
@@ -184,6 +196,10 @@ services:
     container_name: uptimekuma
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
     labels:
+      homepage.group: Monitoring & Metrics
+      homepage.href: https://up.${domain:?}/dashboard
+      homepage.icon: sh-uptime-kuma.svg
+      homepage.name: Uptime Kuma
       release_notes: "https://github.com/louislam/uptime-kuma/releases"
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"

@@ -25,9 +25,13 @@ services:
       JWT_SECRET: ${convertx_jwt:?}
     image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
     labels:
-      release_notes: "https://github.com/C4illin/ConvertX/releases"
+      homepage.group: Tools
+      homepage.href: https://cx.${domain:?}
+      homepage.icon: sh-convertx.webp
+      homepage.name: ConvertX
       kuma.__docker:
       # kuma.__web: '"cx.${domain:?}"'
+      release_notes: "https://github.com/C4illin/ConvertX/releases"
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
       traefik.http.routers.convertx.middlewares: "localonly@file"
@@ -44,9 +48,13 @@ services:
     container_name: ittools
     image: "sharevb/it-tools:${ittools_version:-latest}"
     labels:
-      release_notes: "https://github.com/CorentinTh/it-tools/releases"
+      homepage.group: Development
+      homepage.href: https://it.${domain:?}
+      homepage.icon: sh-it-tools.svg
+      homepage.name: ItTools
       kuma.__docker:
       # kuma.__web: '"it.${domain:?}"'
+      release_notes: "https://github.com/CorentinTh/it-tools/releases"
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file"
@@ -61,9 +69,13 @@ services:
     container_name: libretranslate
     image: libretranslate/libretranslate:${libretranslate_version:-latest}
     labels:
-      release_notes: "https://github.com/LibreTranslate/LibreTranslate/releases"
+      homepage.group: Utils
+      homepage.href: https://lt.${domain:?}
+      homepage.icon: sh-libretranslate.svg
+      homepage.name: Libretranslate
       kuma.__docker:
       # kuma.__web: '"lt.${domain:?}"'
+      release_notes: "https://github.com/LibreTranslate/LibreTranslate/releases"
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
       traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
@@ -78,9 +90,13 @@ services:
     container_name: speedtest
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
     labels:
-      release_notes: "https://github.com/gnmyt/MySpeed/releases"
+      homepage.group: Monitoring & Metrics
+      homepage.href: https://sp.${domain:?}
+      homepage.icon: sh-librespeed.svg
+      homepage.name: MySpeed
       kuma.__docker:
       # kuma.__web: '"sp.${domain:?}"'
+      release_notes: "https://github.com/gnmyt/MySpeed/releases"
       traefik.enable: "true"
       traefik.http.routers.speedtest.entryPoints: "https"
       traefik.http.routers.speedtest.middlewares: "localonly@file"
@@ -97,9 +113,13 @@ services:
     container_name: privatebin
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     labels:
-      release_notes: "https://privatebin.info/tag/release.html"
+      homepage.group: Files & Sharing
+      homepage.href: https://pb.${domain:?}
+      homepage.icon: sh-privatebin.svg
+      homepage.name: PrivateBin
       kuma.__docker:
       # kuma.__web: '"pb.${domain:?}"'
+      release_notes: "https://privatebin.info/tag/release.html"
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
@@ -133,9 +153,13 @@ services:
       REDIS_HOST: send_valkey
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
-      release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
+      homepage.group: Files & Sharing
+      homepage.href: https://send.${domain:?}
+      homepage.icon: sh-send-visee.svg
+      homepage.name: Send
       kuma.__docker:
       # kuma.__web: '"send.${domain:?}"'
+      release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file"
@@ -157,8 +181,8 @@ services:
     container_name: send_valkey
     image: valkey/valkey:${valkey_version:-9}
     labels:
-      release_notes: "https://github.com/valkey-io/valkey/releases"
       kuma.__docker:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
     networks:
       send: null
     volumes:
@@ -185,9 +209,13 @@ services:
       USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
     image: anirdev/slink:${slink_version:-latest}
     labels:
-      release_notes: "https://github.com/andrii-kryvoviaz/slink/releases"
+      homepage.group: Files & Sharing
+      homepage.href: https://sl.${domain:?}
+      homepage.icon: sh-slink.webp
+      homepage.name: Slink
       kuma.__docker:
       # kuma.__web: '"sl.${domain:?}"'
+      release_notes: "https://github.com/andrii-kryvoviaz/slink/releases"
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file"

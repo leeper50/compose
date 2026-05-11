@@ -25,9 +25,13 @@ services:
       - zigbee2mqtt
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
-      release_notes: "https://github.com/home-assistant/docker/releases"
+      homepage.group: Smart Home
+      homepage.href: https://ha.${domain:?}
+      homepage.icon: sh-home-assistant.svg
+      homepage.name: Home Assistant
       kuma.__docker:
       # kuma.__web: '"ha.${domain:?}"'
+      release_notes: "https://github.com/home-assistant/docker/releases"
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
       traefik.http.routers.homeassistant.middlewares: "localonly@file"
@@ -52,8 +56,8 @@ services:
     container_name: mqtt
     image: eclipse-mosquitto:${mqtt_version:-2}
     labels:
-      release_notes: "https://mosquitto.org/blog/categories/releases/"
       kuma.__docker:
+      release_notes: "https://mosquitto.org/blog/categories/releases/"
     networks:
       mqtt:
     volumes:
@@ -75,9 +79,13 @@ services:
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
     labels:
-      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
+      homepage.group: Smart Home
+      homepage.href: https://zb.${domain:?}
+      homepage.icon: sh-zigbee2mqtt.svg
+      homepage.name: Zigbee
       kuma.__docker:
       # kuma.__web: '"zb.${domain:?}"'
+      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
       traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
@@ -101,9 +109,13 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
     labels:
-      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
+      homepage.group: Smart Home
+      homepage.href: https://zw.${domain:?}
+      homepage.icon: sh-z-wave-js-ui.svg
+      homepage.name: ZWave
       kuma.__docker:
       # kuma.__web: '"zw.${domain:?}"'
+      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"
       traefik.http.routers.zwave.middlewares: "localonly@file"

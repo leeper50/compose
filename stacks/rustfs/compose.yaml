@@ -30,13 +30,17 @@ services:
       RUSTFS_SECRET_KEY: ${default_secret_key:?}
     image: rustfs/rustfs:${rustfs_version:-latest}
     labels:
-      release_notes: "https://github.com/RustFS/RustFS/releases"
+      homepage.group: Utils
+      homepage.href: https://rs.${domain:?}
+      homepage.icon: sh-rustfs.svg
+      homepage.name: RustFS
       kuma.__docker:
       # kuma.__web: '"rs.${domain:?}/rustfs/console"'
       kuma.rustfs_s3.port.hostname: rustfs
       kuma.rustfs_s3.port.name: port_rustfs_s3
       kuma.rustfs_s3.port.notification_name_list: '["ntfy"]'
       kuma.rustfs_s3.port.port: 9000
+      release_notes: "https://github.com/RustFS/RustFS/releases"
       traefik.enable: "true"
       traefik.http.routers.rustfs.entryPoints: "https"
       traefik.http.routers.rustfs.middlewares: "localonly@file"

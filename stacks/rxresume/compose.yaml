@@ -41,9 +41,13 @@ services:
       STORAGE_USE_SSL: "false"
     image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.5}
     labels:
-      release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
+      homepage.group: Personal
+      homepage.href: https://rx.${domain:?}
+      homepage.icon: sh-reactive-resume.svg
+      homepage.name: RxResume
       kuma.__docker:
       # kuma.__web: '"rx.${domain:?}"'
+      release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"
       traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@file"
@@ -74,8 +78,8 @@ services:
       timeout: 5s
     image: postgres:${postgres_version:-16-alpine}
     labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
+      release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     volumes:
@@ -97,7 +101,7 @@ services:
       timeout: 5s
     image: ghcr.io/browserless/chromium:${chromium_version:-latest}
     labels:
-      release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
       kuma.__docker:
+      release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
     networks:
       proxy: null

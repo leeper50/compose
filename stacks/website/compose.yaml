@@ -33,9 +33,13 @@ services:
       start_period: 15s
     image: copyparty/iv:${copyparty_version:-latest}
     labels:
-      release_notes: "https://github.com/9001/copyparty/releases"
+      homepage.group: Files & Sharing
+      homepage.href: https://c.${domain:?}
+      homepage.icon: sh-copyparty.svg
+      homepage.name: Copyparty
       kuma.__docker:
       # kuma.__web: '"c.${domain:?}"'
+      release_notes: "https://github.com/9001/copyparty/releases"
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
@@ -73,9 +77,17 @@ services:
       TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     labels:
-      release_notes: "https://github.com/linuxserver/docker-freshrss/releases"
+      homepage.group: Personal
+      homepage.href: https://rss.${domain:?}
+      homepage.icon: sh-freshrss.svg
+      homepage.name: Freshrss
+      homepage.widget.password: ${freshrss_user_password:?}
+      homepage.widget.type: freshrss
+      homepage.widget.url: http://freshrss:80
+      homepage.widget.username: ${freshrss_user_name:?}
       kuma.__docker:
       # kuma.__web: '"rss.${domain:?}"'
+      release_notes: "https://github.com/linuxserver/docker-freshrss/releases"
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
       traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
@@ -104,8 +116,8 @@ services:
       POSTGRES_USER: ${db_user:-freshrss}
     image: postgres:${postgres_version:-16}
     labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
+      release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       freshrss:
     volumes:
@@ -120,9 +132,9 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
-      release_notes: "https://github.com/gethomepage/homepage/releases"
       kuma.__docker:
       # kuma.__web: '"home.${domain:?}"'
+      release_notes: "https://github.com/gethomepage/homepage/releases"
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
@@ -144,9 +156,9 @@ services:
       ORIGIN: https://www.${domain:?}
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
-      release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
       kuma.__docker:
       # kuma.__web: '"${domain:?}"'
+      release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
@@ -167,9 +179,13 @@ services:
       DOMAIN: https://vw.${domain:?}
     image: vaultwarden/server:${vaultwarden_version:-latest}
     labels:
-      release_notes: "https://github.com/dani-garcia/vaultwarden/releases"
+      homepage.group: Personal
+      homepage.href: https://vw.${domain:?}
+      homepage.icon: sh-vaultwarden.svg
+      homepage.name: Vaultwarden
       kuma.__docker:
       # kuma.__web: '"vw.${domain:?}"'
+      release_notes: "https://github.com/dani-garcia/vaultwarden/releases"
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"
       traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"

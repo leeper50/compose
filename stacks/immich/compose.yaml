@@ -33,8 +33,8 @@ services:
       POSTGRES_USER: ${db_user:-immich}
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
+      release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     shm_size: 128mb
@@ -53,8 +53,8 @@ services:
       test: valkey-cli ping || exit 1
     image: valkey/valkey:${valkey_version:-9}
     labels:
-      release_notes: "https://github.com/valkey-io/valkey/releases"
       kuma.__docker:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
     networks:
       default: null
     volumes:
@@ -73,8 +73,8 @@ services:
       disable: false
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
     labels:
-      release_notes: "https://github.com/immich-app/immich/releases"
       kuma.__docker:
+      release_notes: "https://github.com/immich-app/immich/releases"
     networks:
       default: null
     volumes:
@@ -99,9 +99,13 @@ services:
       disable: false
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
-      release_notes: "https://github.com/immich-app/immich/releases"
+      homepage.group: Media Consumption
+      homepage.href: https://im.${domain:?}
+      homepage.icon: sh-immich.svg
+      homepage.name: Immich
       kuma.__docker:
       # kuma.__web: '"im.${domain:?}/auth/login"'
+      release_notes: "https://github.com/immich-app/immich/releases"
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"

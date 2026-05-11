@@ -30,9 +30,13 @@ services:
       - "2606:4700:4700::1111"
     image: adguard/adguardhome:${adguard_version:-latest}
     labels:
-      release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
+      homepage.group: DNS
+      homepage.href: https://ad.${domain:?}
+      homepage.icon: sh-adguard-home.svg
+      homepage.name: Adguard - Komodo
       kuma.__docker:
       # kuma.__web: '"ad.${domain:?}"'
+      release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"
@@ -57,8 +61,8 @@ services:
       LOG_LEVEL: ${log_level:-warn}
     image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-main}
     labels:
-      release_notes: "https://github.com/bakito/adguardhome-sync/releases"
       kuma.__docker:
+      release_notes: "https://github.com/bakito/adguardhome-sync/releases"
     networks:
       default: null
     volumes:
