@@ -36,8 +36,8 @@ services:
       bookstack: null
       proxy: null
     volumes:
-      - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
-      - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
+      - ${data:-.}/public_uploads:/var/www/bookstack/public/uploads:rw
+      - ${data:-.}/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
     extends:
       file: ../common.yaml
@@ -56,4 +56,4 @@ services:
     networks:
       bookstack: null
     volumes:
-      - ${data:-.}/bookstack/db:/var/lib/mysql:rw
+      - ${data:-.}/db:/var/lib/mysql:rw
