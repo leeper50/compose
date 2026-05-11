@@ -1,21 +1,11 @@
 networks:
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   vaultwarden:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: vaultwarden
