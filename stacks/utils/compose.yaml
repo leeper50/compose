@@ -3,33 +3,6 @@ networks:
   proxy:
     external: true
 services:
-  convertx:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: convertx
-    environment:
-      HIDE_HISTORY: true
-      JWT_SECRET: ${convertx_jwt:?}
-    image: ghcr.io/c4illin/convertx:${convertx_version:-latest}
-    labels:
-      homepage.group: Tools
-      homepage.href: https://cx.${domain:?}
-      homepage.icon: sh-convertx.webp
-      homepage.name: ConvertX
-      kuma.__docker:
-      release_notes: "https://github.com/C4illin/ConvertX/releases"
-      traefik.enable: "true"
-      traefik.http.routers.convertx.entryPoints: "https"
-      traefik.http.routers.convertx.middlewares: "localonly@file"
-      traefik.http.routers.convertx.rule: "Host(`cx.${domain:?}`)"
-      traefik.http.services.convertx.loadbalancer.server.url: "http://convertx:3000"
-    networks:
-      proxy: null
-    volumes:
-      - ${data:-.}/convertx:/app/data
   ittools:
     extends:
       file: ../common.yaml
@@ -50,28 +23,6 @@ services:
       traefik.http.routers.ittools.middlewares: "allowedIPs@file"
       traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
-    networks:
-      proxy: null
-  libretranslate:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: libretranslate
-    image: libretranslate/libretranslate:${libretranslate_version:-latest}
-    labels:
-      homepage.group: Utils
-      homepage.href: https://lt.${domain:?}
-      homepage.icon: sh-libretranslate.svg
-      homepage.name: Libretranslate
-      kuma.__docker:
-      release_notes: "https://github.com/LibreTranslate/LibreTranslate/releases"
-      traefik.enable: "true"
-      traefik.http.routers.libretranslate.entryPoints: "https"
-      traefik.http.routers.libretranslate.middlewares: "allowedIPs@file"
-      traefik.http.routers.libretranslate.rule: "Host(`lt.${domain:?}`)"
-      traefik.http.services.libretranslate.loadbalancer.server.url: "http://libretranslate:5000"
     networks:
       proxy: null
   speedtest:
@@ -187,12 +138,6 @@ services:
     extends:
       file: ../common.yaml
       service: base
-    # cap_drop:
-    #   - ALL
-    # cap_add:
-    #   - CHOWN
-    #   - SETGID
-    #   - SETUID
     container_name: slink
     environment:
       IMAGE_COMPRESSION_QUALITY: 100

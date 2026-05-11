@@ -221,7 +221,6 @@ services:
     volumes:
       - ${data:-.}/navidrome:/data:rw
       - ${media}/Music:/music:ro
-
   seerr:
     extends:
       file: ../common.yaml
