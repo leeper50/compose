@@ -2,21 +2,11 @@ networks:
   mqtt: null
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   homeassistant:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: homeassistant
@@ -25,9 +15,12 @@ services:
       - zigbee2mqtt
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
-      release_notes: "https://github.com/home-assistant/docker/releases"
+      homepage.group: Smart Home
+      homepage.href: https://ha.${domain:?}
+      homepage.icon: sh-home-assistant.svg
+      homepage.name: Home Assistant
       kuma.__docker:
-      # kuma.__web: '"ha.${domain:?}"'
+      release_notes: "https://github.com/home-assistant/docker/releases"
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
       traefik.http.routers.homeassistant.middlewares: "localonly@file"
@@ -41,7 +34,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro # Bluetooth connection
   mqtt:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -50,10 +45,10 @@ services:
       - SETUID
     command: "mosquitto -c /mosquitto-no-auth.conf"
     container_name: mqtt
-    image: eclipse-mosquitto:${mqtt_version:-latest}
+    image: eclipse-mosquitto:${mqtt_version:-2}
     labels:
-      release_notes: "https://mosquitto.org/blog/categories/releases/"
       kuma.__docker:
+      release_notes: "https://mosquitto.org/blog/categories/releases/"
     networks:
       mqtt:
     volumes:
@@ -61,7 +56,9 @@ services:
       - ${data:-.}/mqtt/data:/mosquitto/data
       - ${data:-.}/mqtt/log:/mosquitto/log
   zigbee2mqtt:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: zigbee2mqtt
@@ -73,11 +70,14 @@ services:
       TZ: ${timezone:-UTC}
       ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
-    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-latest}
+    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
     labels:
-      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
+      homepage.group: Smart Home
+      homepage.href: https://zb.${domain:?}
+      homepage.icon: sh-zigbee2mqtt.svg
+      homepage.name: Zigbee
       kuma.__docker:
-      # kuma.__web: '"zb.${domain:?}"'
+      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
       traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
@@ -90,7 +90,9 @@ services:
       - ${data:-.}/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
   zwave_js_ui:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: zwave_js_ui
@@ -99,11 +101,14 @@ services:
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
-    image: zwavejs/zwave-js-ui:${zwave_version:-latest}
+    image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
     labels:
-      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
+      homepage.group: Smart Home
+      homepage.href: https://zw.${domain:?}
+      homepage.icon: sh-z-wave-js-ui.svg
+      homepage.name: ZWave
       kuma.__docker:
-      # kuma.__web: '"zw.${domain:?}"'
+      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"
       traefik.http.routers.zwave.middlewares: "localonly@file"

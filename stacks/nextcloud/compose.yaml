@@ -2,34 +2,24 @@ networks:
   default: null
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   nextcloud_app:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_app
     depends_on:
       - nextcloud_db
       - nextcloud_imaginary
-      - nextcloud_keydb
+      - nextcloud_valkey
     environment:
       # Database Stuff
       POSTGRES_DB: ${db_name:-nextcloud}
       POSTGRES_HOST: nextcloud_db
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_name:-nextcloud}
-      REDIS_HOST_PASSWORD: ${keydb_pass}
-      REDIS_HOST: nextcloud_keydb
+      REDIS_HOST_PASSWORD: ${valkey_pass}
+      REDIS_HOST: nextcloud_valkey
       # Nextcloud's Config.php stuff
       ENABLE_PREVIEWS: "true"
       NEXTCLOUD_ADMIN_PASSWORD: ${admin_pass:?}
@@ -60,7 +50,9 @@ services:
     volumes:
       - ${data:-.}/app:/var/www/html
   nextcloud_cron:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_cron
     depends_on:
       - nextcloud_app
@@ -74,7 +66,9 @@ services:
     volumes:
       - ${data:-.}/app:/var/www/html
   nextcloud_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -104,7 +98,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   nextcloud_imaginary:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: nextcloud_imaginary
@@ -114,26 +110,10 @@ services:
       kuma.__docker:
     networks:
       default:
-  nextcloud_keydb:
-    <<: *common-settings
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    command: keydb-server --requirepass ${keydb_pass}
-    container_name: nextcloud_keydb
-    image: eqalpha/keydb:${keydb_version:-latest}
-    labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
-      kuma.__docker:
-    networks:
-      default:
-    volumes:
-      - ${data:-.}/keydb:/data
   nextcloud_nginx:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_nginx
     image: nginx:${nginx_version:-alpine-slim}
     volumes:
@@ -142,9 +122,12 @@ services:
     depends_on:
       - nextcloud_app
     labels:
-      release_notes: "https://github.com/nginx/nginx/releases"
+      homepage.group: Files & Sharing
+      homepage.href: https://next.${domain:?}
+      homepage.icon: sh-nextcloud.webp
+      homepage.name: Nextcloud
       kuma.__docker:
-      # kuma.__web: '"next.${domain:?}"'
+      release_notes: "https://github.com/nginx/nginx/releases"
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entryPoints: "https"
       traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"
@@ -166,3 +149,23 @@ services:
     networks:
       default:
       proxy:
+  nextcloud_valkey:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    command: valkey-server --requirepass ${valkey_pass}
+    container_name: nextcloud_valkey
+    image: valkey/valkey:${valkey_version:-9}
+    labels:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
+      kuma.__docker:
+    networks:
+      default:
+    volumes:
+      - ${data:-.}/valkey:/data

@@ -2,21 +2,11 @@ networks:
   default:
     driver: bridge
     enable_ipv6: false
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   gluetun_proxy:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -34,8 +24,8 @@ services:
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
     image: qmcgaw/gluetun:${gluetun_version:-v3.41}
     labels:
-      release_notes: "https://github.com/qdm12/gluetun/releases"
       kuma.__docker:
+      release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "1080:1080/tcp"
       - "8888:8888/tcp"
@@ -44,7 +34,9 @@ services:
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: socks5proxy
@@ -54,6 +46,6 @@ services:
       REQUIRE_AUTH: ${enable_auth:-true}
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
     labels:
-      release_notes: "https://github.com/serjs/socks5-server/releases"
       kuma.__docker:
+      release_notes: "https://github.com/serjs/socks5-server/releases"
     network_mode: service:gluetun_proxy

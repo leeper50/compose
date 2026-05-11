@@ -4,21 +4,11 @@ networks:
     external: true
   socket-proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   autokuma:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: autokuma
@@ -42,7 +32,7 @@ services:
          {{container_name}}_http.http.name: web_{{container_name}}
          {{container_name}}_http.http.url: https://{{ args[0] }}
          {{container_name}}_http.http.notification_name_list: ["ntfy"]
-    image: ghcr.io/bigboot/autokuma:${autokuma_version:-latest}
+    image: ghcr.io/bigboot/autokuma:${autokuma_version:-2}
     labels:
       release_notes: "https://github.com/bigboot/autokuma/releases"
       kuma.proxy.docker_host.name: 'Socket Proxy'
@@ -66,7 +56,9 @@ services:
       - ${data:-.}/autokuma:/data:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
   bookstack:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: bookstack
@@ -79,11 +71,14 @@ services:
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-bookstack}
-    image: solidnerd/bookstack:${bookstack_version:-25.12.3}
+    image: solidnerd/bookstack:${bookstack_version:-26.3}
     labels:
-      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
+      homepage.group: Utils
+      homepage.href: https://bs.${domain:?}
+      homepage.icon: sh-bookstack.svg
+      homepage.name: Bookstack
       kuma.__docker:
-      # kuma.__web: '"bs.${domain:?}"'
+      release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
       traefik.http.routers.bookstack.middlewares: "localonly@file"
@@ -96,7 +91,9 @@ services:
       - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     image: mariadb:${mariadb_version:-12}
     container_name: bookstack_db
     environment:
@@ -106,23 +103,28 @@ services:
       MARIADB_USER: ${db_user:-bookstack}
       MARIADB_AUTO_UPGRADE: true
     labels:
-      release_notes: "https://mariadb.com/docs/release-notes/community-server"
       kuma.__docker:
+      release_notes: "https://mariadb.com/docs/release-notes/community-server"
     networks:
       bookstack: null
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   dozzle:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: dozzle
     environment:
       DOZZLE_AUTH_PROVIDER: forward-proxy
       DOZZLE_REMOTE_HOST: tcp://socket-proxy:2375
-    image: amir20/dozzle:${dozzle_version:-latest}
+    image: amir20/dozzle:${dozzle_version:-v10}
     labels:
-      release_notes: "https://github.com/amir20/dozzle/releases"
+      homepage.group: Monitoring & Metrics
+      homepage.href: https://dz.${domain:?}
+      homepage.icon: sh-dozzle.svg
+      homepage.name: Dozzle
       kuma.__docker:
-      # kuma.__web: '"dz.${domain:?}"'
+      release_notes: "https://github.com/amir20/dozzle/releases"
       traefik.enable: 'true'
       traefik.http.routers.dozzle.entryPoints: 'https'
       traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
@@ -135,7 +137,9 @@ services:
     volumes:
       - ${data:-.}/dozzle:/data
   ntfy:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     command:
@@ -161,12 +165,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    image: binwiederhier/ntfy:${ntfy_version:-latest}
+    image: binwiederhier/ntfy:${ntfy_version:-v2}
     init: true
     labels:
-      release_notes: "https://github.com/binwiederhier/ntfy/releases"
+      homepage.group: Automation & Notifications
+      homepage.href: https://n.${domain:?}
+      homepage.icon: sh-ntfy.svg
+      homepage.name: Ntfy
       kuma.__docker:
-      # kuma.__web: '"n.${domain:?}"'
+      release_notes: "https://github.com/binwiederhier/ntfy/releases"
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"
       traefik.http.routers.ntfy.middlewares: "localonly@file"
@@ -178,12 +185,18 @@ services:
     volumes:
       - ${data:-.}/ntfy/data:/var/lib/ntfy
   uptimekuma:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: uptimekuma
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
     labels:
+      homepage.group: Monitoring & Metrics
+      homepage.href: https://up.${domain:?}/dashboard
+      homepage.icon: sh-uptime-kuma.svg
+      homepage.name: Uptime Kuma
       release_notes: "https://github.com/louislam/uptime-kuma/releases"
       traefik.enable: "true"
       traefik.http.routers.uptimekuma.entryPoints: "https"

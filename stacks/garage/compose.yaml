@@ -1,34 +1,24 @@
 networks:
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   garage:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: garage
     environment:
       TZ: ${timezone:-UTC}
-    image: dxflrs/garage:${garage_version:-v2.2.0}
+    image: dxflrs/garage:${garage_version:-v2.3.0}
     labels:
-      release_notes: "https://git.deuxfleurs.fr/Deuxfleurs/garage/releases"
       kuma.__docker:
       kuma.garage_s3.port.hostname: garage
       kuma.garage_s3.port.name: port_garage_s3
       kuma.garage_s3.port.notification_name_list: '["ntfy"]'
       kuma.garage_s3.port.port: 3900
+      release_notes: "https://git.deuxfleurs.fr/Deuxfleurs/garage/releases"
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"
@@ -44,7 +34,9 @@ services:
       - ${data:-.}/metadata:/var/lib/garage/meta
       - ${data:-.}/storage:/var/lib/garage/data
   garage_webui:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: garage_webui
@@ -55,9 +47,12 @@ services:
       S3_ENDPOINT_URL: "http://garage:3900"
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
-      release_notes: "https://github.com/khairul169/garage-webui/releases"
+      homepage.group: Utils
+      homepage.href: https://g.${domain:?}
+      homepage.icon: sh-garage.svg
+      homepage.name: Garage
       kuma.__docker:
-      # kuma.__web: '"g.${domain:?}"'
+      release_notes: "https://github.com/khairul169/garage-webui/releases"
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"
       traefik.http.routers.garage_webui.middlewares: "localonly@file"

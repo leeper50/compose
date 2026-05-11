@@ -2,21 +2,11 @@ networks:
   default: null
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   adguardhome:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -30,9 +20,12 @@ services:
       - "2606:4700:4700::1111"
     image: adguard/adguardhome:${adguard_version:-latest}
     labels:
-      release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
+      homepage.group: DNS
+      homepage.href: https://ad.${domain:?}
+      homepage.icon: sh-adguard-home.svg
+      homepage.name: Adguard - Komodo
       kuma.__docker:
-      # kuma.__web: '"ad.${domain:?}"'
+      release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"
@@ -48,17 +41,19 @@ services:
       - ${data:-.}/adguardhome/work:/opt/adguardhome/work
       - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
   adguardhome-sync:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: adguardhome-sync
     command: run --config /config/adguardhome-sync.yml
     environment:
       LOG_LEVEL: ${log_level:-warn}
-    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-latest}
+    image: ghcr.io/bakito/adguardhome-sync:${adguard_sync_version:-main}
     labels:
-      release_notes: "https://github.com/bakito/adguardhome-sync/releases"
       kuma.__docker:
+      release_notes: "https://github.com/bakito/adguardhome-sync/releases"
     networks:
       default: null
     volumes:

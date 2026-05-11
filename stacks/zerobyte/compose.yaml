@@ -1,21 +1,11 @@
 networks:
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   zerobyte:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -29,9 +19,12 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
     labels:
-      release_notes: "https://github.com/nicotsx/zerobyte/releases"
+      homepage.group: Access & Security
+      homepage.href: https://z.${domain:?}
+      homepage.icon: sh-zerobyte.svg
+      homepage.name: Zerobyte
       kuma.__docker:
-      # kuma.__web: '"z.${domain:?}"'
+      release_notes: "https://github.com/nicotsx/zerobyte/releases"
       traefik.enable: "true"
       traefik.http.routers.zerobyte.entryPoints: "https"
       traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"

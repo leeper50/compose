@@ -2,21 +2,11 @@ networks:
   default: null
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   immich_postgres:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -33,34 +23,38 @@ services:
       POSTGRES_USER: ${db_user:-immich}
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
       kuma.__docker:
+      release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     shm_size: 128mb
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
-  immich_keydb:
-    <<: *common-settings
+  immich_valkey:
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: immich_keydb
+    container_name: immich_valkey
     healthcheck:
-      test: redis-cli ping || exit 1
-    image: eqalpha/keydb:${keydb_version:-latest}
+      test: valkey-cli ping || exit 1
+    image: valkey/valkey:${valkey_version:-9}
     labels:
-      release_notes: "https://github.com/Snapchat/KeyDB/releases"
       kuma.__docker:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
     networks:
       default: null
     volumes:
-      - ${data:-.}/keydb:/data
+      - ${data:-.}/valkey:/data
   immich-machine-learning:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: immich-machine-learning
@@ -73,35 +67,40 @@ services:
       disable: false
     image: ghcr.io/immich-app/immich-machine-learning:${immich_version:-release}
     labels:
-      release_notes: "https://github.com/immich-app/immich/releases"
       kuma.__docker:
+      release_notes: "https://github.com/immich-app/immich/releases"
     networks:
       default: null
     volumes:
       - ${data:-.}/model-cache:/cache
   immich:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: immich
     depends_on:
       - immich_postgres
-      - immich_keydb
+      - immich_valkey
       - immich-machine-learning
     environment:
       DB_DATABASE_NAME: ${db_name:-immich}
       DB_HOSTNAME: immich_postgres
       DB_PASSWORD: ${db_pass:?}
       DB_USERNAME: ${db_user:-immich}
-      REDIS_HOSTNAME: immich_keydb
+      REDIS_HOSTNAME: immich_valkey
       TZ: ${timezone:-UTC}
     healthcheck:
       disable: false
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
-      release_notes: "https://github.com/immich-app/immich/releases"
+      homepage.group: Media Consumption
+      homepage.href: https://im.${domain:?}
+      homepage.icon: sh-immich.svg
+      homepage.name: Immich
       kuma.__docker:
-      # kuma.__web: '"im.${domain:?}/auth/login"'
+      release_notes: "https://github.com/immich-app/immich/releases"
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"

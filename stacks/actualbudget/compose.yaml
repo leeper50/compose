@@ -1,21 +1,11 @@
 networks:
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   actualbudget:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: actualbudget
@@ -27,9 +17,12 @@ services:
       start_period: 20s
     image: ghcr.io/actualbudget/actual:${actualbudget_version:-latest}
     labels:
-      release_notes: "https://github.com/actualbudget/actual/releases"
+      homepage.group: Personal
+      homepage.href: https://ab.${domain:?}
+      homepage.icon: sh-actual-budget.svg
+      homepage.name: Actual Budget
       kuma.__docker:
-      # kuma.__web: '"ab.${domain:?}"'
+      release_notes: "https://github.com/actualbudget/actual/releases"
       traefik.enable: "true"
       traefik.http.routers.actualbudget.entryPoints: "https"
       traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"

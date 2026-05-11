@@ -1,21 +1,11 @@
 networks:
   proxy:
     external: true
-x-common-settings: &common-settings
-  logging:
-    driver: local
-    options:
-      compress: "true"
-      max-file: "3"
-      max-size: "10m"
-  restart: unless-stopped
-  security_opt:
-    - no-new-privileges:true
-  stdin_open: false
-  tty: false
 services:
   technitium:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: technitium
@@ -46,9 +36,12 @@ services:
     hostname: technitium
     image: technitium/dns-server:${technitium_version:-latest}
     labels:
-      release_notes: "https://github.com/TechnitiumSoftware/DnsServer/releases"
+      homepage.group: DNS
+      homepage.href: https://dns.${domain:?}
+      homepage.icon: sh-technitium.svg
+      homepage.name: Technitium
       kuma.__docker:
-      # kuma.__web: '"dns.${domain:?}"'
+      release_notes: "https://github.com/TechnitiumSoftware/DnsServer/releases"
       traefik.enable: "true"
       traefik.http.routers.technitium.entryPoints: "https"
       traefik.http.routers.technitium.middlewares: "localonly@file"
