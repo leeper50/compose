@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   paperlessngx:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -62,7 +64,9 @@ services:
       - ${data:-.}/app/export:/usr/src/paperless/export
       - ${data:-.}/app/consume:/usr/src/paperless/consume
   paperlessngx_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -85,7 +89,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   paperlessngx_valkey:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:

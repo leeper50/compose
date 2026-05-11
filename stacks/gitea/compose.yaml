@@ -18,7 +18,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   gitea:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: gitea
@@ -55,7 +57,9 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   gitea_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -78,7 +82,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   gitea_runner:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:

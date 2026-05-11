@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   rxresume:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: rxresume
@@ -56,7 +58,9 @@ services:
       default: null
       proxy: null
   rxresume_postgres:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -84,7 +88,9 @@ services:
     volumes:
       - $data/db:/var/lib/postgresql/data
   rxresume_printer:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: rxresume_printer

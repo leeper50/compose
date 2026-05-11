@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   convertx:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: convertx
@@ -41,7 +43,9 @@ services:
     volumes:
       - ${data:-.}/convertx:/app/data
   ittools:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: ittools
@@ -61,7 +65,9 @@ services:
     networks:
       proxy: null
   libretranslate:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: libretranslate
@@ -81,7 +87,9 @@ services:
     networks:
       proxy: null
   speedtest:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: speedtest
@@ -103,7 +111,9 @@ services:
     volumes:
       - "${data:-.}/speedtest:/myspeed/data"
   privatebin:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: privatebin
@@ -130,7 +140,9 @@ services:
       - ${data:-.}/privatebin/run:/run
       - ${data:-.}/privatebin/nginx:/var/lib/nginx/tmp
   send:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: send
@@ -165,7 +177,9 @@ services:
     volumes:
       - ${data:-.}/send/app:/uploads
   send_valkey:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -182,7 +196,9 @@ services:
     volumes:
       - ${data:-.}/send/valkey:/data
   slink:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     # cap_drop:
     #   - ALL
     # cap_add:

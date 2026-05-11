@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   ollama:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: ollama
@@ -31,7 +33,9 @@ services:
     volumes:
        - ${data:-.}/ollama_data:/root/.ollama
   openwebui:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: openwebui

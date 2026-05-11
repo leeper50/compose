@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   immich_postgres:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -41,7 +43,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   immich_valkey:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -60,7 +64,9 @@ services:
     volumes:
       - ${data:-.}/valkey:/data
   immich-machine-learning:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: immich-machine-learning
@@ -80,7 +86,9 @@ services:
     volumes:
       - ${data:-.}/model-cache:/cache
   immich:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: immich

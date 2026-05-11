@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   nextcloud_app:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_app
     depends_on:
       - nextcloud_db
@@ -60,7 +62,9 @@ services:
     volumes:
       - ${data:-.}/app:/var/www/html
   nextcloud_cron:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_cron
     depends_on:
       - nextcloud_app
@@ -74,7 +78,9 @@ services:
     volumes:
       - ${data:-.}/app:/var/www/html
   nextcloud_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -104,7 +110,9 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   nextcloud_imaginary:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: nextcloud_imaginary
@@ -115,7 +123,9 @@ services:
     networks:
       default:
   nextcloud_nginx:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: nextcloud_nginx
     image: nginx:${nginx_version:-alpine-slim}
     volumes:
@@ -152,7 +162,9 @@ services:
       default:
       proxy:
   nextcloud_valkey:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:

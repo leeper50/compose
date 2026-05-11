@@ -18,7 +18,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   autokuma:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: autokuma
@@ -66,7 +68,9 @@ services:
       - ${data:-.}/autokuma:/data:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
   bookstack:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: bookstack
@@ -99,7 +103,9 @@ services:
       - ${data:-.}/bookstack/public_uploads:/var/www/bookstack/public/uploads:rw
       - ${data:-.}/bookstack/storage_uploads:/var/www/bookstack/storage/uploads:rw
   bookstack_db:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     image: mariadb:${mariadb_version:-12}
     container_name: bookstack_db
     environment:
@@ -116,7 +122,9 @@ services:
     volumes:
       - ${data:-.}/bookstack/db:/var/lib/mysql:rw
   dozzle:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     container_name: dozzle
     environment:
       DOZZLE_AUTH_PROVIDER: forward-proxy
@@ -141,7 +149,9 @@ services:
     volumes:
       - ${data:-.}/dozzle:/data
   ntfy:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     command:
@@ -187,7 +197,9 @@ services:
     volumes:
       - ${data:-.}/ntfy/data:/var/lib/ntfy
   uptimekuma:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: uptimekuma

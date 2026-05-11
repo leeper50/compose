@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   homeassistant:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: homeassistant
@@ -44,7 +46,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro # Bluetooth connection
   mqtt:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -64,7 +68,9 @@ services:
       - ${data:-.}/mqtt/data:/mosquitto/data
       - ${data:-.}/mqtt/log:/mosquitto/log
   zigbee2mqtt:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: zigbee2mqtt
@@ -96,7 +102,9 @@ services:
       - ${data:-.}/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
   zwave_js_ui:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: zwave_js_ui

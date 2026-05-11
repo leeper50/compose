@@ -16,7 +16,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   adguardhome:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -51,7 +53,9 @@ services:
       - ${data:-.}/adguardhome/work:/opt/adguardhome/work
       - ${data:-.}/adguardhome/conf:/opt/adguardhome/conf
   adguardhome-sync:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: adguardhome-sync

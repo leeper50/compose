@@ -15,7 +15,9 @@ x-common-settings: &common-settings
   tty: false
 services:
   garage:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: garage
@@ -44,7 +46,9 @@ services:
       - ${data:-.}/metadata:/var/lib/garage/meta
       - ${data:-.}/storage:/var/lib/garage/data
   garage_webui:
-    <<: *common-settings
+    extends:
+      file: ../common.yaml
+      service: base
     cap_drop:
       - ALL
     container_name: garage_webui
