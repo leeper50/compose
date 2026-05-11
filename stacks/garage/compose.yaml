@@ -47,7 +47,7 @@ services:
       S3_ENDPOINT_URL: "http://garage:3900"
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
-      homepage.group: Utils
+      homepage.group: Files & Sharing
       homepage.href: https://g.${domain:?}
       homepage.icon: sh-garage.svg
       homepage.name: Garage

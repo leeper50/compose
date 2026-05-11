@@ -1,0 +1,166 @@
+networks:
+  send: null
+  proxy:
+    external: true
+services:
+  copyparty:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: copyparty
+    environment:
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
+    healthcheck:
+      # hide it from logs with "/._" so it matches the default --lf-url filter
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
+    image: copyparty/iv:${copyparty_version:-latest}
+    labels:
+      homepage.group: Files & Sharing
+      homepage.href: https://c.${domain:?}
+      homepage.icon: sh-copyparty.svg
+      homepage.name: Copyparty
+      kuma.__docker:
+      release_notes: "https://github.com/9001/copyparty/releases"
+      traefik.enable: "true"
+      traefik.http.routers.copyparty.entryPoints: "https"
+      traefik.http.routers.copyparty.middlewares: "localonly@file"
+      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
+      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
+    networks:
+      proxy:
+    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/copyparty/conf:/cfg
+      - ${data:-.}/copyparty/files:/w
+  privatebin:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: privatebin
+    image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
+    labels:
+      homepage.group: Files & Sharing
+      homepage.href: https://pb.${domain:?}
+      homepage.icon: sh-privatebin.svg
+      homepage.name: PrivateBin
+      kuma.__docker:
+      release_notes: "https://privatebin.info/tag/release.html"
+      traefik.enable: "true"
+      traefik.http.routers.privatebin.entryPoints: "https"
+      traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
+      traefik.http.routers.privatebin.rule: "Host(`pb.${domain:?}`)"
+      traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
+    networks:
+      proxy: null
+    read_only: true
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/privatebin/data:/srv/data
+      - ${data:-.}/privatebin/tmp:/tmp
+      - ${data:-.}/privatebin/run:/run
+      - ${data:-.}/privatebin/nginx:/var/lib/nginx/tmp
+  send:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: send
+    depends_on:
+      - send_valkey
+    environment:
+      BASE_URL: https://send.${domain:?}
+      DEFAULT_EXPIRE_SECONDS: 3600
+      DOWNLOAD_COUNTS: 1,2,5
+      EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
+      MAX_DOWNLOADS: 5
+      MAX_EXPIRE_SECONDS: 31536000
+      MAX_FILE_SIZE: 10737418240
+      NODE_ENV: production
+      REDIS_HOST: send_valkey
+    image: registry.gitlab.com/timvisee/send:${send_version:-latest}
+    labels:
+      homepage.group: Files & Sharing
+      homepage.href: https://send.${domain:?}
+      homepage.icon: sh-send-visee.svg
+      homepage.name: Send
+      kuma.__docker:
+      release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
+      traefik.enable: "true"
+      traefik.http.routers.send.entryPoints: "https"
+      traefik.http.routers.send.middlewares: "allowedIPs@file"
+      traefik.http.routers.send.rule: "Host(`send.${domain:?}`)"
+      traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
+    networks:
+      proxy:
+      send: null
+    volumes:
+      - ${data:-.}/send/app:/uploads
+  send_valkey:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    container_name: send_valkey
+    image: valkey/valkey:${valkey_version:-9}
+    labels:
+      kuma.__docker:
+      release_notes: "https://github.com/valkey-io/valkey/releases"
+    networks:
+      send: null
+    volumes:
+      - ${data:-.}/send/valkey:/data
+  slink:
+    extends:
+      file: ../common.yaml
+      service: base
+    container_name: slink
+    environment:
+      IMAGE_COMPRESSION_QUALITY: 100
+      IMAGE_MAX_SIZE: 50M
+      IMAGE_STRIP_EXIF_METADATA: true
+      ORIGIN: https://sl.${domain:?}
+      REQUIRE_SSL: true
+      STORAGE_PROVIDER: local
+      TZ: ${timezone:-UTC}
+      USER_APPROVAL_REQUIRED: true
+      USER_PASSWORD_MIN_LENGTH: 8
+      USER_PASSWORD_REQUIREMENTS: 15 # bitmask of requirements
+    image: anirdev/slink:${slink_version:-latest}
+    labels:
+      homepage.group: Files & Sharing
+      homepage.href: https://sl.${domain:?}
+      homepage.icon: sh-slink.webp
+      homepage.name: Slink
+      kuma.__docker:
+      release_notes: "https://github.com/andrii-kryvoviaz/slink/releases"
+      traefik.enable: "true"
+      traefik.http.routers.slink.entryPoints: "https"
+      traefik.http.routers.slink.middlewares: "allowedIPs@file"
+      traefik.http.routers.slink.priority: 30
+      traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
+      traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
+      # No middleware for outbound images
+      traefik.http.routers.slink-images.entrypoints: "https"
+      traefik.http.routers.slink-images.priority: 50
+      traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"
+    networks:
+      proxy: null
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/slink/db:/app/var/data
+      - ${data:-.}/slink/images:/app/slink/images

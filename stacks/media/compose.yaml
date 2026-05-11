@@ -36,42 +36,6 @@ services:
     volumes:
       - ${data:-.}/calibre:/config
       - ${media}/Books:/books
-  copyparty:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: copyparty
-    environment:
-      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
-    healthcheck:
-      # hide it from logs with "/._" so it matches the default --lf-url filter
-      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
-      interval: 1m
-      timeout: 2s
-      retries: 5
-      start_period: 15s
-    image: copyparty/iv:${copyparty_version:-latest}
-    labels:
-      homepage.group: Files & Sharing
-      homepage.href: https://c.${domain:?}
-      homepage.icon: sh-copyparty.svg
-      homepage.name: Copyparty
-      kuma.__docker:
-      release_notes: "https://github.com/9001/copyparty/releases"
-      traefik.enable: "true"
-      traefik.http.routers.copyparty.entryPoints: "https"
-      traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
-      traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
-    networks:
-      proxy:
-    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
-    user: ${uid:-1000}:${gid:-1000}
-    volumes:
-      - ${data:-.}/copyparty/conf:/cfg
-      - ${data:-.}/copyparty/files:/w
   freshrss:
     extends:
       file: ../common.yaml
