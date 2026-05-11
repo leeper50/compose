@@ -33,7 +33,6 @@ services:
       homepage.icon: sh-handbrake.webp
       homepage.name: Handbrake
       kuma.__docker:
-      # kuma.__web: '"hb.${domain:?}"'
       release_notes: "https://github.com/jlesage/docker-handbrake/releases"
       traefik.enable: 'true'
       traefik.http.routers.handbrake.entryPoints: 'https'

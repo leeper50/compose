@@ -62,7 +62,6 @@ services:
       homepage.icon: sh-open-webui.svg
       homepage.name: OpenWebUI
       kuma.__docker:
-      # kuma.__web: '"ai.${domain:?}"'
       release_notes: "https://github.com/open-webui/open-webui/releases"
       traefik.enable: "true"
       traefik.http.routers.openwebui.entryPoints: "https"

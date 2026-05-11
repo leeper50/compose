@@ -45,7 +45,6 @@ services:
       homepage.icon: sh-pocket-id.svg
       homepage.name: PocketID
       kuma.__docker:
-      # kuma.__web: '"id.${domain:?}"'
       release_notes: "https://pocket-id.org/changelog"
       traefik.enable: "true"
       traefik.http.routers.pocketid.entryPoints: "https"
@@ -75,7 +74,6 @@ services:
     image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
-      # kuma.__web: '"auth.${domain:?}"'
       release_notes: "https://tinyauth.app/docs/reference/changelog/"
       traefik.enable: "true"
       traefik.http.routers.tinyauth.entryPoints: "https"
@@ -101,7 +99,6 @@ services:
       homepage.icon: sh-traefik.svg
       homepage.name: Traefik
       kuma.__docker:
-      # kuma.__web: '"tf.${domain:?}"'
       release_notes: "https://github.com/traefik/traefik/releases"
       traefik.enable: "true"
       traefik.http.routers.traefik.entryPoints: "https"

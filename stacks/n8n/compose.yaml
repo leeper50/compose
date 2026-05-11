@@ -39,7 +39,6 @@ services:
       homepage.icon: sh-n8n.svg
       homepage.name: N8N
       kuma.__docker:
-      # kuma.__web: '"n8n.${domain:?}"'
       release_notes: "https://docs.n8n.io/release-notes/"
       traefik.enable: "true"
       traefik.http.middlewares.n8n.headers.browserXSSFilter: true

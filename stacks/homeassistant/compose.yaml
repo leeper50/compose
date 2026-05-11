@@ -30,7 +30,6 @@ services:
       homepage.icon: sh-home-assistant.svg
       homepage.name: Home Assistant
       kuma.__docker:
-      # kuma.__web: '"ha.${domain:?}"'
       release_notes: "https://github.com/home-assistant/docker/releases"
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
@@ -84,7 +83,6 @@ services:
       homepage.icon: sh-zigbee2mqtt.svg
       homepage.name: Zigbee
       kuma.__docker:
-      # kuma.__web: '"zb.${domain:?}"'
       release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
@@ -114,7 +112,6 @@ services:
       homepage.icon: sh-z-wave-js-ui.svg
       homepage.name: ZWave
       kuma.__docker:
-      # kuma.__web: '"zw.${domain:?}"'
       release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"

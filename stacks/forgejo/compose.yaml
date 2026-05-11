@@ -39,7 +39,6 @@ services:
       homepage.icon: sh-forgejo.svg
       homepage.name: Forgejo
       kuma.__docker:
-      # kuma.__web: '"fj.${domain:?}"'
       release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"

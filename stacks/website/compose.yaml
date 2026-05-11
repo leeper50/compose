@@ -38,7 +38,6 @@ services:
       homepage.icon: sh-copyparty.svg
       homepage.name: Copyparty
       kuma.__docker:
-      # kuma.__web: '"c.${domain:?}"'
       release_notes: "https://github.com/9001/copyparty/releases"
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
@@ -86,7 +85,6 @@ services:
       homepage.widget.url: http://freshrss:80
       homepage.widget.username: ${freshrss_user_name:?}
       kuma.__docker:
-      # kuma.__web: '"rss.${domain:?}"'
       release_notes: "https://github.com/linuxserver/docker-freshrss/releases"
       traefik.enable: "true"
       traefik.http.routers.freshrss.entryPoints: "https"
@@ -133,7 +131,6 @@ services:
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"home.${domain:?}"'
       release_notes: "https://github.com/gethomepage/homepage/releases"
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
@@ -157,7 +154,6 @@ services:
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
       kuma.__docker:
-      # kuma.__web: '"${domain:?}"'
       release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
@@ -184,7 +180,6 @@ services:
       homepage.icon: sh-vaultwarden.svg
       homepage.name: Vaultwarden
       kuma.__docker:
-      # kuma.__web: '"vw.${domain:?}"'
       release_notes: "https://github.com/dani-garcia/vaultwarden/releases"
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.entryPoints: "https"

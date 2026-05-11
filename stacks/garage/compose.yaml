@@ -60,7 +60,6 @@ services:
       homepage.icon: sh-garage.svg
       homepage.name: Garage
       kuma.__docker:
-      # kuma.__web: '"g.${domain:?}"'
       release_notes: "https://github.com/khairul169/garage-webui/releases"
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"

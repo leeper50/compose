@@ -46,7 +46,6 @@ services:
       homepage.icon: sh-reactive-resume.svg
       homepage.name: RxResume
       kuma.__docker:
-      # kuma.__web: '"rx.${domain:?}"'
       release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"

@@ -129,7 +129,6 @@ services:
       homepage.icon: sh-nextcloud.webp
       homepage.name: Nextcloud
       kuma.__docker:
-      # kuma.__web: '"next.${domain:?}"'
       release_notes: "https://github.com/nginx/nginx/releases"
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entryPoints: "https"

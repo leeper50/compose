@@ -30,7 +30,6 @@ services:
       homepage.icon: sh-convertx.webp
       homepage.name: ConvertX
       kuma.__docker:
-      # kuma.__web: '"cx.${domain:?}"'
       release_notes: "https://github.com/C4illin/ConvertX/releases"
       traefik.enable: "true"
       traefik.http.routers.convertx.entryPoints: "https"
@@ -53,7 +52,6 @@ services:
       homepage.icon: sh-it-tools.svg
       homepage.name: ItTools
       kuma.__docker:
-      # kuma.__web: '"it.${domain:?}"'
       release_notes: "https://github.com/CorentinTh/it-tools/releases"
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
@@ -74,7 +72,6 @@ services:
       homepage.icon: sh-libretranslate.svg
       homepage.name: Libretranslate
       kuma.__docker:
-      # kuma.__web: '"lt.${domain:?}"'
       release_notes: "https://github.com/LibreTranslate/LibreTranslate/releases"
       traefik.enable: "true"
       traefik.http.routers.libretranslate.entryPoints: "https"
@@ -95,7 +92,6 @@ services:
       homepage.icon: sh-librespeed.svg
       homepage.name: MySpeed
       kuma.__docker:
-      # kuma.__web: '"sp.${domain:?}"'
       release_notes: "https://github.com/gnmyt/MySpeed/releases"
       traefik.enable: "true"
       traefik.http.routers.speedtest.entryPoints: "https"
@@ -118,7 +114,6 @@ services:
       homepage.icon: sh-privatebin.svg
       homepage.name: PrivateBin
       kuma.__docker:
-      # kuma.__web: '"pb.${domain:?}"'
       release_notes: "https://privatebin.info/tag/release.html"
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
@@ -158,7 +153,6 @@ services:
       homepage.icon: sh-send-visee.svg
       homepage.name: Send
       kuma.__docker:
-      # kuma.__web: '"send.${domain:?}"'
       release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
@@ -214,7 +208,6 @@ services:
       homepage.icon: sh-slink.webp
       homepage.name: Slink
       kuma.__docker:
-      # kuma.__web: '"sl.${domain:?}"'
       release_notes: "https://github.com/andrii-kryvoviaz/slink/releases"
       traefik.enable: "true"
       traefik.http.routers.slink.entryPoints: "https"

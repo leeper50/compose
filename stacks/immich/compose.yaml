@@ -104,7 +104,6 @@ services:
       homepage.icon: sh-immich.svg
       homepage.name: Immich
       kuma.__docker:
-      # kuma.__web: '"im.${domain:?}/auth/login"'
       release_notes: "https://github.com/immich-app/immich/releases"
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"

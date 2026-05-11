@@ -32,7 +32,6 @@ services:
       homepage.icon: sh-actual-budget.svg
       homepage.name: Actual Budget
       kuma.__docker:
-      # kuma.__web: '"ab.${domain:?}"'
       release_notes: "https://github.com/actualbudget/actual/releases"
       traefik.enable: "true"
       traefik.http.routers.actualbudget.entryPoints: "https"

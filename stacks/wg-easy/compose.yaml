@@ -32,7 +32,6 @@ services:
       homepage.icon: sh-wireguard.svg
       homepage.name: WG-Easy
       kuma.__docker:
-      # kuma.__web: '"vpn.${domain:?}"'
       release_notes: "https://github.com/wg-easy/wg-easy/releases"
       traefik.enable: "true"
       traefik.http.routers.wgeasy.entryPoints: "https"

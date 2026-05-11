@@ -86,7 +86,6 @@ services:
       homepage.icon: sh-bookstack.svg
       homepage.name: Bookstack
       kuma.__docker:
-      # kuma.__web: '"bs.${domain:?}"'
       release_notes: "https://codeberg.org/bookstack/bookstack/releases"
       traefik.enable: "true"
       traefik.http.routers.bookstack.entryPoints: "https"
@@ -129,7 +128,6 @@ services:
       homepage.icon: sh-dozzle.svg
       homepage.name: Dozzle
       kuma.__docker:
-      # kuma.__web: '"dz.${domain:?}"'
       release_notes: "https://github.com/amir20/dozzle/releases"
       traefik.enable: 'true'
       traefik.http.routers.dozzle.entryPoints: 'https'
@@ -177,7 +175,6 @@ services:
       homepage.icon: sh-ntfy.svg
       homepage.name: Ntfy
       kuma.__docker:
-      # kuma.__web: '"n.${domain:?}"'
       release_notes: "https://github.com/binwiederhier/ntfy/releases"
       traefik.enable: "true"
       traefik.http.routers.ntfy.entryPoints: "https"

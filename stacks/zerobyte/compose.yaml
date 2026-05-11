@@ -34,7 +34,6 @@ services:
       homepage.icon: sh-zerobyte.svg
       homepage.name: Zerobyte
       kuma.__docker:
-      # kuma.__web: '"z.${domain:?}"'
       release_notes: "https://github.com/nicotsx/zerobyte/releases"
       traefik.enable: "true"
       traefik.http.routers.zerobyte.entryPoints: "https"

@@ -40,7 +40,6 @@ services:
       homepage.icon: sh-gitea.svg
       homepage.name: Gitea
       kuma.__docker:
-      # kuma.__web: '"git.${domain:?}"'
       release_notes: "https://github.com/go-gitea/gitea/releases"
       traefik.enable: "true"
       traefik.http.routers.gitea.entryPoints: "https"

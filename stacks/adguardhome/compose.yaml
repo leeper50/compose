@@ -35,7 +35,6 @@ services:
       homepage.icon: sh-adguard-home.svg
       homepage.name: Adguard - Komodo
       kuma.__docker:
-      # kuma.__web: '"ad.${domain:?}"'
       release_notes: "https://github.com/AdguardTeam/AdGuardHome/releases"
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"

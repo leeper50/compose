@@ -34,7 +34,6 @@ services:
       homepage.icon: sh-syncthing.svg
       homepage.name: Syncthing
       kuma.__docker:
-      # kuma.__web: '"sync.${domain:?}"'
       release_notes: "https://github.com/syncthing/syncthing/releases"
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
