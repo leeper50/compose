@@ -1,0 +1,16 @@
+services:
+  archivewarrior:
+    environment:
+      CONCURRENT_ITEMS: ${concurrent_items:-6}
+      DOWNLOADER: ${username}
+      SELECTED_PROJECT: ${selected_project:-auto}
+    deploy:
+      endpoint_mode: vip
+      mode: replicated
+      replicas: ${num_instances:-1}
+    image: atdr.meo.ws/archiveteam/warrior-dockerfile
+    ports:
+      - 30000-30020:8001
+    restart: unless-stopped
+    stop_grace_period: 5m
+    stop_signal: SIGINT
