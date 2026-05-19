@@ -27,8 +27,8 @@ services:
       kuma.__docker:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
-      - "1080:1080/tcp"
-      - "8888:8888/tcp"
+      - "${allowed_ip:-0.0.0.0}:1080:1080/tcp"
+      - "${allowed_ip:-0.0.0.0}:8888:8888/tcp"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
     volumes:
