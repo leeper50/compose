@@ -10,7 +10,7 @@ services:
       replicas: ${num_instances:-1}
     image: atdr.meo.ws/archiveteam/warrior-dockerfile:${archivewarrior_version:-latest}
     ports:
-      - 30000-30020:8001
+      - ${allowed_ip:-0.0.0.0}:30000-30020:8001
     restart: unless-stopped
     stop_grace_period: 5m
     stop_signal: SIGINT
