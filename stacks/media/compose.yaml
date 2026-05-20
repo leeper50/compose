@@ -3,39 +3,6 @@ networks:
   proxy:
     external: true
 services:
-  calibre:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: calibre
-    environment:
-      PGID: ${gid:-1000}
-      PUID: ${uid:-1000}
-      TZ: ${timezone:-UTC}
-    image: lscr.io/linuxserver/calibre-web:${calibre_web_version:-latest}
-    labels:
-      homepage.group: Media Consumption
-      homepage.href: https://cb.${domain:?}
-      homepage.icon: sh-calibre.svg
-      homepage.name: Calibre
-      kuma.__docker:
-      release_notes: "https://docs.linuxserver.io/images/docker-calibre-web/#versions"
-      traefik.enable: "true"
-      traefik.http.routers.calibre.entryPoints: "https"
-      traefik.http.routers.calibre.middlewares: "allowedIPs@file"
-      traefik.http.routers.calibre.rule: "Host(`cb.${domain:?}`)"
-      traefik.http.services.calibre.loadbalancer.server.url: "http://calibre:8083"
-    networks:
-      proxy: null
-    volumes:
-      - ${data:-.}/calibre:/config
-      - ${media}/Books:/books
   freshrss:
     extends:
       file: ../common.yaml
@@ -149,6 +116,35 @@ services:
       - ${media}/TV:/data/tvshows:rw
       - ${media}/Movies:/data/movies:rw
       - ${media}/Music:/data/music:rw
+  kavita:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+    container_name: kavita
+    environment:
+      TZ: ${timezone:-UTC}
+    image: ghcr.io/kareadita/kavita:${kavita_version:-latest}
+    labels:
+      homepage.group: Media Consumption
+      homepage.href: https://kv.${domain:?}
+      homepage.icon: sh-kavita.svg
+      homepage.name: Kavita
+      kuma.__docker:
+      release_notes: "https://github.com/Kareadita/Kavita/releases"
+      traefik.enable: "true"
+      traefik.http.routers.kavita.entryPoints: "https"
+      traefik.http.routers.kavita.middlewares: "allowedIPs@file"
+      traefik.http.routers.kavita.rule: "Host(`kv.${domain:?}`)"
+      traefik.http.services.kavita.loadbalancer.server.url: "http://kavita:5000"
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/kavita:/kavita/config
+      - ${media}/Books:/books
   navidrome:
     extends:
       file: ../common.yaml
