@@ -1,7 +1,7 @@
 networks:
   default:
     driver: bridge
-    enable_ipv6: ${enable_ipv6:-false}
+    enable_ipv6: ${enable_ipv6_bool:-true}
 services:
   gluetun_proxy:
     extends:
@@ -36,7 +36,7 @@ services:
       - "${allowed_ip:-0.0.0.0}:1080:1080/tcp"
       - "${allowed_ip:-0.0.0.0}:8888:8888/tcp"
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
