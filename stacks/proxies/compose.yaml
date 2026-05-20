@@ -22,6 +22,12 @@ services:
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     image: qmcgaw/gluetun:${gluetun_version:-v3.41}
     labels:
       kuma.__docker:
@@ -34,6 +40,9 @@ services:
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
   socks5proxy:
+    depends_on:
+      gluetun_proxy:
+        condition: service_healthy
     extends:
       file: ../common.yaml
       service: base
