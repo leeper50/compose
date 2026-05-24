@@ -33,8 +33,8 @@ services:
       kuma.__docker:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
-      - "${allowed_ip:-0.0.0.0}:1080:1080/tcp"
-      - "${allowed_ip:-0.0.0.0}:8888:8888/tcp"
+      - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
+      - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
@@ -50,6 +50,7 @@ services:
       - ALL
     container_name: socks5proxy
     environment:
+      ALLOWED_IPS: ${allowed_ips}
       PROXY_PASS: ${proxy_pass:?}
       PROXY_USER: ${proxy_user:?}
       REQUIRE_AUTH: ${enable_auth:-true}
