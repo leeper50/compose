@@ -162,5 +162,6 @@ services:
       proxy: null
     user: ${uid:-1000}:${gid:-1000}
     volumes:
+      - ${data:-.}/slink/data:/data
       - ${data:-.}/slink/db:/app/var/data
       - ${data:-.}/slink/images:/app/slink/images
