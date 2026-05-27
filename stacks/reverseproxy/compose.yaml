@@ -14,7 +14,6 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: pocketid
     environment:
       APP_URL: https://id.${domain}
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
@@ -48,7 +47,6 @@ services:
       service: base
     cap_drop:
       - ALL
-    container_name: socket-proxy
     environment:
       CONTAINERS: 1
       EVENTS: 1
@@ -73,7 +71,6 @@ services:
       service: base
     cap_drop:
       - ALL
-    container_name: tinyauth
     depends_on:
       - pocketid
     environment:
@@ -104,7 +101,6 @@ services:
       service: base
     cap_drop:
       - ALL
-    container_name: traefik
     depends_on:
       - pocketid
     environment:
