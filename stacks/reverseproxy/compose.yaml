@@ -27,16 +27,17 @@ services:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       timeout: 5s
     image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://id.${domain:?}
-      homepage.icon: sh-pocket-id.svg
-      homepage.name: PocketID
-      kuma.__docker:
-      release_notes: "https://pocket-id.org/changelog"
-      traefik.enable: "true"
-      traefik.http.routers.pocketid.entryPoints: "https"
-      traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
+    deploy:
+      labels:
+        homepage.group: Access & Security
+        homepage.href: https://id.${domain:?}
+        homepage.icon: sh-pocket-id.svg
+        homepage.name: PocketID
+        kuma.__docker:
+        release_notes: "https://pocket-id.org/changelog"
+        traefik.enable: "true"
+        traefik.http.routers.pocketid.entryPoints: "https"
+        traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
     networks:
       proxy:
     volumes:
@@ -58,9 +59,10 @@ services:
       TZ: ${timezone:-UTC}
       VOLUMES: 1
     image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
     networks:
       socket-proxy:
     volumes:
@@ -85,12 +87,13 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
     image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
-    labels:
-      kuma.__docker:
-      release_notes: "https://tinyauth.app/docs/reference/changelog/"
-      traefik.enable: "true"
-      traefik.http.routers.tinyauth.entryPoints: "https"
-      traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://tinyauth.app/docs/reference/changelog/"
+        traefik.enable: "true"
+        traefik.http.routers.tinyauth.entryPoints: "https"
+        traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
     networks:
       proxy:
     volumes:
@@ -107,19 +110,20 @@ services:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
     image: traefik:${traefik_version:-v3.6}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://tf.${domain:?}
-      homepage.icon: sh-traefik.svg
-      homepage.name: Traefik
-      kuma.__docker:
-      release_notes: "https://github.com/traefik/traefik/releases"
-      traefik.enable: "true"
-      traefik.http.routers.traefik.entryPoints: "https"
-      traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
-      traefik.http.routers.traefik.service: "api@internal"
-      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
+    deploy:
+      labels:
+        homepage.group: Access & Security
+        homepage.href: https://tf.${domain:?}
+        homepage.icon: sh-traefik.svg
+        homepage.name: Traefik
+        kuma.__docker:
+        release_notes: "https://github.com/traefik/traefik/releases"
+        traefik.enable: "true"
+        traefik.http.routers.traefik.entryPoints: "https"
+        traefik.http.routers.traefik.middlewares: "localonly@file"
+        traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
+        traefik.http.routers.traefik.service: "api@internal"
+        traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
     networks:
       proxy:
       socket-proxy:
