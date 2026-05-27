@@ -73,8 +73,6 @@ services:
       service: base
     cap_drop:
       - ALL
-    depends_on:
-      - pocketid
     environment:
       TINYAUTH_APPURL: https://auth.${domain}
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
@@ -104,8 +102,6 @@ services:
       service: base
     cap_drop:
       - ALL
-    depends_on:
-      - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
