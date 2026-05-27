@@ -48,6 +48,11 @@ services:
       VOLUMES: 1
     image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
     deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         kuma.__docker:
         release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
