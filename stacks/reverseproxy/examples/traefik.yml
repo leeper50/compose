@@ -1,11 +1,11 @@
 accessLog:
   filePath: /var/log/traefik/access.log
   filters:
+    minDuration: 1000ms
+    retryAttempts: true
     statusCodes:
       - 400-499
       - 500-599
-    retryAttempts: true
-    minDuration: 1000ms
 
 api:
   dashboard: true
@@ -14,14 +14,14 @@ api:
 certificatesResolvers:
   your-cert-provider:
     acme:
-      email: youremail@example.com
-      storage: /acme.json
       caServer: https://acme-v02.api.letsencrypt.org/directory
+      email: youremail@example.com
       dnsChallenge:
         provider: your-cert-provider
         resolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
+      storage: /acme.json
 
 entryPoints:
   http:
@@ -29,9 +29,9 @@ entryPoints:
     http:
       redirections:
         entryPoint:
-          to: https
-          scheme: https
           permanent: true
+          scheme: https
+          to: https
   https:
     address: :443
     http3: {}
@@ -45,8 +45,8 @@ entryPoints:
         - 172.16.0.0/12
     transport:
       respondingTimeouts:
-        readTimeout: 600s
         idleTimeout: 600s
+        readTimeout: 600s
         writeTimeout: 600s
     http:
       tls:
@@ -66,8 +66,8 @@ log:
   compress: true
   filePath: /var/log/traefik/traefik.log
   level: INFO
-  maxSize: 25
   maxAge: 7
+  maxSize: 25
 
 metrics:
   prometheus:
