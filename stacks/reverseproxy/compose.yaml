@@ -87,7 +87,7 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
-    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
+    image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
       release_notes: "https://tinyauth.app/docs/reference/changelog/"
@@ -110,7 +110,7 @@ services:
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
-    image: traefik:${traefik_version:-v3.6}
+    image: traefik:${traefik_version:-v3.7}
     labels:
       homepage.group: Access & Security
       homepage.href: https://tf.${domain:?}
