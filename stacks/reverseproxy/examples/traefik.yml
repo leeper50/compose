@@ -85,6 +85,7 @@ providers:
     endpoint: tcp://socket-proxy:2375
     exposedByDefault: false
     network: proxy
+    swarmMode: true
   file:
     filename: /dynamic.yml
     watch: true
