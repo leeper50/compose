@@ -5,9 +5,6 @@ networks:
     external: true
 services:
   pocketid:
-    extends:
-      file: ../common.yaml
-      service: base
     environment:
       APP_URL: https://id.${domain}
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
@@ -37,9 +34,6 @@ services:
     volumes:
       - ${data:-.}/pocketid:/app/data
   socket-proxy:
-    extends:
-      file: ../common.yaml
-      service: base
     environment:
       CONTAINERS: 1
       EVENTS: 1
@@ -60,9 +54,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
   tinyauth:
-    extends:
-      file: ../common.yaml
-      service: base
     environment:
       TINYAUTH_APPURL: https://auth.${domain}
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
@@ -87,9 +78,6 @@ services:
     volumes:
       - ${data:-.}/tinyauth:/data
   traefik:
-    extends:
-      file: ../common.yaml
-      service: base
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
