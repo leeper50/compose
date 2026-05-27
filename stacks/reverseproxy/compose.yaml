@@ -8,12 +8,6 @@ services:
     extends:
       file: ../common.yaml
       service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     environment:
       APP_URL: https://id.${domain}
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
@@ -46,8 +40,6 @@ services:
     extends:
       file: ../common.yaml
       service: base
-    cap_drop:
-      - ALL
     environment:
       CONTAINERS: 1
       EVENTS: 1
@@ -71,8 +63,6 @@ services:
     extends:
       file: ../common.yaml
       service: base
-    cap_drop:
-      - ALL
     environment:
       TINYAUTH_APPURL: https://auth.${domain}
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
@@ -100,8 +90,6 @@ services:
     extends:
       file: ../common.yaml
       service: base
-    cap_drop:
-      - ALL
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
