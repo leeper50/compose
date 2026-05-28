@@ -16,7 +16,7 @@ services:
       - SETUID
     container_name: pocketid
     environment:
-      APP_URL: https://id.${domain}
+      APP_URL: https://id.dellhplaptop.xyz
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
@@ -77,16 +77,16 @@ services:
     depends_on:
       - pocketid
     environment:
-      TINYAUTH_APPURL: https://auth.${domain}
+      TINYAUTH_APPURL: https://auth.dellhplaptop.xyz
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.${domain}/authorize
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.dellhplaptop.xyz/authorize
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.${domain}/api/oauth/callback/pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.dellhplaptop.xyz/api/oauth/callback/pocketid
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
     image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
