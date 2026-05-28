@@ -5,49 +5,39 @@ networks:
     external: true
 services:
   homepage:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: homepage
     environment:
       TZ: ${timezone:-UTC}
       HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/gethomepage/homepage/releases"
-      traefik.enable: "true"
-      traefik.http.routers.homepage.entryPoints: "https"
-      traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
-      traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://github.com/gethomepage/homepage/releases"
+        traefik.enable: "true"
+        traefik.http.routers.homepage.entryPoints: "https"
+        traefik.http.routers.homepage.middlewares: "localonly@file"
+        traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
+        traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
     networks:
       proxy:
       socket-proxy:
     volumes:
       - ${data:-.}/homepage:/app/config:rw
   mywebsite:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: mywebsite
     environment:
       BETTER_AUTH_SECRET: ${auth_secret:?}
       BETTER_AUTH_URL: https://www.${domain:?}
       ORIGIN: https://www.${domain:?}
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
-      traefik.enable: "true"
-      traefik.http.routers.mywebsite.entryPoints: "https"
-      traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-      traefik.http.routers.mywebsite.rule: "Host(`www.${domain:?}`)"
-      traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
+        traefik.enable: "true"
+        traefik.http.routers.mywebsite.entryPoints: "https"
+        traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
+        traefik.http.routers.mywebsite.rule: "Host(`www.${domain:?}`)"
+        traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
     networks:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
