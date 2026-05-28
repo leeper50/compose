@@ -4,21 +4,12 @@ networks:
     external: true
 services:
   rxresume:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: rxresume
-    depends_on:
-      - rxresume_postgres
-      - rxresume_printer
     environment:
-      APP_URL: https://rx.${domain:?}
+      APP_URL: https://rx.buncha.men
       AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
       NODE_ENV: production
-      PRINTER_APP_URL: https://rx.${domain:?}
+      PRINTER_APP_URL: https://rx.buncha.men
       PRINTER_ENDPOINT: ws://rxresume_printer:3000?token=${printer_token:?}
       STORAGE_ACCESS_KEY: ${s3_access_key:?}
       STORAGE_BUCKET: rxresume
@@ -27,37 +18,26 @@ services:
       STORAGE_REGION: garage
       STORAGE_SECRET_KEY: ${s3_secret_key:?}
       STORAGE_SKIP_BUCKET_CHECK: "false"
-      STORAGE_URL: https://s3.${domain:?}
+      STORAGE_URL: https://s3.buncha.men
       STORAGE_USE_SSL: "false"
     image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.5}
-    labels:
-      homepage.group: Personal
-      homepage.href: https://rx.${domain:?}
-      homepage.icon: sh-reactive-resume.svg
-      homepage.name: RxResume
-      kuma.__docker:
-      release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
-      traefik.enable: "true"
-      traefik.http.routers.rxresume.entrypoints: "https"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@file"
-      traefik.http.routers.rxresume.rule: "Host(`rx.${domain:?}`)"
-      traefik.http.services.rxresume.loadbalancer.server.url: 'http://rxresume:3000'
+    deploy:
+      labels:
+        homepage.group: Personal
+        homepage.href: https://rx.buncha.men
+        homepage.icon: sh-reactive-resume.svg
+        homepage.name: RxResume
+        kuma.__docker:
+        release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
+        traefik.enable: "true"
+        traefik.http.routers.rxresume.entrypoints: "https"
+        traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@file"
+        traefik.http.routers.rxresume.rule: "Host(`rx.buncha.men`)"
+        traefik.http.services.rxresume.loadbalancer.server.port: 3000
     networks:
       default: null
       proxy: null
   rxresume_postgres:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    container_name: rxresume_postgres
     environment:
       POSTGRES_DB: ${db_name:-rxresume}
       POSTGRES_USER: ${db_user:-rxresume}
@@ -68,20 +48,15 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       timeout: 5s
     image: postgres:${postgres_version:-16-alpine}
-    labels:
-      kuma.__docker:
-      release_notes: "https://www.postgresql.org/docs/release/"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     volumes:
-      - $data/db:/var/lib/postgresql/data
+      - /mnt/docker/rxresume/db:/var/lib/postgresql/data
   rxresume_printer:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: rxresume_printer
     environment:
       CONCURRENT: 5
       HEALTH: true
@@ -93,8 +68,9 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000/pressure?token=${printer_token:?}"]
       timeout: 5s
     image: ghcr.io/browserless/chromium:${chromium_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
     networks:
       proxy: null

@@ -5,14 +5,6 @@ networks:
     external: true
 services:
   autokuma:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: autokuma
-    depends_on:
-      - uptimekuma
     environment:
       AUTOKUMA__DEFAULT_SETTINGS: |- 
          docker.docker_container: {{container_name}}
@@ -32,69 +24,61 @@ services:
          {{container_name}}_http.http.url: https://{{ args[0] }}
          {{container_name}}_http.http.notification_name_list: ["ntfy"]
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-2}
-    labels:
-      kuma.proxy.docker_host.name: 'Socket Proxy'
-      kuma.proxy.docker_host.connection_type: 'tcp'
-      kuma.proxy.docker_host.host: 'tcp://socket-proxy:2375'
-      kuma.ntfy.notification.name: 'NTFY'
-      kuma.ntfy.notification.active: 'true'
-      kuma.ntfy.notification.config: |
-        {
-          "ntfyaccesstoken": "${ntfy_token:?}",
-          "ntfyAuthenticationMethod": "accessToken",
-          "ntfyPriority": 2,
-          "ntfyserverurl": "http://ntfy:80",
-          "ntfytopic": "UptimeKuma",
-          "type": "ntfy"
-        }
-      release_notes: "https://github.com/bigboot/autokuma/releases"
+    deploy:
+      labels:
+        kuma.proxy.docker_host.name: 'Socket Proxy'
+        kuma.proxy.docker_host.connection_type: 'tcp'
+        kuma.proxy.docker_host.host: 'tcp://socket-proxy:2375'
+        kuma.ntfy.notification.name: 'NTFY'
+        kuma.ntfy.notification.active: 'true'
+        kuma.ntfy.notification.config: |
+          {
+            "ntfyaccesstoken": "${ntfy_token:?}",
+            "ntfyAuthenticationMethod": "accessToken",
+            "ntfyPriority": 2,
+            "ntfyserverurl": "http://ntfy:80",
+            "ntfytopic": "UptimeKuma",
+            "type": "ntfy"
+          }
+        release_notes: "https://github.com/bigboot/autokuma/releases"
     networks:
       proxy: null
       socket-proxy: null
     volumes:
-      - ${data:-.}/autokuma:/data:rw
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/docker/autokuma:/data:rw
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
   dozzle:
-    extends:
-      file: ../common.yaml
-      service: base
-    container_name: dozzle
     environment:
       DOZZLE_AUTH_PROVIDER: forward-proxy
       DOZZLE_REMOTE_HOST: tcp://socket-proxy:2375
     image: amir20/dozzle:${dozzle_version:-v10}
-    labels:
-      homepage.group: Monitoring & Metrics
-      homepage.href: https://dz.${domain:?}
-      homepage.icon: sh-dozzle.svg
-      homepage.name: Dozzle
-      kuma.__docker:
-      release_notes: "https://github.com/amir20/dozzle/releases"
-      traefik.enable: 'true'
-      traefik.http.routers.dozzle.entryPoints: 'https'
-      traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
-      traefik.http.routers.dozzle.rule: 'Host(`dz.${domain}`)'
-      traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
-      traefik.http.services.dozzle.loadbalancer.server.port: 8080
+    deploy:
+      labels:
+        homepage.group: Monitoring & Metrics
+        homepage.href: https://dz.buncha.men
+        homepage.icon: sh-dozzle.svg
+        homepage.name: Dozzle
+        kuma.__docker:
+        release_notes: "https://github.com/amir20/dozzle/releases"
+        traefik.enable: 'true'
+        traefik.http.routers.dozzle.entryPoints: 'https'
+        traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
+        traefik.http.routers.dozzle.rule: 'Host(`dz.buncha.men`)'
+        traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
+        traefik.http.services.dozzle.loadbalancer.server.port: 8080
     networks:
       proxy:
       socket-proxy:
     volumes:
-      - ${data:-.}/dozzle:/data
+      - /mnt/docker/dozzle:/data
   ntfy:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
     command:
       - serve
-    container_name: ntfy
     environment:
       NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
       NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
-      NTFY_BASE_URL: https://n.${domain:?}
+      NTFY_BASE_URL: https://n.buncha.men
       NTFY_BEHIND_PROXY: true
       NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
       NTFY_ENABLE_LOGIN: true
@@ -112,68 +96,59 @@ services:
       start_period: 40s
     image: binwiederhier/ntfy:${ntfy_version:-v2}
     init: true
-    labels:
-      homepage.group: Monitoring & Metrics
-      homepage.href: https://n.${domain:?}
-      homepage.icon: sh-ntfy.svg
-      homepage.name: Ntfy
-      kuma.__docker:
-      release_notes: "https://github.com/binwiederhier/ntfy/releases"
-      traefik.enable: "true"
-      traefik.http.routers.ntfy.entryPoints: "https"
-      traefik.http.routers.ntfy.middlewares: "localonly@file"
-      traefik.http.routers.ntfy.rule: "Host(`n.${domain:?}`)"
-      traefik.http.services.ntfy.loadbalancer.server.url: "http://ntfy:80"
+    deploy:
+      labels:
+        homepage.group: Monitoring & Metrics
+        homepage.href: https://n.buncha.men
+        homepage.icon: sh-ntfy.svg
+        homepage.name: Ntfy
+        kuma.__docker:
+        release_notes: "https://github.com/binwiederhier/ntfy/releases"
+        traefik.enable: "true"
+        traefik.http.routers.ntfy.entryPoints: "https"
+        traefik.http.routers.ntfy.middlewares: "localonly@file"
+        traefik.http.routers.ntfy.rule: "Host(`n.buncha.men`)"
+        traefik.http.services.ntfy.loadbalancer.server.port: 80
     networks:
       proxy: null
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/ntfy/data:/var/lib/ntfy
+      - /mnt/docker/ntfy/data:/var/lib/ntfy
   speedtest:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: speedtest
     image: germannewsmaker/myspeed:${myspeed_version:-latest}
-    labels:
-      homepage.group: Monitoring & Metrics
-      homepage.href: https://sp.${domain:?}
-      homepage.icon: sh-librespeed.svg
-      homepage.name: MySpeed
-      kuma.__docker:
-      release_notes: "https://github.com/gnmyt/MySpeed/releases"
-      traefik.enable: "true"
-      traefik.http.routers.speedtest.entryPoints: "https"
-      traefik.http.routers.speedtest.middlewares: "localonly@file"
-      traefik.http.routers.speedtest.rule: "Host(`sp.${domain:?}`)"
-      traefik.http.services.speedtest.loadbalancer.server.url: "http://speedtest:5216"
+    deploy:
+      labels:
+        homepage.group: Monitoring & Metrics
+        homepage.href: https://sp.buncha.men
+        homepage.icon: sh-librespeed.svg
+        homepage.name: MySpeed
+        kuma.__docker:
+        release_notes: "https://github.com/gnmyt/MySpeed/releases"
+        traefik.enable: "true"
+        traefik.http.routers.speedtest.entryPoints: "https"
+        traefik.http.routers.speedtest.middlewares: "localonly@file"
+        traefik.http.routers.speedtest.rule: "Host(`sp.buncha.men`)"
+        traefik.http.services.speedtest.loadbalancer.server.port: 5216
     networks:
       proxy: null
     volumes:
-      - "${data:-.}/speedtest:/myspeed/data"
+      - "/mnt/docker/speedtest:/myspeed/data"
   uptimekuma:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: uptimekuma
     image: louislam/uptime-kuma:${uptimekuma_version:-2}
-    labels:
-      homepage.group: Monitoring & Metrics
-      homepage.href: https://up.${domain:?}/dashboard
-      homepage.icon: sh-uptime-kuma.svg
-      homepage.name: Uptime Kuma
-      release_notes: "https://github.com/louislam/uptime-kuma/releases"
-      traefik.enable: "true"
-      traefik.http.routers.uptimekuma.entryPoints: "https"
-      traefik.http.routers.uptimekuma.middlewares: "localonly@file"
-      traefik.http.routers.uptimekuma.rule: "Host(`up.${domain:?}`)"
-      traefik.http.services.uptimekuma.loadbalancer.server.url: "http://uptimekuma:3001"
+    deploy:
+      labels:
+        homepage.group: Monitoring & Metrics
+        homepage.href: https://up.buncha.men/dashboard
+        homepage.icon: sh-uptime-kuma.svg
+        homepage.name: Uptime Kuma
+        release_notes: "https://github.com/louislam/uptime-kuma/releases"
+        traefik.enable: "true"
+        traefik.http.routers.uptimekuma.entryPoints: "https"
+        traefik.http.routers.uptimekuma.middlewares: "localonly@file"
+        traefik.http.routers.uptimekuma.rule: "Host(`up.buncha.men`)"
+        traefik.http.services.uptimekuma.loadbalancer.server.port: 3001
     networks:
       proxy: null
       socket-proxy: null
     volumes:
-      - ${data:-.}/uptime:/app/data:rw
+      - /mnt/docker/uptimekuma:/app/data:rw

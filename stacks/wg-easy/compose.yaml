@@ -3,31 +3,22 @@ networks:
     external: true
 services:
   wgeasy:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-      - SYS_MODULE
-    container_name: wgeasy
     environment:
       INSECURE: false
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://vpn.${domain:?}
-      homepage.icon: sh-wireguard.svg
-      homepage.name: WG-Easy
-      kuma.__docker:
-      release_notes: "https://github.com/wg-easy/wg-easy/releases"
-      traefik.enable: "true"
-      traefik.http.routers.wgeasy.entryPoints: "https"
-      traefik.http.routers.wgeasy.middlewares: "localonly@file"
-      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain:?}`)"
-      traefik.http.services.wgeasy.loadbalancer.server.url: "http://wgeasy:51821"
+    deploy:
+      labels:
+        homepage.group: Access & Security
+        homepage.href: https://vpn.buncha.men
+        homepage.icon: sh-wireguard.svg
+        homepage.name: WG-Easy
+        kuma.__docker:
+        release_notes: "https://github.com/wg-easy/wg-easy/releases"
+        traefik.enable: "true"
+        traefik.http.routers.wgeasy.entryPoints: "https"
+        traefik.http.routers.wgeasy.middlewares: "localonly@file"
+        traefik.http.routers.wgeasy.rule: "Host(`vpn.buncha.men`)"
+        traefik.http.services.wgeasy.loadbalancer.server.port: 51821
     networks:
       proxy:
     ports:
@@ -39,5 +30,5 @@ services:
       - net.ipv6.conf.all.forwarding=1
       - net.ipv6.conf.default.forwarding=1
     volumes:
-      - ${data:-.}/wg-easy:/etc/wireguard
+      - /mnt/docker/wg-easy:/etc/wireguard
       - /lib/modules:/lib/modules:ro

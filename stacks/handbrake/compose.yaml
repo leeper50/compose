@@ -3,12 +3,6 @@ networks:
     external: true
 services:
   handbrake:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: handbrake
     environment:
       AUTOMATED_CONVERSION_FORMAT: ${extension:-mp4}
       AUTOMATED_CONVERSION_PRESET: ${custom_profile:-General/Very Fast 1080p30}
@@ -17,23 +11,24 @@ services:
       TZ: ${timezone:-UTC}
       USER_ID: ${uid:-1000}
     image: ghcr.io/jlesage/handbrake:${handbrake_version:-latest}
-    labels:
-      homepage.group: Tools
-      homepage.href: https://hb.${domain:?}
-      homepage.icon: sh-handbrake.webp
-      homepage.name: Handbrake
-      kuma.__docker:
-      release_notes: "https://github.com/jlesage/docker-handbrake/releases"
-      traefik.enable: 'true'
-      traefik.http.routers.handbrake.entryPoints: 'https'
-      traefik.http.routers.handbrake.middlewares: 'localonly@file'
-      traefik.http.routers.handbrake.rule: 'Host(`hb.${domain:?}`)'
-      traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'
+    deploy:
+      labels:
+        homepage.group: Tools
+        homepage.href: https://hb.buncha.men
+        homepage.icon: sh-handbrake.webp
+        homepage.name: Handbrake
+        kuma.__docker:
+        release_notes: "https://github.com/jlesage/docker-handbrake/releases"
+        traefik.enable: 'true'
+        traefik.http.routers.handbrake.entryPoints: 'https'
+        traefik.http.routers.handbrake.middlewares: 'localonly@file'
+        traefik.http.routers.handbrake.rule: 'Host(`hb.buncha.men`)'
+        traefik.http.services.handbrake.loadbalancer.server.port: 5800
     networks:
       proxy: null
     volumes:
-      - $data/handbrake:/config:rw
-      - $data/trash:/trash:rw
-      - $media/HandBrake/storage:/storage:rw
-      - $media/HandBrake/watch:/watch:rw
-      - $media/HandBrake/output:/output:rw
+      - /mnt/docker/handbrake/config:/config:rw
+      - /mnt/docker/handbrake/trash:/trash:rw
+      - /mnt/media/HandBrake/storage:/storage:rw
+      - /mnt/media/HandBrake/watch:/watch:rw
+      - /mnt/media/HandBrake/output:/output:rw

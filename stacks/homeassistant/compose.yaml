@@ -4,66 +4,39 @@ networks:
     external: true
 services:
   homeassistant:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: homeassistant
-    depends_on:
-      - zwave_js_ui
-      - zigbee2mqtt
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
-    labels:
-      homepage.group: Smart Home
-      homepage.href: https://ha.${domain:?}
-      homepage.icon: sh-home-assistant.svg
-      homepage.name: Home Assistant
-      kuma.__docker:
-      release_notes: "https://github.com/home-assistant/docker/releases"
-      traefik.enable: "true"
-      traefik.http.routers.homeassistant.entryPoints: "https"
-      traefik.http.routers.homeassistant.middlewares: "localonly@file"
-      traefik.http.routers.homeassistant.rule: "Host(`ha.${domain:?}`)"
-      traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
+    deploy:
+      labels:
+        homepage.group: Smart Home
+        homepage.href: https://ha.buncha.men
+        homepage.icon: sh-home-assistant.svg
+        homepage.name: Home Assistant
+        kuma.__docker:
+        release_notes: "https://github.com/home-assistant/docker/releases"
+        traefik.enable: "true"
+        traefik.http.routers.homeassistant.entryPoints: "https"
+        traefik.http.routers.homeassistant.middlewares: "localonly@file"
+        traefik.http.routers.homeassistant.rule: "Host(`ha.buncha.men`)"
+        traefik.http.services.homeassistant.loadbalancer.server.port: 8123
     networks:
       proxy: null
       mqtt: null
     volumes:
-      - ${data:-.}/homeassistant:/config
+      - /mnt/docker/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro # Bluetooth connection
   mqtt:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     command: "mosquitto -c /mosquitto-no-auth.conf"
-    container_name: mqtt
     image: eclipse-mosquitto:${mqtt_version:-2}
-    labels:
-      kuma.__docker:
-      release_notes: "https://mosquitto.org/blog/categories/releases/"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://mosquitto.org/blog/categories/releases/"
     networks:
       mqtt:
     volumes:
-      - ${data:-.}/mqtt/config:/mosquitto/config
-      - ${data:-.}/mqtt/data:/mosquitto/data
-      - ${data:-.}/mqtt/log:/mosquitto/log
+      - /mnt/docker/mqtt:/mosquitto
   zigbee2mqtt:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: zigbee2mqtt
-    depends_on:
-      - mqtt
     devices:
       - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
     environment:
@@ -71,52 +44,48 @@ services:
       ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
-    labels:
-      homepage.group: Smart Home
-      homepage.href: https://zb.${domain:?}
-      homepage.icon: sh-zigbee2mqtt.svg
-      homepage.name: Zigbee
-      kuma.__docker:
-      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
-      traefik.enable: "true"
-      traefik.http.routers.zigbee2mqtt.entryPoints: "https"
-      traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
-      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.${domain:?}`)"
-      traefik.http.services.zigbee2mqtt.loadbalancer.server.url: "http://zigbee2mqtt:8080"
+    deploy:
+      labels:
+        homepage.group: Smart Home
+        homepage.href: https://zb.buncha.men
+        homepage.icon: sh-zigbee2mqtt.svg
+        homepage.name: Zigbee
+        kuma.__docker:
+        release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
+        traefik.enable: "true"
+        traefik.http.routers.zigbee2mqtt.entryPoints: "https"
+        traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
+        traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.buncha.men`)"
+        traefik.http.services.zigbee2mqtt.loadbalancer.server.port: 8080
     networks:
       proxy:
       mqtt:
     volumes:
-      - ${data:-.}/zigbee2mqtt:/app/data
+      - /mnt/docker/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
   zwave_js_ui:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: zwave_js_ui
     devices:
       - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
     image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
-    labels:
-      homepage.group: Smart Home
-      homepage.href: https://zw.${domain:?}
-      homepage.icon: sh-z-wave-js-ui.svg
-      homepage.name: ZWave
-      kuma.__docker:
-      release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
-      traefik.enable: "true"
-      traefik.http.routers.zwave.entryPoints: "https"
-      traefik.http.routers.zwave.middlewares: "localonly@file"
-      traefik.http.routers.zwave.rule: "Host(`zw.${domain:?}`)"
-      traefik.http.services.zwave.loadbalancer.server.url: "http://zwave_js_ui:8091"
+    deploy:
+      labels:
+        homepage.group: Smart Home
+        homepage.href: https://zw.buncha.men
+        homepage.icon: sh-z-wave-js-ui.svg
+        homepage.name: ZWave
+        kuma.__docker:
+        release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
+        traefik.enable: "true"
+        traefik.http.routers.zwave.entryPoints: "https"
+        traefik.http.routers.zwave.middlewares: "localonly@file"
+        traefik.http.routers.zwave.rule: "Host(`zw.buncha.men`)"
+        traefik.http.services.zwave.loadbalancer.server.port: 8091
     networks:
       proxy:
     stop_signal: SIGINT
     tty: true
     volumes:
-      - ${data:-.}/zwave-config:/usr/src/app/store
+      - /mnt/docker/zwave:/usr/src/app/store

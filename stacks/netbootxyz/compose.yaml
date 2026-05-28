@@ -3,12 +3,6 @@ networks:
     external: true
 services:
   netbootxyz:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: netbootxyz
     environment:
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
@@ -21,18 +15,19 @@ services:
       retries: 10
       start_period: 3s
     image: ghcr.io/netbootxyz/netbootxyz:${netbootxyz_version-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://netboot.xyz/docs/community/changelog"
-      traefik.enable: "true"
-      traefik.http.routers.netbootxyz.entryPoints: "https"
-      traefik.http.routers.netbootxyz.middlewares: "localonly@file"
-      traefik.http.routers.netbootxyz.rule: "Host(`nb.${domain:?}`)"
-      traefik.http.services.netbootxyz.loadbalancer.server.url: "http://netbootxyz:3000"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://netboot.xyz/docs/community/changelog"
+        traefik.enable: "true"
+        traefik.http.routers.netbootxyz.entryPoints: "https"
+        traefik.http.routers.netbootxyz.middlewares: "localonly@file"
+        traefik.http.routers.netbootxyz.rule: "Host(`nb.buncha.men`)"
+        traefik.http.services.netbootxyz.loadbalancer.server.port: 3000
     networks:
       proxy: null
     ports:
       - "69:69/udp"
     volumes:
-      - ${data:-.}/netbootxyz/config:/config:rw
-      - ${data:-.}/netbootxyz/assets:/assets:rw
+      - /mnt/docker/netbootxyz/config:/config:rw
+      - /mnt/docker/netbootxyz/assets:/assets:rw

@@ -18,7 +18,7 @@ This folder should contain an `rclone.conf` file that contains a valid remote.
 
 Your directory structure should look like this:
 ```
-${data}
+/mnt/docker/zerobyte
 ├── app
 │       ├── data
 │       └── restic

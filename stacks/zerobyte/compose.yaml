@@ -3,37 +3,30 @@ networks:
     external: true
 services:
   zerobyte:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - SYS_ADMIN
-    container_name: zerobyte
     environment:
       APP_SECRET: ${app_secret:?}
-      BASE_URL: https://z.${domain:?}
+      BASE_URL: https://z.buncha.men
       TRUST_PROXY: true
-      TRUSTED_ORIGINS: https://z.${domain:?}
+      TRUSTED_ORIGINS: https://z.buncha.men
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://z.${domain:?}
-      homepage.icon: sh-zerobyte.svg
-      homepage.name: Zerobyte
-      kuma.__docker:
-      release_notes: "https://github.com/nicotsx/zerobyte/releases"
-      traefik.enable: "true"
-      traefik.http.routers.zerobyte.entryPoints: "https"
-      traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"
-      traefik.http.routers.zerobyte.rule: "Host(`z.${domain:?}`)"
-      traefik.http.services.zerobyte.loadbalancer.server.url: "http://zerobyte:4096"
+    deploy:
+      labels:
+        homepage.group: Access & Security
+        homepage.href: https://z.buncha.men
+        homepage.icon: sh-zerobyte.svg
+        homepage.name: Zerobyte
+        kuma.__docker:
+        release_notes: "https://github.com/nicotsx/zerobyte/releases"
+        traefik.enable: "true"
+        traefik.http.routers.zerobyte.entryPoints: "https"
+        traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"
+        traefik.http.routers.zerobyte.rule: "Host(`z.buncha.men`)"
+        traefik.http.services.zerobyte.loadbalancer.server.port: 4096
     networks:
       proxy:
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${data:?}/app:/var/lib/zerobyte
-      - ${data:?}/rclone:/root/.config/rclone:ro
+      - /mnt/docker/zerobyte/app:/var/lib/zerobyte
+      - /mnt/docker/zerobyte/rclone:/root/.config/rclone:ro
       - ${backup:?}:/mnt/data1:ro

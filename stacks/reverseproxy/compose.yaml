@@ -6,7 +6,7 @@ networks:
 services:
   pocketid:
     environment:
-      APP_URL: https://id.${domain}
+      APP_URL: https://id.buncha.men
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
@@ -21,19 +21,19 @@ services:
     deploy:
       labels:
         homepage.group: Access & Security
-        homepage.href: https://id.${domain:?}
+        homepage.href: https://id.buncha.men
         homepage.icon: sh-pocket-id.svg
         homepage.name: PocketID
         kuma.__docker:
         release_notes: "https://pocket-id.org/changelog"
         traefik.enable: "true"
         traefik.http.routers.pocketid.entryPoints: "https"
-        traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
+        traefik.http.routers.pocketid.rule: "Host(`id.buncha.men`)"
         traefik.http.services.pocketid.loadbalancer.server.port: 1411
     networks:
       proxy:
     volumes:
-      - ${data:-.}/pocketid:/app/data
+      - /mnt/docker/pocketid:/app/data
   socket-proxy:
     environment:
       CONTAINERS: 1
@@ -64,16 +64,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
   tinyauth:
     environment:
-      TINYAUTH_APPURL: https://auth.${domain}
+      TINYAUTH_APPURL: https://auth.buncha.men
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.${domain}/authorize
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.buncha.men/authorize
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.${domain}/api/oauth/callback/pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.buncha.men/api/oauth/callback/pocketid
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.buncha.men/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.buncha.men/api/oidc/userinfo
     image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
     deploy:
       labels:
@@ -81,12 +81,12 @@ services:
         release_notes: "https://tinyauth.app/docs/reference/changelog/"
         traefik.enable: "true"
         traefik.http.routers.tinyauth.entryPoints: "https"
-        traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
+        traefik.http.routers.tinyauth.rule: "Host(`auth.buncha.men`)"
         traefik.http.services.tinyauth.loadbalancer.server.port: 3000
     networks:
       proxy:
     volumes:
-      - ${data:-.}/tinyauth:/data
+      - /mnt/docker/tinyauth:/data
   traefik:
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
@@ -100,7 +100,7 @@ services:
           - node.role == manager
       labels:
         homepage.group: Access & Security
-        homepage.href: https://tf.${domain:?}
+        homepage.href: https://tf.buncha.men
         homepage.icon: sh-traefik.svg
         homepage.name: Traefik
         kuma.__docker:
@@ -108,7 +108,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.traefik.entryPoints: "https"
         traefik.http.routers.traefik.middlewares: "localonly@file"
-        traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
+        traefik.http.routers.traefik.rule: "Host(`tf.buncha.men`)"
         traefik.http.routers.traefik.service: "api@internal"
         traefik.http.services.traefik.loadbalancer.server.port: 8080
     networks:
@@ -120,7 +120,7 @@ services:
       - "443:443/udp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json:rw
-      - ${data:-.}/logs/traefik:/var/log/traefik:rw
+      - /mnt/docker/traefik/traefik.yml:/traefik.yml:ro
+      - /mnt/docker/traefik/dynamic.yml:/dynamic.yml:ro
+      - /mnt/docker/traefik/acme.json:/acme.json:rw
+      - /mnt/docker/traefik/logs/traefik:/var/log/traefik:rw

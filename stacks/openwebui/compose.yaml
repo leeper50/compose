@@ -4,31 +4,18 @@ networks:
     external: true
 services:
   ollama:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: ollama
     environment:
        OLLAMA_HOST: 0.0.0.0:11434
     image: ollama/ollama:${ollama_version:-latest}
-    labels:
-      release_notes: "https://github.com/ollama/ollama/releases"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://github.com/ollama/ollama/releases"
+        kuma.__docker:
     networks:
       default:
     volumes:
-       - ${data:-.}/ollama_data:/root/.ollama
+       - /mnt/docker/ollama:/root/.ollama
   openwebui:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: openwebui
-    depends_on:
-      - ollama
     environment:
       DEFAULT_USER_ROLE: user
       ENABLE_OAUTH_GROUP_CREATION: true
@@ -45,24 +32,25 @@ services:
       OAUTH_SCOPES: openid email profile groups
       OAUTH_UPDATE_PICTURE_ON_LOGIN: true
       OLLAMA_BASE_URL: http://ollama:11434
-      OPENID_PROVIDER_URL: https://id.${domain:?}/.well-known/openid-configuration
-      WEBUI_URL: https://ai.${domain:?}
+      OPENID_PROVIDER_URL: https://id.buncha.men/.well-known/openid-configuration
+      WEBUI_URL: https://ai.buncha.men
     image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
-    labels:
-      homepage.group: Tools
-      homepage.href: https://ai.${domain:?}
-      homepage.icon: sh-open-webui.svg
-      homepage.name: OpenWebUI
-      kuma.__docker:
-      release_notes: "https://github.com/open-webui/open-webui/releases"
-      traefik.enable: "true"
-      traefik.http.routers.openwebui.entryPoints: "https"
-      traefik.http.routers.openwebui.middlewares: "localonly@file"
-      traefik.http.routers.openwebui.rule: "Host(`ai.${domain:?}`)"
-      traefik.http.routers.openwebui.tls.certresolver: "cloudflare"
-      traefik.http.services.openwebui.loadbalancer.server.url: "http://openwebui:8080"
+    deploy:
+      labels:
+        homepage.group: Tools
+        homepage.href: https://ai.buncha.men
+        homepage.icon: sh-open-webui.svg
+        homepage.name: OpenWebUI
+        kuma.__docker:
+        release_notes: "https://github.com/open-webui/open-webui/releases"
+        traefik.enable: "true"
+        traefik.http.routers.openwebui.entryPoints: "https"
+        traefik.http.routers.openwebui.middlewares: "localonly@file"
+        traefik.http.routers.openwebui.rule: "Host(`ai.buncha.men`)"
+        traefik.http.routers.openwebui.tls.certresolver: "cloudflare"
+        traefik.http.services.openwebui.loadbalancer.server.port: 8080
     networks:
       default:
       proxy:
     volumes:
-      - ${data:-.}/openwebui:/app/backend/data
+      - /mnt/docker/openwebui:/app/backend/data

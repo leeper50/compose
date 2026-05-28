@@ -4,14 +4,6 @@ networks:
     external: true
 services:
   nextcloud_app:
-    extends:
-      file: ../common.yaml
-      service: base
-    container_name: nextcloud_app
-    depends_on:
-      - nextcloud_db
-      - nextcloud_imaginary
-      - nextcloud_valkey
     environment:
       # Database Stuff
       POSTGRES_DB: ${db_name:-nextcloud}
@@ -24,15 +16,15 @@ services:
       ENABLE_PREVIEWS: "true"
       NEXTCLOUD_ADMIN_PASSWORD: ${admin_pass:?}
       NEXTCLOUD_ADMIN_USER: admin
-      NEXTCLOUD_TRUSTED_DOMAINS: next.${domain:?}
-      OVERWRITECLIURL: https://next.${domain:?}
-      OVERWRITEHOST: next.${domain:?}
+      NEXTCLOUD_TRUSTED_DOMAINS: next.buncha.men
+      OVERWRITECLIURL: https://next.buncha.men
+      OVERWRITEHOST: next.buncha.men
       OVERWRITEPROTOCOL: https
       TRUSTED_PROXIES: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
       # Garage Config
       OBJECTSTORE_S3_BUCKET: nextcloud
       OBJECTSTORE_S3_REGION: garage
-      OBJECTSTORE_S3_HOST: s3.${domain:?}
+      OBJECTSTORE_S3_HOST: s3.buncha.men
       OBJECTSTORE_S3_PORT: 443
       OBJECTSTORE_S3_KEY: ${s3_access_key:?}
       OBJECTSTORE_S3_SECRET: ${s3_secret_key:?}
@@ -42,42 +34,26 @@ services:
       OBJECTSTORE_S3_SSE_C_KEY: ${s3_enc_key:?}
       OBJECTSTORE_S3_LEGACYAUTH: false
     image: nextcloud:${nextcloud_version:-32-fpm}
-    labels:
-      release_notes: "https://github.com/nextcloud/docker/releases"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://github.com/nextcloud/docker/releases"
+        kuma.__docker:
     networks:
       default:
     volumes:
-      - ${data:-.}/app:/var/www/html
+      - /mnt/docker/nextcloud/app:/var/www/html
   nextcloud_cron:
-    extends:
-      file: ../common.yaml
-      service: base
-    container_name: nextcloud_cron
-    depends_on:
-      - nextcloud_app
     entrypoint: /cron.sh
     image: nextcloud:${nextcloud_version:-32-fpm}
-    labels:
-      release_notes: "https://github.com/nextcloud/docker/releases"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://github.com/nextcloud/docker/releases"
+        kuma.__docker:
     networks:
       default:
     volumes:
-      - ${data:-.}/app:/var/www/html
+      - /mnt/docker/nextcloud/app:/var/www/html
   nextcloud_db:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    container_name: nextcloud_db
     environment:
       POSTGRES_DB: ${db_name:-nextcloud}
       POSTGRES_PASSWORD: ${db_pass:?}
@@ -90,82 +66,64 @@ services:
         - pg_isready -U postgres -d postgres
       timeout: 5s
     image: postgres:${postgres_version:-17}
-    labels:
-      release_notes: "https://www.postgresql.org/docs/release/"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://www.postgresql.org/docs/release/"
+        kuma.__docker:
     networks:
       default:
     volumes:
-      - ${data:-.}/db:/var/lib/postgresql/data
+      - /mnt/docker/nextcloud/db:/var/lib/postgresql/data
   nextcloud_imaginary:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: nextcloud_imaginary
     image: ghcr.io/nextcloud-releases/aio-imaginary:${imaginary_version:-latest}
-    labels:
-      release_notes: "https://github.com/nextcloud/all-in-one/releases"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://github.com/nextcloud/all-in-one/releases"
+        kuma.__docker:
     networks:
       default:
   nextcloud_nginx:
-    extends:
-      file: ../common.yaml
-      service: base
-    container_name: nextcloud_nginx
     image: nginx:${nginx_version:-alpine-slim}
     volumes:
-      - ${data:-.}/nginx.conf:/etc/nginx/nginx.conf:ro  
-      - ${data:-.}/app:/var/www/html:ro
-    depends_on:
-      - nextcloud_app
-    labels:
-      homepage.group: Files & Sharing
-      homepage.href: https://next.${domain:?}
-      homepage.icon: sh-nextcloud.webp
-      homepage.name: Nextcloud
-      kuma.__docker:
-      release_notes: "https://github.com/nginx/nginx/releases"
-      traefik.enable: "true"
-      traefik.http.routers.nextcloud.entryPoints: "https"
-      traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"
-      traefik.http.routers.nextcloud.rule: "Host(`next.${domain:?}`)"
-      traefik.http.routers.nextcloud.tls.certresolver: "cloudflare"
-      traefik.http.services.nextcloud.loadbalancer.server.url: "http://nextcloud_nginx:80"
-      # Middlewares
-      ## Secure headers
-      traefik.http.middlewares.nextcloud-secure-headers.headers.forceSTSHeader: true
-      traefik.http.middlewares.nextcloud-secure-headers.headers.hostsProxyHeaders: "X-Forwarded-Host"
-      traefik.http.middlewares.nextcloud-secure-headers.headers.referrerPolicy: "same-origin"
-      traefik.http.middlewares.nextcloud-secure-headers.headers.STSIncludeSubdomains: true
-      traefik.http.middlewares.nextcloud-secure-headers.headers.STSPreload: true
-      traefik.http.middlewares.nextcloud-secure-headers.headers.STSSeconds: 315360000
-      ## Redirect
-      traefik.http.middlewares.nextcloud-redirect.redirectregex.permanent: true
-      traefik.http.middlewares.nextcloud-redirect.redirectregex.regex: "https://(.*)/.well-known/(card|cal)dav"
-      traefik.http.middlewares.nextcloud-redirect.redirectregex.replacement: "https://$$1/remote.php/dav/"
+      - /mnt/docker/nextcloud/nginx.conf:/etc/nginx/nginx.conf:ro  
+      - /mnt/docker/nextcloud/app:/var/www/html:ro
+    deploy:
+      labels:
+        homepage.group: Files & Sharing
+        homepage.href: https://next.buncha.men
+        homepage.icon: sh-nextcloud.webp
+        homepage.name: Nextcloud
+        kuma.__docker:
+        release_notes: "https://github.com/nginx/nginx/releases"
+        traefik.enable: "true"
+        traefik.http.routers.nextcloud.entryPoints: "https"
+        traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"
+        traefik.http.routers.nextcloud.rule: "Host(`next.buncha.men`)"
+        traefik.http.routers.nextcloud.tls.certresolver: "cloudflare"
+        traefik.http.services.nextcloud.loadbalancer.server.port: 80
+        # Middlewares
+        ## Secure headers
+        traefik.http.middlewares.nextcloud-secure-headers.headers.forceSTSHeader: true
+        traefik.http.middlewares.nextcloud-secure-headers.headers.hostsProxyHeaders: "X-Forwarded-Host"
+        traefik.http.middlewares.nextcloud-secure-headers.headers.referrerPolicy: "same-origin"
+        traefik.http.middlewares.nextcloud-secure-headers.headers.STSIncludeSubdomains: true
+        traefik.http.middlewares.nextcloud-secure-headers.headers.STSPreload: true
+        traefik.http.middlewares.nextcloud-secure-headers.headers.STSSeconds: 315360000
+        ## Redirect
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.permanent: true
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.regex: "https://(.*)/.well-known/(card|cal)dav"
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.replacement: "https://$$1/remote.php/dav/"
     networks:
       default:
       proxy:
   nextcloud_valkey:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     command: valkey-server --requirepass ${valkey_pass}
-    container_name: nextcloud_valkey
     image: valkey/valkey:${valkey_version:-9}
-    labels:
-      release_notes: "https://github.com/valkey-io/valkey/releases"
-      kuma.__docker:
+    deploy:
+      labels:
+        release_notes: "https://github.com/valkey-io/valkey/releases"
+        kuma.__docker:
     networks:
       default:
     volumes:
-      - ${data:-.}/valkey:/data
+      - /mnt/docker/nextcloud/valkey:/data

@@ -26,7 +26,7 @@ I recommend avoid the symbols and generating a 64 character long string of just 
 ## Permissions
 Nextcloud will only function if the files are owned by a user and group with the id `33`. This is often present on many distributions as
 `www-data` but not always. In any case, ensure that nextcloud's data folder is owned by this user. This includes checking after making
-changes to the config.php file as it may change ownership. Use the command `chown -R 33:33 app` in your chosen $data directory to fix
+changes to the config.php file as it may change ownership. Use the command `chown -R 33:33 app` in the `/mnt/docker/nextcloud` directory to fix
 ownership problems.
 
 ## Post-install

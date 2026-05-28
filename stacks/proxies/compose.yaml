@@ -4,15 +4,6 @@ networks:
     enable_ipv6: ${enable_ipv6_bool:-true}
 services:
   gluetun_proxy:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
     environment:
@@ -29,33 +20,26 @@ services:
       retries: 3
       start_period: 15s
     image: qmcgaw/gluetun:${gluetun_version:-v3.41}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/qdm12/gluetun/releases"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
       - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
-      - ${data:-.}/gluetun-proxy:/gluetun:rw
+      - /mnt/docker/gluetun-proxy:/gluetun:rw
   socks5proxy:
-    depends_on:
-      gluetun_proxy:
-        condition: service_healthy
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: socks5proxy
     environment:
       ALLOWED_IPS: ${allowed_ips}
       PROXY_PASS: ${proxy_pass:?}
       PROXY_USER: ${proxy_user:?}
       REQUIRE_AUTH: ${enable_auth:-true}
     image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/serjs/socks5-server/releases"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://github.com/serjs/socks5-server/releases"
     network_mode: service:gluetun_proxy

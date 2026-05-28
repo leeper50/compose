@@ -3,12 +3,6 @@ networks:
     external: true
 services:
   actualbudget:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: actualbudget
     healthcheck:
       test: ['CMD-SHELL', 'node src/scripts/health-check.js']
       interval: 60s
@@ -16,19 +10,20 @@ services:
       retries: 3
       start_period: 20s
     image: ghcr.io/actualbudget/actual:${actualbudget_version:-latest}
-    labels:
-      homepage.group: Personal
-      homepage.href: https://ab.${domain:?}
-      homepage.icon: sh-actual-budget.svg
-      homepage.name: Actual Budget
-      kuma.__docker:
-      release_notes: "https://github.com/actualbudget/actual/releases"
-      traefik.enable: "true"
-      traefik.http.routers.actualbudget.entryPoints: "https"
-      traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
-      traefik.http.routers.actualbudget.rule: "Host(`ab.${domain:?}`)"
-      traefik.http.services.actualbudget.loadbalancer.server.url: "http://actualbudget:5006"
+    deploy:
+      labels:
+        homepage.group: Personal
+        homepage.href: https://ab.buncha.men
+        homepage.icon: sh-actual-budget.svg
+        homepage.name: Actual Budget
+        kuma.__docker:
+        release_notes: "https://github.com/actualbudget/actual/releases"
+        traefik.enable: "true"
+        traefik.http.routers.actualbudget.entryPoints: "https"
+        traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
+        traefik.http.routers.actualbudget.rule: "Host(`ab.buncha.men`)"
+        traefik.http.services.actualbudget.loadbalancer.server.port: 5006
     networks:
       proxy: null
     volumes:
-      - ${data:-.}/app:/data
+      - /mnt/docker/actualbudget:/data

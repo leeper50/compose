@@ -7,7 +7,7 @@ services:
   homepage:
     environment:
       TZ: ${timezone:-UTC}
-      HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
+      HOMEPAGE_ALLOWED_HOSTS: home.buncha.men
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     deploy:
       labels:
@@ -16,18 +16,18 @@ services:
         traefik.enable: "true"
         traefik.http.routers.homepage.entryPoints: "https"
         traefik.http.routers.homepage.middlewares: "localonly@file"
-        traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
-        traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
+        traefik.http.routers.homepage.rule: "Host(`home.buncha.men`)"
+        traefik.http.services.homepage.loadbalancer.server.port: 3000
     networks:
       proxy:
       socket-proxy:
     volumes:
-      - ${data:-.}/homepage:/app/config:rw
+      - /mnt/docker/homepage:/app/config:rw
   mywebsite:
     environment:
       BETTER_AUTH_SECRET: ${auth_secret:?}
-      BETTER_AUTH_URL: https://www.${domain:?}
-      ORIGIN: https://www.${domain:?}
+      BETTER_AUTH_URL: https://www.buncha.men
+      ORIGIN: https://www.buncha.men
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     deploy:
       labels:
@@ -36,10 +36,10 @@ services:
         traefik.enable: "true"
         traefik.http.routers.mywebsite.entryPoints: "https"
         traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-        traefik.http.routers.mywebsite.rule: "Host(`www.${domain:?}`)"
-        traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
+        traefik.http.routers.mywebsite.rule: "Host(`www.buncha.men`)"
+        traefik.http.services.mywebsite.loadbalancer.server.port: 3000
     networks:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/newweb/db:/app/data
+      - /mnt/docker/newweb:/app/data

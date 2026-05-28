@@ -3,34 +3,25 @@ networks:
     external: true
 services:
   syncthing:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: syncthing
     environment:
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
       UMASK: ${umask:-0220}
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
-    labels:
-      homepage.group: Files & Sharing
-      homepage.href: https://sync.${domain:?}
-      homepage.icon: sh-syncthing.svg
-      homepage.name: Syncthing
-      kuma.__docker:
-      release_notes: "https://github.com/syncthing/syncthing/releases"
-      traefik.enable: "true"
-      traefik.http.routers.syncthing.entryPoints: "https"
-      traefik.http.routers.syncthing.middlewares: "localonly@file"
-      traefik.http.routers.syncthing.rule: "Host(`sync.${domain:?}`)"
-      traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"
+    deploy:
+      labels:
+        homepage.group: Files & Sharing
+        homepage.href: https://sync.buncha.men
+        homepage.icon: sh-syncthing.svg
+        homepage.name: Syncthing
+        kuma.__docker:
+        release_notes: "https://github.com/syncthing/syncthing/releases"
+        traefik.enable: "true"
+        traefik.http.routers.syncthing.entryPoints: "https"
+        traefik.http.routers.syncthing.middlewares: "localonly@file"
+        traefik.http.routers.syncthing.rule: "Host(`sync.buncha.men`)"
+        traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"
     network_mode: host
     volumes:
-      - ${data:-.}/sync:/config:rw
+      - /mnt/docker/syncthing:/config:rw
       - ${syncthingFolder:?}/Syncthing:/data1:rw

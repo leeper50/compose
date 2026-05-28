@@ -5,12 +5,12 @@ services:
   vaultwarden:
     environment:
       ADMIN_TOKEN: "${vaultwarden_admin_token:?}"
-      DOMAIN: https://vw.${domain:?}
+      DOMAIN: https://vw.buncha.men
     image: vaultwarden/server:${vaultwarden_version:-latest}
     deploy:
       labels:
         homepage.group: Personal
-        homepage.href: https://vw.${domain:?}
+        homepage.href: https://vw.buncha.men
         homepage.icon: sh-vaultwarden.svg
         homepage.name: Vaultwarden
         kuma.__docker:
@@ -19,14 +19,14 @@ services:
         traefik.http.routers.vaultwarden.entryPoints: "https"
         traefik.http.routers.vaultwarden.middlewares: "allowedIPs@file"
         traefik.http.routers.vaultwarden.priority: 30
-        traefik.http.routers.vaultwarden.rule: "Host(`vw.${domain:?}`)"
-        traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
+        traefik.http.routers.vaultwarden.rule: "Host(`vw.buncha.men`)"
+        traefik.http.services.vaultwarden.loadbalancer.server.port: 80
         # Block admin page with tinyauth
         traefik.http.routers.vaultwarden-admin.entrypoints: "https"
         traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,tinyauth@file"
         traefik.http.routers.vaultwarden-admin.priority: 50
-        traefik.http.routers.vaultwarden-admin.rule: Host(`vw.${domain:?}`) && PathPrefix(`/admin`)
+        traefik.http.routers.vaultwarden-admin.rule: Host(`vw.buncha.men`) && PathPrefix(`/admin`)
     networks:
       proxy:
     volumes:
-      - ${data:-.}/vault/data:/data
+      - /mnt/docker/vaultwarden:/data

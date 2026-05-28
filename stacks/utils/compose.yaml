@@ -3,24 +3,19 @@ networks:
     external: true
 services:
   ittools:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: ittools
     image: "sharevb/it-tools:${ittools_version:-latest}"
-    labels:
-      homepage.group: Development
-      homepage.href: https://it.${domain:?}
-      homepage.icon: sh-it-tools.svg
-      homepage.name: ItTools
-      kuma.__docker:
-      release_notes: "https://github.com/CorentinTh/it-tools/releases"
-      traefik.enable: "true"
-      traefik.http.routers.ittools.entryPoints: "https"
-      traefik.http.routers.ittools.middlewares: "allowedIPs@file"
-      traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
-      traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
+    deploy:
+      labels:
+        homepage.group: Development
+        homepage.href: https://it.buncha.men
+        homepage.icon: sh-it-tools.svg
+        homepage.name: ItTools
+        kuma.__docker:
+        release_notes: "https://github.com/CorentinTh/it-tools/releases"
+        traefik.enable: "true"
+        traefik.http.routers.ittools.entryPoints: "https"
+        traefik.http.routers.ittools.middlewares: "allowedIPs@file"
+        traefik.http.routers.ittools.rule: "Host(`it.buncha.men`)"
+        traefik.http.services.ittools.loadbalancer.server.port: 8080
     networks:
       proxy: null

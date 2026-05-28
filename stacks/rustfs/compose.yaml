@@ -3,46 +3,36 @@ networks:
     external: true
 services:
   rustfs:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - FOWNER
-      - SETGID
-      - SETUID
     command: --access-key ${default_access_key:?} --secret-key ${default_secret_key:?} /data
-    container_name: rustfs
     environment:
       RUSTFS_ACCESS_KEY: ${default_access_key:?}
       RUSTFS_SECRET_KEY: ${default_secret_key:?}
     image: rustfs/rustfs:${rustfs_version:-latest}
-    labels:
-      homepage.group: Utils
-      homepage.href: https://rs.${domain:?}
-      homepage.icon: sh-rustfs.svg
-      homepage.name: RustFS
-      kuma.__docker:
-      kuma.rustfs_s3.port.hostname: rustfs
-      kuma.rustfs_s3.port.name: port_rustfs_s3
-      kuma.rustfs_s3.port.notification_name_list: '["ntfy"]'
-      kuma.rustfs_s3.port.port: 9000
-      release_notes: "https://github.com/RustFS/RustFS/releases"
-      traefik.enable: "true"
-      traefik.http.routers.rustfs.entryPoints: "https"
-      traefik.http.routers.rustfs.middlewares: "localonly@file"
-      traefik.http.routers.rustfs.rule: "Host(`rs.${domain:?}`)"
-      traefik.http.routers.rustfs.service: "rustfs"
-      traefik.http.services.rustfs.loadbalancer.server.url: "http://rustfs:9001"
-      # S3 entrypoint
-      traefik.http.routers.rustfs-s3.entryPoints: "https"
-      traefik.http.routers.rustfs-s3.middlewares: "localonly@file"
-      traefik.http.routers.rustfs-s3.rule: "Host(`r3.${domain:?}`)"
-      traefik.http.routers.rustfs-s3.service: "rustfs-s3"
-      traefik.http.services.rustfs-s3.loadbalancer.server.url: "http://rustfs:9000"
+    deploy:
+      labels:
+        homepage.group: Utils
+        homepage.href: https://rs.buncha.men
+        homepage.icon: sh-rustfs.svg
+        homepage.name: RustFS
+        kuma.__docker:
+        kuma.rustfs_s3.port.hostname: rustfs
+        kuma.rustfs_s3.port.name: port_rustfs_s3
+        kuma.rustfs_s3.port.notification_name_list: '["ntfy"]'
+        kuma.rustfs_s3.port.port: 9000
+        release_notes: "https://github.com/RustFS/RustFS/releases"
+        traefik.enable: "true"
+        traefik.http.routers.rustfs.entryPoints: "https"
+        traefik.http.routers.rustfs.middlewares: "localonly@file"
+        traefik.http.routers.rustfs.rule: "Host(`rs.buncha.men`)"
+        traefik.http.routers.rustfs.service: "rustfs"
+        traefik.http.services.rustfs.loadbalancer.server.port: rustfs:9001
+        # S3 entrypoint
+        traefik.http.routers.rustfs-s3.entryPoints: "https"
+        traefik.http.routers.rustfs-s3.middlewares: "localonly@file"
+        traefik.http.routers.rustfs-s3.rule: "Host(`r3.buncha.men`)"
+        traefik.http.routers.rustfs-s3.service: "rustfs-s3"
+        traefik.http.services.rustfs-s3.loadbalancer.server.port: 9000
     networks:
       proxy:
     volumes:
-      - ${data:-.}/data:/data
+      - /mnt/docker/rustfs:/data

@@ -5,12 +5,6 @@ networks:
     external: true
 services:
   forgejo:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: forgejo
     environment:
       FORGEJO__database__DB_TYPE: postgres
       FORGEJO__database__HOST: forgejo_db:5432
@@ -20,20 +14,19 @@ services:
       FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
       USER_GID: ${gid:-1000}
       USER_UID: ${uid:-1000}
-    depends_on:
-      - forgejo_db
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-15-rootless}
-    labels:
-      homepage.group: Development
-      homepage.href: https://fj.${domain:?}
-      homepage.icon: sh-forgejo.svg
-      homepage.name: Forgejo
-      kuma.__docker:
-      release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
-      traefik.enable: "true"
-      traefik.http.routers.forgejo.entryPoints: "https"
-      traefik.http.routers.forgejo.rule: "Host(`fj.${domain:?}`)"
-      traefik.http.services.forgejo.loadbalancer.server.url: "http://forgejo:3000"
+    deploy:
+      labels:
+        homepage.group: Development
+        homepage.href: https://fj.buncha.men
+        homepage.icon: sh-forgejo.svg
+        homepage.name: Forgejo
+        kuma.__docker:
+        release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
+        traefik.enable: "true"
+        traefik.http.routers.forgejo.entryPoints: "https"
+        traefik.http.routers.forgejo.rule: "Host(`fj.buncha.men`)"
+        traefik.http.services.forgejo.loadbalancer.server.port: 3000
     networks:
       default:
       proxy:
@@ -41,49 +34,28 @@ services:
       - "2222:2222/tcp" # Rootless ssh port
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - ${data:-.}/app/data:/var/lib/gitea
-      - ${data:-.}/app/conf:/etc/gitea
+      - /mnt/docker/forgejo/app/data:/var/lib/gitea
+      - /mnt/docker/forgejo/app/conf:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   forgejo_db:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_READ_SEARCH
-      - FOWNER
-      - SETGID
-      - SETUID
-    container_name: forgejo_db
     environment:
       POSTGRES_DB: ${db_name:-forgejo}
       POSTGRES_PASSWORD: ${db_pass:?}
       POSTGRES_USER: ${db_user:-forgejo}
     image: postgres:${postgres_version:-14}
-    labels:
-      kuma.__docker:
-      release_notes: "https://www.postgresql.org/docs/release/"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default:
     volumes:
-      - ${data:-.}/db:/var/lib/postgresql/data
+      - /mnt/docker/forgejo/db:/var/lib/postgresql/data
   forgejo_runner:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-    container_name: forgejo_runner
-    depends_on:
-      - forgejo
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
-      GITEA_INSTANCE_URL: https://fj.${domain:?}/
+      GITEA_INSTANCE_URL: https://fj.buncha.men/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
         ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\
@@ -92,11 +64,12 @@ services:
       GITEA_RUNNER_NAME: forgejo_runner
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
     image: gitea/act_runner:${runner_version:-nightly}
-    labels:
-      kuma.__docker:
-      release_notes: "https://gitea.com/gitea/runner/releases"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://gitea.com/gitea/runner/releases"
     networks:
       default: null
       socket-proxy: null
     volumes:
-      - ${data:-.}/runner/data:/data
+      - /mnt/docker/forgejo/runner:/data
