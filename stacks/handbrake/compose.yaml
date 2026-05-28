@@ -19,7 +19,7 @@ services:
     image: ghcr.io/jlesage/handbrake:${handbrake_version:-latest}
     labels:
       homepage.group: Tools
-      homepage.href: https://hb.${domain:?}
+      homepage.href: https://hb.dellhplaptop.xyz
       homepage.icon: sh-handbrake.webp
       homepage.name: Handbrake
       kuma.__docker:
@@ -27,7 +27,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.handbrake.entryPoints: 'https'
       traefik.http.routers.handbrake.middlewares: 'localonly@file'
-      traefik.http.routers.handbrake.rule: 'Host(`hb.${domain:?}`)'
+      traefik.http.routers.handbrake.rule: 'Host(`hb.dellhplaptop.xyz`)'
       traefik.http.services.handbrake.loadbalancer.server.url: 'http://handbrake:5800'
     networks:
       proxy: null

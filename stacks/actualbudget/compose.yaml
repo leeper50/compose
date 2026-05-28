@@ -18,7 +18,7 @@ services:
     image: ghcr.io/actualbudget/actual:${actualbudget_version:-latest}
     labels:
       homepage.group: Personal
-      homepage.href: https://ab.${domain:?}
+      homepage.href: https://ab.dellhplaptop.xyz
       homepage.icon: sh-actual-budget.svg
       homepage.name: Actual Budget
       kuma.__docker:
@@ -26,7 +26,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.actualbudget.entryPoints: "https"
       traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
-      traefik.http.routers.actualbudget.rule: "Host(`ab.${domain:?}`)"
+      traefik.http.routers.actualbudget.rule: "Host(`ab.dellhplaptop.xyz`)"
       traefik.http.services.actualbudget.loadbalancer.server.url: "http://actualbudget:5006"
     networks:
       proxy: null

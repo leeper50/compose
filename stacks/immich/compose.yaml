@@ -96,7 +96,7 @@ services:
     image: ghcr.io/immich-app/immich-server:${immich_version:-release}
     labels:
       homepage.group: Media Consumption
-      homepage.href: https://im.${domain:?}
+      homepage.href: https://im.dellhplaptop.xyz
       homepage.icon: sh-immich.svg
       homepage.name: Immich
       kuma.__docker:
@@ -104,7 +104,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.immich.entryPoints: "https"
       traefik.http.routers.immich.middlewares: "localonly@file"
-      traefik.http.routers.immich.rule: "Host(`im.${domain:?}`)"
+      traefik.http.routers.immich.rule: "Host(`im.dellhplaptop.xyz`)"
       traefik.http.services.immich.loadbalancer.server.url: "http://immich:2283"
     networks:
       proxy: null

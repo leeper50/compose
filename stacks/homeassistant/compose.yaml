@@ -16,7 +16,7 @@ services:
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
       homepage.group: Smart Home
-      homepage.href: https://ha.${domain:?}
+      homepage.href: https://ha.dellhplaptop.xyz
       homepage.icon: sh-home-assistant.svg
       homepage.name: Home Assistant
       kuma.__docker:
@@ -24,7 +24,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
       traefik.http.routers.homeassistant.middlewares: "localonly@file"
-      traefik.http.routers.homeassistant.rule: "Host(`ha.${domain:?}`)"
+      traefik.http.routers.homeassistant.rule: "Host(`ha.dellhplaptop.xyz`)"
       traefik.http.services.homeassistant.loadbalancer.server.url: "http://homeassistant:8123"
     networks:
       proxy: null
@@ -73,7 +73,7 @@ services:
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
     labels:
       homepage.group: Smart Home
-      homepage.href: https://zb.${domain:?}
+      homepage.href: https://zb.dellhplaptop.xyz
       homepage.icon: sh-zigbee2mqtt.svg
       homepage.name: Zigbee
       kuma.__docker:
@@ -81,7 +81,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
       traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
-      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.${domain:?}`)"
+      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.dellhplaptop.xyz`)"
       traefik.http.services.zigbee2mqtt.loadbalancer.server.url: "http://zigbee2mqtt:8080"
     networks:
       proxy:
@@ -104,7 +104,7 @@ services:
     image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
     labels:
       homepage.group: Smart Home
-      homepage.href: https://zw.${domain:?}
+      homepage.href: https://zw.dellhplaptop.xyz
       homepage.icon: sh-z-wave-js-ui.svg
       homepage.name: ZWave
       kuma.__docker:
@@ -112,7 +112,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"
       traefik.http.routers.zwave.middlewares: "localonly@file"
-      traefik.http.routers.zwave.rule: "Host(`zw.${domain:?}`)"
+      traefik.http.routers.zwave.rule: "Host(`zw.dellhplaptop.xyz`)"
       traefik.http.services.zwave.loadbalancer.server.url: "http://zwave_js_ui:8091"
     networks:
       proxy:

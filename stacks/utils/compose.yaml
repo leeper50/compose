@@ -12,7 +12,7 @@ services:
     image: "sharevb/it-tools:${ittools_version:-latest}"
     labels:
       homepage.group: Development
-      homepage.href: https://it.${domain:?}
+      homepage.href: https://it.dellhplaptop.xyz
       homepage.icon: sh-it-tools.svg
       homepage.name: ItTools
       kuma.__docker:
@@ -20,7 +20,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.ittools.entryPoints: "https"
       traefik.http.routers.ittools.middlewares: "allowedIPs@file"
-      traefik.http.routers.ittools.rule: "Host(`it.${domain:?}`)"
+      traefik.http.routers.ittools.rule: "Host(`it.dellhplaptop.xyz`)"
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
     networks:
       proxy: null

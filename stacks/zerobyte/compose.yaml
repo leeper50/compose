@@ -13,14 +13,14 @@ services:
     container_name: zerobyte
     environment:
       APP_SECRET: ${app_secret:?}
-      BASE_URL: https://z.${domain:?}
+      BASE_URL: https://z.dellhplaptop.xyz
       TRUST_PROXY: true
-      TRUSTED_ORIGINS: https://z.${domain:?}
+      TRUSTED_ORIGINS: https://z.dellhplaptop.xyz
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}
     labels:
       homepage.group: Access & Security
-      homepage.href: https://z.${domain:?}
+      homepage.href: https://z.dellhplaptop.xyz
       homepage.icon: sh-zerobyte.svg
       homepage.name: Zerobyte
       kuma.__docker:
@@ -28,7 +28,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.zerobyte.entryPoints: "https"
       traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"
-      traefik.http.routers.zerobyte.rule: "Host(`z.${domain:?}`)"
+      traefik.http.routers.zerobyte.rule: "Host(`z.dellhplaptop.xyz`)"
       traefik.http.services.zerobyte.loadbalancer.server.url: "http://zerobyte:4096"
     networks:
       proxy:

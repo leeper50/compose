@@ -22,7 +22,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.garage.entryPoints: "https"
       traefik.http.routers.garage.middlewares: "localonly@file"
-      traefik.http.routers.garage.rule: "Host(`s3.${domain:?}`)"
+      traefik.http.routers.garage.rule: "Host(`s3.dellhplaptop.xyz`)"
       traefik.http.services.garage.loadbalancer.server.url: "http://garage:3900"
     networks:
       proxy:
@@ -48,7 +48,7 @@ services:
     image: khairul169/garage-webui:${garage_webui_version:-latest}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://g.${domain:?}
+      homepage.href: https://g.dellhplaptop.xyz
       homepage.icon: sh-garage.svg
       homepage.name: Garage
       kuma.__docker:
@@ -56,7 +56,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.garage_webui.entryPoints: "https"
       traefik.http.routers.garage_webui.middlewares: "localonly@file"
-      traefik.http.routers.garage_webui.rule: "Host(`g.${domain:?}`)"
+      traefik.http.routers.garage_webui.rule: "Host(`g.dellhplaptop.xyz`)"
       traefik.http.services.garage_webui.loadbalancer.server.url: "http://garage_webui:3909"
     networks:
       proxy:

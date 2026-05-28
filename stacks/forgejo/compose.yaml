@@ -25,14 +25,14 @@ services:
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-15-rootless}
     labels:
       homepage.group: Development
-      homepage.href: https://fj.${domain:?}
+      homepage.href: https://fj.dellhplaptop.xyz
       homepage.icon: sh-forgejo.svg
       homepage.name: Forgejo
       kuma.__docker:
       release_notes: "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published"
       traefik.enable: "true"
       traefik.http.routers.forgejo.entryPoints: "https"
-      traefik.http.routers.forgejo.rule: "Host(`fj.${domain:?}`)"
+      traefik.http.routers.forgejo.rule: "Host(`fj.dellhplaptop.xyz`)"
       traefik.http.services.forgejo.loadbalancer.server.url: "http://forgejo:3000"
     networks:
       default:
@@ -83,7 +83,7 @@ services:
       - forgejo
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
-      GITEA_INSTANCE_URL: https://fj.${domain:?}/
+      GITEA_INSTANCE_URL: https://fj.dellhplaptop.xyz/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
         ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,\

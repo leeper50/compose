@@ -21,7 +21,7 @@ services:
     image: adguard/adguardhome:${adguard_version:-latest}
     labels:
       homepage.group: DNS
-      homepage.href: https://ad.${domain:?}
+      homepage.href: https://ad.dellhplaptop.xyz
       homepage.icon: sh-adguard-home.svg
       homepage.name: Adguard - Komodo
       kuma.__docker:
@@ -29,7 +29,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.adguardhome.entryPoints: "https"
       traefik.http.routers.adguardhome.middlewares: "localonly@file"
-      traefik.http.routers.adguardhome.rule: "Host(`ad.${domain:?}`)"
+      traefik.http.routers.adguardhome.rule: "Host(`ad.dellhplaptop.xyz`)"
       traefik.http.services.adguardhome.loadbalancer.server.url: "http://adguardhome:3000"
     networks:
       default: null

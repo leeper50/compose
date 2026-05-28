@@ -22,7 +22,7 @@ services:
     image: copyparty/iv:${copyparty_version:-latest}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://c.${domain:?}
+      homepage.href: https://c.dellhplaptop.xyz
       homepage.icon: sh-copyparty.svg
       homepage.name: Copyparty
       kuma.__docker:
@@ -30,7 +30,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.copyparty.entryPoints: "https"
       traefik.http.routers.copyparty.middlewares: "localonly@file"
-      traefik.http.routers.copyparty.rule: "Host(`c.${domain:?}`)"
+      traefik.http.routers.copyparty.rule: "Host(`c.dellhplaptop.xyz`)"
       traefik.http.services.copyparty.loadbalancer.server.url: "http://copyparty:3923"
     networks:
       proxy:
@@ -49,7 +49,7 @@ services:
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://pb.${domain:?}
+      homepage.href: https://pb.dellhplaptop.xyz
       homepage.icon: sh-privatebin.svg
       homepage.name: PrivateBin
       kuma.__docker:
@@ -57,7 +57,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.privatebin.entryPoints: "https"
       traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
-      traefik.http.routers.privatebin.rule: "Host(`pb.${domain:?}`)"
+      traefik.http.routers.privatebin.rule: "Host(`pb.dellhplaptop.xyz`)"
       traefik.http.services.privatebin.loadbalancer.server.url: "http://privatebin:8080"
     networks:
       proxy: null
@@ -78,7 +78,7 @@ services:
     depends_on:
       - send_valkey
     environment:
-      BASE_URL: https://send.${domain:?}
+      BASE_URL: https://send.dellhplaptop.xyz
       DEFAULT_EXPIRE_SECONDS: 3600
       DOWNLOAD_COUNTS: 1,2,5
       EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
@@ -90,7 +90,7 @@ services:
     image: registry.gitlab.com/timvisee/send:${send_version:-latest}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://send.${domain:?}
+      homepage.href: https://send.dellhplaptop.xyz
       homepage.icon: sh-send-visee.svg
       homepage.name: Send
       kuma.__docker:
@@ -98,7 +98,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.send.entryPoints: "https"
       traefik.http.routers.send.middlewares: "allowedIPs@file"
-      traefik.http.routers.send.rule: "Host(`send.${domain:?}`)"
+      traefik.http.routers.send.rule: "Host(`send.dellhplaptop.xyz`)"
       traefik.http.services.send.loadbalancer.server.url: "http://send:1443"
     networks:
       proxy:
@@ -133,7 +133,7 @@ services:
       IMAGE_COMPRESSION_QUALITY: 100
       IMAGE_MAX_SIZE: 50M
       IMAGE_STRIP_EXIF_METADATA: true
-      ORIGIN: https://sl.${domain:?}
+      ORIGIN: https://sl.dellhplaptop.xyz
       REQUIRE_SSL: true
       STORAGE_PROVIDER: local
       TZ: ${timezone:-UTC}
@@ -143,7 +143,7 @@ services:
     image: anirdev/slink:${slink_version:-latest}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://sl.${domain:?}
+      homepage.href: https://sl.dellhplaptop.xyz
       homepage.icon: sh-slink.webp
       homepage.name: Slink
       kuma.__docker:
@@ -152,12 +152,12 @@ services:
       traefik.http.routers.slink.entryPoints: "https"
       traefik.http.routers.slink.middlewares: "allowedIPs@file"
       traefik.http.routers.slink.priority: 30
-      traefik.http.routers.slink.rule: "Host(`sl.${domain:?}`)"
+      traefik.http.routers.slink.rule: "Host(`sl.dellhplaptop.xyz`)"
       traefik.http.services.slink.loadbalancer.server.url: "http://slink:3000"
       # No middleware for outbound images
       traefik.http.routers.slink-images.entrypoints: "https"
       traefik.http.routers.slink-images.priority: 50
-      traefik.http.routers.slink-images.rule: "Host(`sl.${domain:?}`) && PathPrefix(`/image/`)"
+      traefik.http.routers.slink-images.rule: "Host(`sl.dellhplaptop.xyz`) && PathPrefix(`/image/`)"
     networks:
       proxy: null
     user: ${uid:-1000}:${gid:-1000}

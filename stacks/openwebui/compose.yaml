@@ -45,12 +45,12 @@ services:
       OAUTH_SCOPES: openid email profile groups
       OAUTH_UPDATE_PICTURE_ON_LOGIN: true
       OLLAMA_BASE_URL: http://ollama:11434
-      OPENID_PROVIDER_URL: https://id.${domain:?}/.well-known/openid-configuration
-      WEBUI_URL: https://ai.${domain:?}
+      OPENID_PROVIDER_URL: https://id.dellhplaptop.xyz/.well-known/openid-configuration
+      WEBUI_URL: https://ai.dellhplaptop.xyz
     image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
     labels:
       homepage.group: Tools
-      homepage.href: https://ai.${domain:?}
+      homepage.href: https://ai.dellhplaptop.xyz
       homepage.icon: sh-open-webui.svg
       homepage.name: OpenWebUI
       kuma.__docker:
@@ -58,7 +58,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.openwebui.entryPoints: "https"
       traefik.http.routers.openwebui.middlewares: "localonly@file"
-      traefik.http.routers.openwebui.rule: "Host(`ai.${domain:?}`)"
+      traefik.http.routers.openwebui.rule: "Host(`ai.dellhplaptop.xyz`)"
       traefik.http.routers.openwebui.tls.certresolver: "cloudflare"
       traefik.http.services.openwebui.loadbalancer.server.url: "http://openwebui:8080"
     networks:
