@@ -1,5 +1,3 @@
-networks:
-  default:
 services:
   gluetun_proxy:
     devices:
