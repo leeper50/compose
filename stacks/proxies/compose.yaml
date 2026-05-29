@@ -1,6 +1,5 @@
 networks:
   default:
-    driver: bridge
 services:
   gluetun_proxy:
     devices:
