@@ -12,24 +12,12 @@ services:
     container_name: rxresume
     depends_on:
       - rxresume_postgres
-      - rxresume_printer
     environment:
       APP_URL: https://rx.dellhplaptop.xyz
       AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
-      NODE_ENV: production
-      PRINTER_APP_URL: https://rx.dellhplaptop.xyz
-      PRINTER_ENDPOINT: ws://rxresume_printer:3000?token=${printer_token:?}
-      STORAGE_ACCESS_KEY: ${s3_access_key:?}
-      STORAGE_BUCKET: rxresume
-      STORAGE_ENDPOINT: garage
-      STORAGE_PORT: 3900
-      STORAGE_REGION: garage
-      STORAGE_SECRET_KEY: ${s3_secret_key:?}
-      STORAGE_SKIP_BUCKET_CHECK: "false"
-      STORAGE_URL: https://s3.dellhplaptop.xyz
-      STORAGE_USE_SSL: "false"
-    image: amruthpillai/reactive-resume:${rxresume_version:-v5.0.5}
+      TZ: ${timezone:-Etc/UTC}
+    image: ghcr.io/amruthpillai/reactive-resume:${rxresume_version:-v5}
     labels:
       homepage.group: Personal
       homepage.href: https://rx.dellhplaptop.xyz
@@ -45,6 +33,8 @@ services:
     networks:
       default: null
       proxy: null
+    volumes:
+      - ${data:-.}/data:/app/data
   rxresume_postgres:
     extends:
       file: ../common.yaml
@@ -74,27 +64,5 @@ services:
     networks:
       default: null
     volumes:
-      - $data/db:/var/lib/postgresql/data
-  rxresume_printer:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: rxresume_printer
-    environment:
-      CONCURRENT: 5
-      HEALTH: true
-      QUEUED: 10
-      TOKEN: ${printer_token:?}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure?token=${printer_token:?}"]
-      timeout: 5s
-    image: ghcr.io/browserless/chromium:${chromium_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/browserless/browserless/pkgs/container/chromium"
-    networks:
-      proxy: null
+      - ${data:-.}/db:/var/lib/postgresql/data
+
