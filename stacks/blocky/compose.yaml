@@ -8,6 +8,8 @@ services:
         homepage.group: DNS
         homepage.icon: sh-blocky.svg
         homepage.name: Blocky
+        kuma.__docker:
+        release_notes: "https://github.com/0xERR0R/blocky/releases"
       mode: global
     environment:
       TZ: ${timezone:-UTC}
