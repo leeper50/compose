@@ -1,0 +1,22 @@
+networks:
+  proxy:
+    external: true
+services:
+  blocky:
+    deploy:
+      labels:
+        homepage.group: DNS
+        homepage.icon: sh-blocky.svg
+        homepage.name: Blocky
+      mode: global
+    environment:
+      TZ: ${timezone:-UTC}
+    image: spx01/blocky:${blocky_version:-main}
+    networks:
+      proxy:
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/docker/blocky/config.yml:/app/config.yml:ro
