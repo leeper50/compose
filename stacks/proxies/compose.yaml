@@ -5,6 +5,8 @@ services:
     environment:
       HTTPPROXY: on
       SERVER_CITIES: ${cities:-Stockholm}
+      SHADOWSOCKS: on
+      SHADOWSOCKS_PASSWORD: ${shadowsocks_password:-}
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
@@ -22,6 +24,7 @@ services:
         release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
+      - "${listen_interface:-0.0.0.0}:8388:8388/tcp"
       - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=${disable_ipv6:-0}
