@@ -25,6 +25,8 @@ services:
       OIDC_PROVIDER_METADATA_URL: https://id.dellhplaptop.xyz/.well-known/openid-configuration
       OIDC_REMOTE_USER_CLAIM: preferred_username
       OIDC_SCOPES: openid email profile
+      OIDC_SESSION_INACTIVITY_TIMEOUT: 86400
+      OIDC_SESSION_MAX_DURATION: 0
       OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
       TRUSTED_PROXY: 0
       TZ: ${timezone:-UTC}
