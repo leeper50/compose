@@ -39,6 +39,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.pocketid.entryPoints: "https"
       traefik.http.routers.pocketid.rule: "Host(`id.dellhplaptop.xyz`)"
+      traefik.http.services.pocketid.loadbalancer.server.url: "http://pocketid:1411"
     networks:
       proxy:
     volumes:
@@ -95,6 +96,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.tinyauth.entryPoints: "https"
       traefik.http.routers.tinyauth.rule: "Host(`auth.dellhplaptop.xyz`)"
+      traefik.http.services.tinyauth.loadbalancer.server.url: "http://tinyauth:3000"
     networks:
       proxy:
     volumes:
