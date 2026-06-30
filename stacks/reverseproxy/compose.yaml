@@ -89,6 +89,7 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
+      TINYAUTH_AUTH_SECURECOOKIE: true
     image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
