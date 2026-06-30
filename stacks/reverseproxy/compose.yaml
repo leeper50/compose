@@ -18,9 +18,10 @@ services:
     environment:
       APP_URL: https://id.dellhplaptop.xyz
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
+      LOCAL_IPV6_RANGES: ${ipv6_ranges:-::/0}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
-      TRUST_PROXY: "true"
+      TRUST_PROXY: true
     healthcheck:
       interval: 1m30s
       retries: 2
