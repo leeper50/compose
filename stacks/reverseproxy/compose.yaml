@@ -41,7 +41,7 @@ services:
     networks:
       proxy:
     volumes:
-      - ${data:-.}/pocketid:/app/data
+      - pocketid:/app/data
   socket-proxy:
     extends:
       file: ../common.yaml
@@ -97,7 +97,7 @@ services:
     networks:
       proxy:
     volumes:
-      - ${data:-.}/tinyauth:/data
+      - tinyauth:/data
   traefik:
     extends:
       file: ../common.yaml
@@ -135,7 +135,11 @@ services:
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json:rw
-      - ${data:-.}/logs/traefik:/var/log/traefik:rw
+      - ${data:-.}/traefik.yml:/traefik.yml:ro
+      - ${data:-.}/dynamic.yml:/dynamic.yml:ro
+      - ${data:-.}/acme.json:/acme.json:rw
+      - traefik_logs:/var/log/traefik:rw
+volumes:
+  pocketid:
+  tinyauth:
+  traefik_logs:
