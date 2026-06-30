@@ -18,10 +18,9 @@ services:
     environment:
       APP_URL: https://id.dellhplaptop.xyz
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
-      LOCAL_IPV6_RANGES: ${ipv6_ranges:-::/0}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
-      TRUST_PROXY: true
+      TRUST_PROXY: "true"
     healthcheck:
       interval: 1m30s
       retries: 2
@@ -39,11 +38,10 @@ services:
       traefik.enable: "true"
       traefik.http.routers.pocketid.entryPoints: "https"
       traefik.http.routers.pocketid.rule: "Host(`id.dellhplaptop.xyz`)"
-      traefik.http.services.pocketid.loadbalancer.server.url: "http://pocketid:1411"
     networks:
       proxy:
     volumes:
-      - pocketid:/app/data
+      - ${data:-.}/pocketid:/app/data
   socket-proxy:
     extends:
       file: ../common.yaml
@@ -80,7 +78,6 @@ services:
       - pocketid
     environment:
       TINYAUTH_APPURL: https://auth.dellhplaptop.xyz
-      TINYAUTH_AUTH_SECURECOOKIE: true
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.dellhplaptop.xyz/authorize
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
@@ -88,8 +85,8 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.dellhplaptop.xyz/api/oauth/callback/pocketid
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: http://pocketid:1411/api/oidc/token
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: http://pocketid:1411/api/oidc/userinfo
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
     image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
     labels:
       kuma.__docker:
@@ -97,11 +94,10 @@ services:
       traefik.enable: "true"
       traefik.http.routers.tinyauth.entryPoints: "https"
       traefik.http.routers.tinyauth.rule: "Host(`auth.dellhplaptop.xyz`)"
-      traefik.http.services.tinyauth.loadbalancer.server.url: "http://tinyauth:3000"
     networks:
       proxy:
     volumes:
-      - tinyauth:/data
+      - ${data:-.}/tinyauth:/data
   traefik:
     extends:
       file: ../common.yaml
@@ -139,11 +135,7 @@ services:
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${data:-.}/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/acme.json:/acme.json:rw
-      - traefik_logs:/var/log/traefik:rw
-volumes:
-  pocketid:
-  tinyauth:
-  traefik_logs:
+      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
+      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
+      - ${data:-.}/traefik/acme.json:/acme.json:rw
+      - ${data:-.}/logs/traefik:/var/log/traefik:rw
