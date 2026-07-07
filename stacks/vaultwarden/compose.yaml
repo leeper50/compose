@@ -26,7 +26,7 @@ services:
       traefik.http.routers.vaultwarden.priority: 30
       traefik.http.routers.vaultwarden.rule: "Host(`vw.dellhplaptop.xyz`)"
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
-      # Block admin page with tinyauth
+      # Only local access to admin page
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
       traefik.http.routers.vaultwarden-admin.middlewares: "localonly@file"
       traefik.http.routers.vaultwarden-admin.priority: 50

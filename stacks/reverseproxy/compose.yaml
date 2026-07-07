@@ -36,8 +36,6 @@ services:
     cap_drop:
       - ALL
     container_name: traefik
-    depends_on:
-      - pocketid
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}

@@ -31,21 +31,7 @@ services:
       - ollama
     environment:
       DEFAULT_USER_ROLE: user
-      ENABLE_OAUTH_GROUP_CREATION: true
-      ENABLE_OAUTH_GROUP_MANAGEMENT: true
-      ENABLE_OAUTH_ROLE_MANAGEMENT: true
-      ENABLE_OAUTH_SIGNUP: true
-      OAUTH_ADMIN_ROLES: admins
-      OAUTH_ALLOWED_ROLES: users,admins
-      OAUTH_CLIENT_ID: ${client_id:?}
-      OAUTH_CLIENT_SECRET: ${client_secret:?}
-      OAUTH_MERGE_ACCOUNTS_BY_EMAIL: true
-      OAUTH_PROVIDER_NAME: Pocket ID
-      OAUTH_ROLES_CLAIM: groups
-      OAUTH_SCOPES: openid email profile groups
-      OAUTH_UPDATE_PICTURE_ON_LOGIN: true
       OLLAMA_BASE_URL: http://ollama:11434
-      OPENID_PROVIDER_URL: https://id.dellhplaptop.xyz/.well-known/openid-configuration
       WEBUI_URL: https://ai.dellhplaptop.xyz
     image: ghcr.io/open-webui/open-webui:${openwebui_version:-main}
     labels:
