@@ -27,7 +27,7 @@ services:
       release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
       traefik.enable: "true"
       traefik.http.routers.rxresume.entrypoints: "https"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.rxresume.middlewares: "allowedIPs@file"
       traefik.http.routers.rxresume.rule: "Host(`rx.dellhplaptop.xyz`)"
       traefik.http.services.rxresume.loadbalancer.server.url: 'http://rxresume:3000'
     networks:

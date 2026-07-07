@@ -25,7 +25,7 @@ services:
       release_notes: "https://github.com/actualbudget/actual/releases"
       traefik.enable: "true"
       traefik.http.routers.actualbudget.entryPoints: "https"
-      traefik.http.routers.actualbudget.middlewares: "tinyauth@file,localonly@file"
+      traefik.http.routers.actualbudget.middlewares: "localonly@file"
       traefik.http.routers.actualbudget.rule: "Host(`ab.dellhplaptop.xyz`)"
       traefik.http.services.actualbudget.loadbalancer.server.url: "http://actualbudget:5006"
     networks:

@@ -19,15 +19,6 @@ services:
     environment:
       CRON_MIN: "1,31"
       LISTEN: 0.0.0.0:80
-      OIDC_CLIENT_ID: ${client_id:?}
-      OIDC_CLIENT_SECRET: ${client_secret:?}
-      OIDC_ENABLED: 1
-      OIDC_PROVIDER_METADATA_URL: https://id.dellhplaptop.xyz/.well-known/openid-configuration
-      OIDC_REMOTE_USER_CLAIM: preferred_username
-      OIDC_SCOPES: openid email profile
-      OIDC_SESSION_INACTIVITY_TIMEOUT: 86400
-      OIDC_SESSION_MAX_DURATION: 0
-      OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
       TRUSTED_PROXY: 0
       TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
@@ -168,7 +159,7 @@ services:
       release_notes: "https://github.com/navidrome/navidrome/releases"
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file"
       traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.dellhplaptop.xyz`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
@@ -216,7 +207,7 @@ services:
       release_notes: "https://github.com/seerr-team/seerr/releases"
       traefik.enable: "true"
       traefik.http.routers.seerr.entryPoints: "https"
-      traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.seerr.middlewares: "allowedIPs@file"
       traefik.http.routers.seerr.rule: "Host(`se.dellhplaptop.xyz`)"
       traefik.http.services.seerr.loadbalancer.server.url: "http://seerr:5055"
     networks:

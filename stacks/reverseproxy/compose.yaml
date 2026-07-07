@@ -4,44 +4,6 @@ networks:
   socket-proxy:
     external: true
 services:
-  pocketid:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    container_name: pocketid
-    environment:
-      APP_URL: https://id.dellhplaptop.xyz
-      ENCRYPTION_KEY: ${pocketid_enc_key:?}
-      PGID: ${gid:-1000}
-      PUID: ${uid:-1000}
-      TRUST_PROXY: "true"
-    healthcheck:
-      interval: 1m30s
-      retries: 2
-      start_period: 10s
-      test: [ "CMD", "/app/pocket-id", "healthcheck" ]
-      timeout: 5s
-    image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://id.dellhplaptop.xyz
-      homepage.icon: sh-pocket-id.svg
-      homepage.name: PocketID
-      kuma.__docker:
-      release_notes: "https://pocket-id.org/changelog"
-      traefik.enable: "true"
-      traefik.http.routers.pocketid.entryPoints: "https"
-      traefik.http.routers.pocketid.rule: "Host(`id.dellhplaptop.xyz`)"
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/pocketid:/app/data
   socket-proxy:
     extends:
       file: ../common.yaml
@@ -67,37 +29,6 @@ services:
       socket-proxy:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-  tinyauth:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: tinyauth
-    depends_on:
-      - pocketid
-    environment:
-      TINYAUTH_APPURL: https://auth.dellhplaptop.xyz
-      TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.dellhplaptop.xyz/authorize
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.dellhplaptop.xyz/api/oauth/callback/pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
-    image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
-    labels:
-      kuma.__docker:
-      release_notes: "https://tinyauth.app/docs/reference/changelog/"
-      traefik.enable: "true"
-      traefik.http.routers.tinyauth.entryPoints: "https"
-      traefik.http.routers.tinyauth.rule: "Host(`auth.dellhplaptop.xyz`)"
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/tinyauth:/data
   traefik:
     extends:
       file: ../common.yaml
