@@ -4,6 +4,10 @@ The stack uses the fpm version of nextcloud which relies on an external web serv
 Nginx is the reverse proxy used here, and it must have a configuration file set up.
 An example file is provided in the `examples` folder and must be mounted to the nginx container.
 
+## PocketID
+Nextcloud may integrate with pocketid through an external plugin with directions provided [here](https://pocket-id.org/docs/client-examples/nextcloud).
+After editing the config.php file in the config folder, make sure the file is still owned by either user & group 33 or www-data. If it is not, run the command `chown 33:33 config.php`.
+
 ## S3
 The provided configuration is designed to work with the `garage` stack and is quite simple to setup. 
 1. Navigate to garage's webui using the address https://g.your_domain .

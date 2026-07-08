@@ -27,7 +27,7 @@ services:
       release_notes: "https://github.com/nicotsx/zerobyte/releases"
       traefik.enable: "true"
       traefik.http.routers.zerobyte.entryPoints: "https"
-      traefik.http.routers.zerobyte.middlewares: "localonly@file"
+      traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@file"
       traefik.http.routers.zerobyte.rule: "Host(`z.dellhplaptop.xyz`)"
       traefik.http.services.zerobyte.loadbalancer.server.url: "http://zerobyte:4096"
     networks:

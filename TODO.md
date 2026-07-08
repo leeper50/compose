@@ -1,1 +1,2 @@
 - Consider using secrets for domains, api-keys, other random global config junk.
+- [Setup tinyauth's access controls using docker labels](https://tinyauth.app/docs/guides/access-controls/)
