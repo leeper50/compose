@@ -55,6 +55,8 @@ services:
       traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
     networks:
       proxy:
+        aliases:
+          - dellhplaptop.xyz
       socket-proxy:
     ports:
       - "80:80/tcp"
