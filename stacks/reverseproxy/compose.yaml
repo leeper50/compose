@@ -57,6 +57,7 @@ services:
       proxy:
         aliases:
           - dellhplaptop.xyz
+          - jf.dellhplaptop.xyz
       socket-proxy:
     ports:
       - "80:80/tcp"
