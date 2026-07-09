@@ -76,7 +76,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 5
-      test: ["CMD-SHELL", "pg_isready -U romm-user -d romm"]
+      test: ["CMD-SHELL", "pg_isready -U romm -d romm"]
       timeout: 5s
     image: postgres:${postgres_version:-16}
     networks:
