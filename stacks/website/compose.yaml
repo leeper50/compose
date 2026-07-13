@@ -12,8 +12,10 @@ services:
       - ALL
     container_name: homepage
     environment:
-      TZ: ${timezone:-UTC}
       HOMEPAGE_ALLOWED_HOSTS: home.dellhplaptop.xyz
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
       kuma.__docker:
