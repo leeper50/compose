@@ -10,6 +10,10 @@ services:
       service: base
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     container_name: homepage
     environment:
       HOMEPAGE_ALLOWED_HOSTS: home.dellhplaptop.xyz
