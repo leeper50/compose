@@ -3,6 +3,47 @@ networks:
   proxy:
     external: true
 services:
+  droppedneedle:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
+    container_name: droppedneedle
+    environment:
+      PGID: ${gid:-1000}
+      PORT: 8688
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 15s
+      test: ["CMD", "curl", "-f", "http://localhost:8688/health"]
+      timeout: 10s
+    image: ghcr.io/habirabbu/droppedneedle:${droppedneedle_version:-latest}
+    labels:
+      homepage.group: Media Consumption
+      homepage.href: https://dn.dellhplaptop.xyz
+      homepage.icon: sh-droppedneedle.webp
+      homepage.name: Droppedneedle
+      kuma.__docker:
+      release_notes: "https://github.com/HabiRabbu/DroppedNeedle/releases"
+      traefik.enable: "true"
+      traefik.http.routers.droppedneedle.entryPoints: https
+      traefik.http.routers.droppedneedle.middlewares: localonly@file
+      traefik.http.routers.droppedneedle.rule: Host(`dn.dellhplaptop.xyz`)
+      traefik.http.routers.droppedneedle.tls.certresolver: cloudflare
+      traefik.http.services.droppedneedle.loadbalancer.server.url: http://droppedneedle:8688
+    networks:
+      proxy: null
+    volumes:
+      - ${data:-.}/droppedneedle/cache:/app/cache
+      - ${data:-.}/droppedneedle/config:/app/config
+      - ${media:?}/Music:/music:rw
   freshrss:
     extends:
       file: ../common.yaml
