@@ -38,7 +38,7 @@ Apps you may want to integrate that are presenting in this repository include:
 The traefik container relies on a file, `traefik/traefik.yml` to provide
 some configuration options. The default configuration expects the following settings.
 
-1. An entrypoint named `https` that running on port `8443/tcp` and `8443/udp` to serve web traffic and http3 traffic. The docker host listens on port `443` so traffic resolves normally.
+1. An entrypoint named `https` that running on port `443/tcp` and `443/udp` to serve web traffic and http3 traffic.
 2. A docker provider to connect to connect to the containers on the `proxy` network.
 3. A file provider that provides the middlewares `localonly` and `allowedIPs`. `localonly` is used to restrict access to your LAN. `allowedIPs` extends this to include a specific whitelist of IP addresses for friends, organizations, etc. This file will be named `traefik/dynamic.yml` on disk.
 
