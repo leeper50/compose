@@ -96,6 +96,7 @@ services:
       traefik.http.routers.tinyauth.rule: "Host(`auth.dellhplaptop.xyz`)"
     networks:
       proxy:
+    user: ${uid:-1000}:${gid:-1000}
     volumes:
       - ${data:-.}/tinyauth:/data
   traefik:
