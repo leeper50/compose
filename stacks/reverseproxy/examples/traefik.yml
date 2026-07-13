@@ -25,7 +25,7 @@ certificatesResolvers:
 
 entryPoints:
   http:
-    address: :80
+    address: :8080
     http:
       redirections:
         entryPoint:
@@ -33,7 +33,7 @@ entryPoints:
           scheme: https
           permanent: true
   https:
-    address: :443
+    address: :8443
     http3: {}
     forwardedHeaders:
       insecure: false
