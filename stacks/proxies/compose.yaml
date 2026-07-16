@@ -18,8 +18,7 @@ services:
     environment:
       HTTPPROXY: on
       SERVER_CITIES: ${cities:-Stockholm}
-      SHADOWSOCKS: on
-      SHADOWSOCKS_PASSWORD: ${shadowsocks_password:-}
+      SOCKS5_ENABLED: on
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
@@ -30,35 +29,14 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    image: qmcgaw/gluetun:${gluetun_version:-v3.41}
+    image: qmcgaw/gluetun:${gluetun_version:-latest}
     labels:
       kuma.__docker:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
-      - "${listen_interface:-0.0.0.0}:8388:8388/tcp"
       - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
       - ${data:-.}/gluetun-proxy:/gluetun:rw
-  socks5proxy:
-    depends_on:
-      gluetun_proxy:
-        condition: service_healthy
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: socks5proxy
-    environment:
-      ALLOWED_IPS: ${allowed_ips}
-      PROXY_PASS: ${proxy_pass:?}
-      PROXY_USER: ${proxy_user:?}
-      REQUIRE_AUTH: ${enable_auth:-true}
-    image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
-    labels:
-      kuma.__docker:
-      release_notes: "https://github.com/serjs/socks5-server/releases"
-    network_mode: service:gluetun_proxy
