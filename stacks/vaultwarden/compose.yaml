@@ -28,7 +28,7 @@ services:
       traefik.http.services.vaultwarden.loadbalancer.server.url: "http://vaultwarden:80"
       # Block admin page with tinyauth
       traefik.http.routers.vaultwarden-admin.entrypoints: "https"
-      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,tinyauth@docker"
       traefik.http.routers.vaultwarden-admin.priority: 50
       traefik.http.routers.vaultwarden-admin.rule: Host(`vw.dellhplaptop.xyz`) && PathPrefix(`/admin`)
     networks:

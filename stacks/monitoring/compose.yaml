@@ -14,30 +14,30 @@ services:
     depends_on:
       - uptimekuma
     environment:
-      AUTOKUMA__DEFAULT_SETTINGS: |- 
-         docker.docker_container: {{container_name}}
-         http.max_redirects: 10
-         *.max_retries: 3
+      AUTOKUMA__DEFAULT_SETTINGS: |-
+        docker.docker_container: {{container_name}}
+        http.max_redirects: 10
+        *.max_retries: 3
       AUTOKUMA__DOCKER__EXCLUDE_CONTAINER_PATTERNS: "^temp_;^[a-f0-9]{12}_.*_" # Excludes test containers and temporary stack containers.
       AUTOKUMA__KUMA__PASSWORD: ${kuma_pass:?}
       AUTOKUMA__KUMA__URL: http://uptimekuma:3001
       AUTOKUMA__KUMA__USERNAME: ${kuma_user:?}
-      AUTOKUMA__SNIPPETS__DOCKER: |- 
-         {{container_name}}_docker.docker.docker_container: {{container_name}}
-         {{container_name}}_docker.docker.docker_host_name: proxy
-         {{container_name}}_docker.docker.name: docker_{{container_name}}
-         {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
-      AUTOKUMA__SNIPPETS__WEB: |- 
-         {{container_name}}_http.http.name: web_{{container_name}}
-         {{container_name}}_http.http.url: https://{{ args[0] }}
-         {{container_name}}_http.http.notification_name_list: ["ntfy"]
+      AUTOKUMA__SNIPPETS__DOCKER: |-
+        {{container_name}}_docker.docker.docker_container: {{container_name}}
+        {{container_name}}_docker.docker.docker_host_name: proxy
+        {{container_name}}_docker.docker.name: docker_{{container_name}}
+        {{container_name}}_docker.docker.notification_name_list: ["ntfy"]
+      AUTOKUMA__SNIPPETS__WEB: |-
+        {{container_name}}_http.http.name: web_{{container_name}}
+        {{container_name}}_http.http.url: https://{{ args[0] }}
+        {{container_name}}_http.http.notification_name_list: ["ntfy"]
     image: ghcr.io/bigboot/autokuma:${autokuma_version:-2}
     labels:
-      kuma.proxy.docker_host.name: 'Socket Proxy'
-      kuma.proxy.docker_host.connection_type: 'tcp'
-      kuma.proxy.docker_host.host: 'tcp://socket-proxy:2375'
-      kuma.ntfy.notification.name: 'NTFY'
-      kuma.ntfy.notification.active: 'true'
+      kuma.proxy.docker_host.name: "Socket Proxy"
+      kuma.proxy.docker_host.connection_type: "tcp"
+      kuma.proxy.docker_host.host: "tcp://socket-proxy:2375"
+      kuma.ntfy.notification.name: "NTFY"
+      kuma.ntfy.notification.active: "true"
       kuma.ntfy.notification.config: |
         {
           "ntfyaccesstoken": "${ntfy_token:?}",
@@ -70,11 +70,11 @@ services:
       homepage.name: Dozzle
       kuma.__docker:
       release_notes: "https://github.com/amir20/dozzle/releases"
-      traefik.enable: 'true'
-      traefik.http.routers.dozzle.entryPoints: 'https'
-      traefik.http.routers.dozzle.middlewares: 'tinyauth@file,localonly@file'
-      traefik.http.routers.dozzle.rule: 'Host(`dz.dellhplaptop.xyz`)'
-      traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
+      traefik.enable: "true"
+      traefik.http.routers.dozzle.entryPoints: "https"
+      traefik.http.routers.dozzle.middlewares: "localonly@file,tinyauth@docker"
+      traefik.http.routers.dozzle.rule: "Host(`dz.dellhplaptop.xyz`)"
+      traefik.http.routers.dozzle.tls.certresolver: "cloudflare"
       traefik.http.services.dozzle.loadbalancer.server.port: 8080
     networks:
       proxy:

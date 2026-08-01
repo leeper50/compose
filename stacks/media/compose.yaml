@@ -209,7 +209,7 @@ services:
       release_notes: "https://github.com/navidrome/navidrome/releases"
       traefik.enable: "true"
       traefik.http.routers.navidrome.entryPoints: "https"
-      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
+      traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@docker"
       traefik.http.routers.navidrome.priority: 30
       traefik.http.routers.navidrome.rule: "Host(`nav.dellhplaptop.xyz`)"
       traefik.http.services.navidrome.loadbalancer.server.url: "http://navidrome:4533"
@@ -257,7 +257,7 @@ services:
       release_notes: "https://github.com/seerr-team/seerr/releases"
       traefik.enable: "true"
       traefik.http.routers.seerr.entryPoints: "https"
-      traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
+      traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@docker"
       traefik.http.routers.seerr.rule: "Host(`se.dellhplaptop.xyz`)"
       traefik.http.services.seerr.loadbalancer.server.url: "http://seerr:5055"
     networks:
