@@ -1,4 +1,4 @@
-# Forgejo Stack
+# Forgejo
 
 To configure a runner for CI/CD actions, you must:
 1. Create an administrator account.

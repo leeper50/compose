@@ -19,18 +19,23 @@ The official guide on how to integrate tinyauth with PocketID is available [here
 
 PocketID maintains a list of example configurations for applications [here](https://pocket-id.org/docs/client-examples).
 
-Apps you may want to integrate that are presenting in this repository include:
-- [Bookstack](https://pocket-id.org/docs/client-examples/bookstack) from the `docs` stack.
+Apps in this repo with examples from the pocket-id folks are listed here:
+- [Actualbudget](https://pocket-id.org/docs/client-examples/actual-budget) from the `actualbudget` stack.
+- [Bookstack](https://pocket-id.org/docs/client-examples/bookstack) from the `bookstack` stack.
+- [Dozzle](https://pocket-id.org/docs/client-examples/dozzle) from the `monitoring` stack.
 - [Forgejo](https://pocket-id.org/docs/client-examples/forgejo) from the `forgejo` stack.
-- [FreshRSS](https://pocket-id.org/docs/client-examples/freshrss) from the `website` stack.
+- [FreshRSS](https://pocket-id.org/docs/client-examples/freshrss) from the `media` stack.
 - [Gitea](https://pocket-id.org/docs/client-examples/gitea) from the `gitea` stack.
-- [Grafana](https://pocket-id.org/docs/client-examples/grafana) from the `docs` stack.
 - [Immich](https://pocket-id.org/docs/client-examples/immich) from the `media` stack.
 - [Jellyfin](https://pocket-id.org/docs/client-examples/jellyfin) from the `media` stack.
+- [Kavita](https://pocket-id.org/docs/client-examples/kavita) from the `media` stack.
 - [N8N (Formerly Node-RED)](https://pocket-id.org/docs/client-examples/node-red) from the `n8n` stack.
 - [Nextcloud](https://pocket-id.org/docs/client-examples/nextcloud) from the `nextcloud` stack.
+- [OpenWebUI](https://pocket-id.org/docs/client-examples/open-webui) from the `openwebui` stack.
 - [Paperless-ngx](https://pocket-id.org/docs/client-examples/paperless-ngx) from the `paperlessngx` stack.
-- [Vaulwarden](https://pocket-id.org/docs/client-examples/vaultwarden) from the `website` stack.
+- [RomM](https://pocket-id.org/docs/client-examples/romm) from the `romm` stack.
+- [TechnitiumDNS](https://pocket-id.org/docs/client-examples/technitium-dns) from the `technitium` stack.
+- [Vaultwarden](https://pocket-id.org/docs/client-examples/vaultwarden) from the `vaultwarden` stack.
 
 
 ### Traefik

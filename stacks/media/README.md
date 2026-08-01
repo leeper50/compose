@@ -1,4 +1,4 @@
-# Media Stack
+# Media
 
 ## Jellyfin
 This stack assumes that you have an intel gpu that is available to the container for transcoding media.
