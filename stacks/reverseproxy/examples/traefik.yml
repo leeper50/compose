@@ -1,11 +1,11 @@
 accessLog:
   filePath: /var/log/traefik/access.log
   filters:
+    retryAttempts: true
     statusCodes:
       - 400-499
       - 500-599
-    retryAttempts: true
-    minDuration: 1000ms
+  format: json
 
 api:
   dashboard: true
@@ -63,11 +63,7 @@ entryPoints:
     address: :7777
 
 log:
-  compress: true
-  filePath: /var/log/traefik/traefik.log
   level: INFO
-  maxSize: 25
-  maxAge: 7
 
 providers:
   docker:
@@ -77,6 +73,3 @@ providers:
   file:
     filename: /dynamic.yml
     watch: true
-
-serversTransport:
-  insecureSkipVerify: true
