@@ -7,4 +7,4 @@ for creating and assigning permissions for buckets.
 
 Relevant documentation can be found [here](https://garagehq.deuxfleurs.fr/documentation/quick-start/).
 
-Note that you must make a cluster of at least 1 node to begin using garage.
+You must make a cluster of at least 1 node.

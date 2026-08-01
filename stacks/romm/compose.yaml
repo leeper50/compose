@@ -1,0 +1,85 @@
+networks:
+  default:
+  proxy:
+    external: true
+services:
+  romm:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: romm
+    depends_on:
+      romm-db:
+        condition: service_healthy
+        restart: true
+    environment:
+      DB_HOST: romm-db
+      DB_NAME: romm
+      DB_PASSWD: ${db_pass:?}
+      DB_PORT: 5432
+      DB_USER: romm
+      HASHEOUS_API_ENABLED: true # https://docs.romm.app/latest/getting-started/metadata-providers/#hasheous
+      OIDC_CLIENT_ID: ${oidc_client_id:?}
+      OIDC_CLIENT_SECRET: ${oidc_client_secret:?}
+      OIDC_ENABLED: true
+      OIDC_PROVIDER: pocketid
+      OIDC_REDIRECT_URI: https://rm.dellhplaptop.xyz/api/oauth/openid
+      OIDC_SERVER_APPLICATION_URL: https://id.dellhplaptop.xyz
+      RETROACHIEVEMENTS_API_KEY: ${retroachievements_key:-} 
+      ROMM_AUTH_SECRET_KEY: ${auth_key:?}
+      ROMM_DB_DRIVER: postgresql
+      SCREENSCRAPER_PASSWORD: ${screenscraper_pass:-}
+      SCREENSCRAPER_USER: ${screenscraper_user:-}
+      STEAMGRIDDB_API_KEY: ${steamgriddb_key:-}
+    image: rommapp/romm:${romm_version:-latest}
+    labels:
+      homepage.group: Personal
+      homepage.href: https://rm.dellhplaptop.xyz
+      homepage.icon: sh-romm.svg
+      homepage.name: Romm
+      kuma.__docker:
+      release_notes: "https://github.com/rommapp/romm/releases"
+      traefik.enable: "true"
+      traefik.http.routers.romm.entryPoints: "https"
+      traefik.http.routers.romm.middlewares: "allowedIPs@file"
+      traefik.http.routers.romm.rule: "Host(`rm.dellhplaptop.xyz`)"
+      traefik.http.services.romm.loadbalancer.server.url: "http://romm:8080"
+    networks:
+      default:
+      proxy:
+    restart: unless-stopped
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/config:/romm/config # Path where config.yml is stored
+      - ${data:-.}/metadata:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
+      - ${data:-.}/redis:/redis-data # Cached data for background tasks
+      - ${data:-.}/saves:/romm/assets # Uploaded saves, states, etc.
+      - ${games:-.}/Games:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+  romm-db:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    environment:
+      POSTGRES_DB: romm
+      POSTGRES_USER: romm
+      POSTGRES_PASSWORD: ${db_pass:?}
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U romm -d romm"]
+      timeout: 5s
+    image: postgres:${postgres_version:-16}
+    networks:
+      default:
+    volumes:
+      - ${data:-.}/db:/var/lib/postgresql/data

@@ -18,7 +18,7 @@ services:
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     labels:
       homepage.group: Access & Security
-      homepage.href: https://vpn.${domain:?}
+      homepage.href: https://vpn.dellhplaptop.xyz
       homepage.icon: sh-wireguard.svg
       homepage.name: WG-Easy
       kuma.__docker:
@@ -26,7 +26,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.wgeasy.entryPoints: "https"
       traefik.http.routers.wgeasy.middlewares: "localonly@file"
-      traefik.http.routers.wgeasy.rule: "Host(`vpn.${domain:?}`)"
+      traefik.http.routers.wgeasy.rule: "Host(`vpn.dellhplaptop.xyz`)"
       traefik.http.services.wgeasy.loadbalancer.server.url: "http://wgeasy:51821"
     networks:
       proxy:

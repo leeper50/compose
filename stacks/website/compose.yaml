@@ -10,10 +10,16 @@ services:
       service: base
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
     container_name: homepage
     environment:
+      HOMEPAGE_ALLOWED_HOSTS: home.dellhplaptop.xyz
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
       TZ: ${timezone:-UTC}
-      HOMEPAGE_ALLOWED_HOSTS: home.${domain:?}
     image: ghcr.io/gethomepage/homepage:${homepage_version:-latest}
     labels:
       kuma.__docker:
@@ -21,7 +27,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.homepage.entryPoints: "https"
       traefik.http.routers.homepage.middlewares: "localonly@file"
-      traefik.http.routers.homepage.rule: "Host(`home.${domain:?}`)"
+      traefik.http.routers.homepage.rule: "Host(`home.dellhplaptop.xyz`)"
       traefik.http.services.homepage.loadbalancer.server.url: "http://homepage:3000"
     networks:
       proxy:
@@ -37,8 +43,8 @@ services:
     container_name: mywebsite
     environment:
       BETTER_AUTH_SECRET: ${auth_secret:?}
-      BETTER_AUTH_URL: https://www.${domain:?}
-      ORIGIN: https://www.${domain:?}
+      BETTER_AUTH_URL: https://www.dellhplaptop.xyz
+      ORIGIN: https://www.dellhplaptop.xyz
     image: dellhplaptop/newwebsite:${mywebsite_version:-latest}
     labels:
       kuma.__docker:
@@ -46,7 +52,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.mywebsite.entryPoints: "https"
       traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
-      traefik.http.routers.mywebsite.rule: "Host(`www.${domain:?}`)"
+      traefik.http.routers.mywebsite.rule: "Host(`www.dellhplaptop.xyz`)"
       traefik.http.services.mywebsite.loadbalancer.server.url: "http://mywebsite:3000"
     networks:
       proxy:

@@ -10,7 +10,7 @@ services:
       - ALL
     container_name: technitium
     environment:
-      DNS_SERVER_DOMAIN: dns.${domain:?} #The primary domain name used by this DNS Server to identify itself.
+      DNS_SERVER_DOMAIN: dns.dellhplaptop.xyz #The primary domain name used by this DNS Server to identify itself.
       # - DNS_SERVER_ADMIN_PASSWORD=password #DNS web console admin user password.
       # - DNS_SERVER_ADMIN_PASSWORD_FILE=password.txt #The path to a file that contains a plain text password for the DNS web console admin user.
       # - DNS_SERVER_PREFER_IPV6=false #DNS Server will use IPv6 for querying whenever possible with this option enabled.
@@ -37,7 +37,7 @@ services:
     image: technitium/dns-server:${technitium_version:-latest}
     labels:
       homepage.group: DNS
-      homepage.href: https://dns.${domain:?}
+      homepage.href: https://dns.dellhplaptop.xyz
       homepage.icon: sh-technitium.svg
       homepage.name: Technitium
       kuma.__docker:
@@ -45,7 +45,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.technitium.entryPoints: "https"
       traefik.http.routers.technitium.middlewares: "localonly@file"
-      traefik.http.routers.technitium.rule: "Host(`dns.${domain:?}`)"
+      traefik.http.routers.technitium.rule: "Host(`dns.dellhplaptop.xyz`)"
       traefik.http.services.technitium.loadbalancer.server.url: "http://technitium:5380"
     networks:
       proxy:

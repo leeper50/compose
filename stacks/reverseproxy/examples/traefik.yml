@@ -69,17 +69,6 @@ log:
   maxSize: 25
   maxAge: 7
 
-metrics:
-  prometheus:
-    addEntryPointsLabels: true
-    addServicesLabels: true
-    buckets:
-      - 0.1
-      - 0.3
-      - 1.2
-      - 5.0
-    entryPoint: metrics
-
 providers:
   docker:
     endpoint: tcp://socket-proxy:2375

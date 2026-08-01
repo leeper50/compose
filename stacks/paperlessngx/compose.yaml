@@ -22,26 +22,26 @@ services:
       PAPERLESS_REDIS: redis://paperlessngx_valkey:6379
       PAPERLESS_SECRET_KEY: ${secret_key:?}
       PAPERLESS_TIME_ZONE: ${timezone:-UTC}
-      PAPERLESS_URL: https://pl.${domain:?}
+      PAPERLESS_URL: https://pl.dellhplaptop.xyz
       USERMAP_GID: ${gid:-1000}
       USERMAP_UID: ${uid:-1000}
       PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
-      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"pocket-id","name":"Pocket-ID","client_id":"${client_id:?}","secret":"${client_secret:?}","settings":{"server_url":"https://id.${domain:?}"}}]}}'
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect":{"SCOPE":["openid","profile","email"],"OAUTH_PKCE_ENABLED":true,"APPS":[{"provider_id":"pocket-id","name":"Pocket-ID","client_id":"${client_id:?}","secret":"${client_secret:?}","settings":{"server_url":"https://id.dellhplaptop.xyz"}}]}}'
     depends_on:
       - paperlessngx_db
       - paperlessngx_valkey
     image: ghcr.io/paperless-ngx/paperless-ngx:${paperlessngx_version:-latest}
     labels:
       homepage.group: Personal
-      homepage.href: https://pl.${domain:?}
+      homepage.href: https://pl.dellhplaptop.xyz
       homepage.icon: sh-paperless-ngx.svg
       homepage.name: Paperless
       kuma.__docker:
       release_notes: "https://github.com/paperless-ngx/paperless-ngx/releases"
       traefik.enable: "true"
       traefik.http.routers.paperlessngx.entryPoints: "https"
-      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file,tinyauth@file"
-      traefik.http.routers.paperlessngx.rule: "Host(`pl.${domain:?}`)"
+      traefik.http.routers.paperlessngx.middlewares: "allowedIPs@file"
+      traefik.http.routers.paperlessngx.rule: "Host(`pl.dellhplaptop.xyz`)"
       traefik.http.services.paperlessngx.loadbalancer.server.url: "http://paperlessngx:8000"
     networks:
       proxy: null

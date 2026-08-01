@@ -24,15 +24,15 @@ services:
       ENABLE_PREVIEWS: "true"
       NEXTCLOUD_ADMIN_PASSWORD: ${admin_pass:?}
       NEXTCLOUD_ADMIN_USER: admin
-      NEXTCLOUD_TRUSTED_DOMAINS: next.${domain:?}
-      OVERWRITECLIURL: https://next.${domain:?}
-      OVERWRITEHOST: next.${domain:?}
+      NEXTCLOUD_TRUSTED_DOMAINS: next.dellhplaptop.xyz
+      OVERWRITECLIURL: https://next.dellhplaptop.xyz
+      OVERWRITEHOST: next.dellhplaptop.xyz
       OVERWRITEPROTOCOL: https
       TRUSTED_PROXIES: 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
       # Garage Config
       OBJECTSTORE_S3_BUCKET: nextcloud
       OBJECTSTORE_S3_REGION: garage
-      OBJECTSTORE_S3_HOST: s3.${domain:?}
+      OBJECTSTORE_S3_HOST: s3.dellhplaptop.xyz
       OBJECTSTORE_S3_PORT: 443
       OBJECTSTORE_S3_KEY: ${s3_access_key:?}
       OBJECTSTORE_S3_SECRET: ${s3_secret_key:?}
@@ -123,7 +123,7 @@ services:
       - nextcloud_app
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://next.${domain:?}
+      homepage.href: https://next.dellhplaptop.xyz
       homepage.icon: sh-nextcloud.webp
       homepage.name: Nextcloud
       kuma.__docker:
@@ -131,7 +131,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.nextcloud.entryPoints: "https"
       traefik.http.routers.nextcloud.middlewares: "allowedIPs@file,nextcloud-secure-headers@docker,nextcloud-redirect@docker"
-      traefik.http.routers.nextcloud.rule: "Host(`next.${domain:?}`)"
+      traefik.http.routers.nextcloud.rule: "Host(`next.dellhplaptop.xyz`)"
       traefik.http.routers.nextcloud.tls.certresolver: "cloudflare"
       traefik.http.services.nextcloud.loadbalancer.server.url: "http://nextcloud_nginx:80"
       # Middlewares

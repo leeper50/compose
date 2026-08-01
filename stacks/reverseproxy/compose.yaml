@@ -1,5 +1,4 @@
 networks:
-  default: null
   proxy:
     external: true
   socket-proxy:
@@ -17,7 +16,7 @@ services:
       - SETUID
     container_name: pocketid
     environment:
-      APP_URL: https://id.${domain}
+      APP_URL: https://id.dellhplaptop.xyz
       ENCRYPTION_KEY: ${pocketid_enc_key:?}
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
@@ -31,90 +30,18 @@ services:
     image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
     labels:
       homepage.group: Access & Security
-      homepage.href: https://id.${domain:?}
+      homepage.href: https://id.dellhplaptop.xyz
       homepage.icon: sh-pocket-id.svg
       homepage.name: PocketID
       kuma.__docker:
       release_notes: "https://pocket-id.org/changelog"
       traefik.enable: "true"
       traefik.http.routers.pocketid.entryPoints: "https"
-      traefik.http.routers.pocketid.rule: "Host(`id.${domain:?}`)"
+      traefik.http.routers.pocketid.rule: "Host(`id.dellhplaptop.xyz`)"
     networks:
       proxy:
     volumes:
       - ${data:-.}/pocketid:/app/data
-  tinyauth:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: tinyauth
-    depends_on:
-      - pocketid
-    environment:
-      TINYAUTH_APPURL: https://auth.${domain}
-      TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.${domain}/authorize
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.${domain}/api/oauth/callback/pocketid
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.${domain}/api/oidc/token
-      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.${domain}/api/oidc/userinfo
-    image: ghcr.io/steveiliop56/tinyauth:${tinyauth_version:-v5}
-    labels:
-      kuma.__docker:
-      release_notes: "https://tinyauth.app/docs/reference/changelog/"
-      traefik.enable: "true"
-      traefik.http.routers.tinyauth.entryPoints: "https"
-      traefik.http.routers.tinyauth.rule: "Host(`auth.${domain:?}`)"
-    networks:
-      proxy:
-    volumes:
-      - ${data:-.}/tinyauth:/data
-  traefik:
-    extends:
-      file: ../common.yaml
-      service: base
-    cap_drop:
-      - ALL
-    container_name: traefik
-    depends_on:
-      - pocketid
-    environment:
-      CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
-    image: traefik:${traefik_version:-v3.6}
-    labels:
-      homepage.group: Access & Security
-      homepage.href: https://tf.${domain:?}
-      homepage.icon: sh-traefik.svg
-      homepage.name: Traefik
-      kuma.__docker:
-      release_notes: "https://github.com/traefik/traefik/releases"
-      traefik.enable: "true"
-      traefik.http.routers.traefik.entryPoints: "https"
-      traefik.http.routers.traefik.middlewares: "localonly@file"
-      traefik.http.routers.traefik.rule: "Host(`tf.${domain:?}`)"
-      traefik.http.routers.traefik.service: "api@internal"
-      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
-    networks:
-      proxy:
-      socket-proxy:
-    ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
-      - "443:443/udp"
-      - "7777:7777/tcp"
-      - "25565:25565/tcp"
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json:rw
-      - ${data:-.}/logs/traefik:/var/log/traefik:rw
   socket-proxy:
     extends:
       file: ../common.yaml
@@ -140,3 +67,82 @@ services:
       socket-proxy:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+  tinyauth:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    container_name: tinyauth
+    depends_on:
+      - pocketid
+    environment:
+      TINYAUTH_APPURL: https://auth.dellhplaptop.xyz
+      TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.dellhplaptop.xyz/authorize
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET: ${tinyauth_secret}
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME: Pocket ID
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL: https://auth.dellhplaptop.xyz/api/oauth/callback/pocketid
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
+      TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
+    image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
+    labels:
+      kuma.__docker:
+      release_notes: "https://tinyauth.app/docs/reference/changelog/"
+      traefik.enable: "true"
+      traefik.http.routers.tinyauth.entryPoints: "https"
+      traefik.http.routers.tinyauth.rule: "Host(`auth.dellhplaptop.xyz`)"
+    networks:
+      proxy:
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - ${data:-.}/tinyauth:/data
+  traefik:
+    extends:
+      file: ../common.yaml
+      service: base
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    container_name: traefik
+    depends_on:
+      - pocketid
+    environment:
+      CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
+    image: traefik:${traefik_version:-v3.7}
+    labels:
+      homepage.group: Access & Security
+      homepage.href: https://tf.dellhplaptop.xyz
+      homepage.icon: sh-traefik.svg
+      homepage.name: Traefik
+      kuma.__docker:
+      release_notes: "https://github.com/traefik/traefik/releases"
+      traefik.enable: "true"
+      traefik.http.routers.traefik.entryPoints: "https"
+      traefik.http.routers.traefik.middlewares: "localonly@file"
+      traefik.http.routers.traefik.rule: "Host(`tf.dellhplaptop.xyz`)"
+      traefik.http.routers.traefik.service: "api@internal"
+      traefik.http.services.traefik.loadbalancer.server.url: "http://traefik:8080"
+    networks:
+      proxy:
+        aliases:
+          - auth.dellhplaptop.xyz
+          - id.dellhplaptop.xyz
+      socket-proxy:
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "443:443/udp"
+      - "7777:7777/tcp"
+      - "25565:25565/tcp"
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
+      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
+      - ${data:-.}/traefik/acme.json:/acme.json:rw
+      - ${data:-.}/logs/traefik:/var/log/traefik:rw

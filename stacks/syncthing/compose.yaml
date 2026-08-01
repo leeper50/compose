@@ -20,7 +20,7 @@ services:
     image: lscr.io/linuxserver/syncthing:${syncthing_version:-latest}
     labels:
       homepage.group: Files & Sharing
-      homepage.href: https://sync.${domain:?}
+      homepage.href: https://sync.dellhplaptop.xyz
       homepage.icon: sh-syncthing.svg
       homepage.name: Syncthing
       kuma.__docker:
@@ -28,7 +28,7 @@ services:
       traefik.enable: "true"
       traefik.http.routers.syncthing.entryPoints: "https"
       traefik.http.routers.syncthing.middlewares: "localonly@file"
-      traefik.http.routers.syncthing.rule: "Host(`sync.${domain:?}`)"
+      traefik.http.routers.syncthing.rule: "Host(`sync.dellhplaptop.xyz`)"
       traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"
     network_mode: host
     volumes:

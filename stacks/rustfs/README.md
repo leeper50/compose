@@ -1,4 +1,4 @@
-# RustFS Configuration
+# RustFS
 
 This stack requires a folder with the correct permissions to exist before it runs.
 
