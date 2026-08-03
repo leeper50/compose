@@ -146,7 +146,6 @@ services:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${data:-.}/traefik/traefik.yml:/traefik.yml:ro
-      - ${data:-.}/traefik/dynamic.yml:/dynamic.yml:ro
-      - ${data:-.}/traefik/acme.json:/acme.json:rw
+      - ${data:-.}/traefik:/etc/traefik:ro
+      - ${data:-.}/certs/acme.json:/acme.json:rw
       - ${data:-.}/logs/traefik:/var/log/traefik:rw
