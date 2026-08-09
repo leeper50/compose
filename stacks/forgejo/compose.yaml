@@ -1,8 +1,6 @@
 networks:
   proxy:
     external: true
-  socket-proxy:
-    external: true
 services:
   forgejo:
     extends:
@@ -71,18 +69,12 @@ services:
     volumes:
       - ${data:-.}/db:/var/lib/postgresql/data
   forgejo_runner:
-    extends:
-      file: ../common.yaml
-      service: base
     cap_drop:
       - ALL
-    cap_add:
-      - CHOWN
     container_name: forgejo_runner
     depends_on:
       - forgejo
     environment:
-      DOCKER_HOST: tcp://socket-proxy:2375
       GITEA_INSTANCE_URL: https://fj.dellhplaptop.xyz/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
@@ -91,12 +83,19 @@ services:
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
       GITEA_RUNNER_NAME: forgejo_runner
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
-    image: gitea/act_runner:${runner_version:-nightly}
+    image: gitea/act_runner:${runner_version:-latest-dind-rootless}
     labels:
       kuma.__docker:
       release_notes: "https://gitea.com/gitea/runner/releases"
+    logging:
+      driver: local
+      options:
+        compress: "true"
+        max-file: "3"
+        max-size: 10m
     networks:
       default: null
-      socket-proxy: null
+    privileged: true
+    restart: unless-stopped
     volumes:
-      - ${data:-.}/runner/data:/data
+      - ${data:-.}/runner:/data
