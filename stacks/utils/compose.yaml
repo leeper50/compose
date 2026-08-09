@@ -25,7 +25,7 @@ services:
       traefik.http.services.ittools.loadbalancer.server.url: "http://ittools:8080"
     networks:
       proxy: null
-  searxng-core:
+  searxng_core:
     extends:
       file: ../common.yaml
       service: base
@@ -33,13 +33,13 @@ services:
       - ALL
     cap_add:
       - CHOWN
-    container_name: searxng-core
+    container_name: searxng_core
     depends_on:
-      - searxng-valkey
+      - searxng_valkey
     environment:
       SEARXNG_BASE_URL: "https://sx.dellhplaptop.xyz"
       SEARXNG_SECRET: ${searxng_secret:?}
-      SEARXNG_VALKEY_URL: valkey://searxng-valkey:6379/0
+      SEARXNG_VALKEY_URL: valkey://searxng_valkey:6379/0
     image: "ghcr.io/searxng/searxng:${searxng_version:-latest}"
     labels:
       homepage.group: Personal
@@ -52,14 +52,14 @@ services:
       traefik.http.routers.searxng.entryPoints: "https"
       traefik.http.routers.searxng.middlewares: "allowedIPs@file"
       traefik.http.routers.searxng.rule: "Host(`sx.dellhplaptop.xyz`)"
-      traefik.http.services.searxng.loadbalancer.server.url: "http://searxng-core:8080"
+      traefik.http.services.searxng.loadbalancer.server.url: "http://searxng_core:8080"
     networks:
       proxy: null
       searxng: null
     volumes:
       - ${data:-.}/searxng/config:/etc/searxng
       - ${data:-.}/searxng/data:/var/cache/searxng
-  searxng-valkey:
+  searxng_valkey:
     extends:
       file: ../common.yaml
       service: base
@@ -69,7 +69,7 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-    container_name: searxng-valkey
+    container_name: searxng_valkey
     healthcheck:
       test: valkey-cli ping || exit 1
     image: valkey/valkey:${valkey_version:-9}
