@@ -52,7 +52,7 @@ services:
       traefik.http.routers.searxng.entryPoints: "https"
       traefik.http.routers.searxng.middlewares: "allowedIPs@file"
       traefik.http.routers.searxng.rule: "Host(`sx.dellhplaptop.xyz`)"
-      traefik.http.services.searxng.loadbalancer.server.url: "http://searxng-core:8888"
+      traefik.http.services.searxng.loadbalancer.server.url: "http://searxng-core:8080"
     networks:
       proxy: null
       searxng: null
