@@ -31,7 +31,11 @@ services:
       service: base
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
     container_name: searxng-core
+    depends_on:
+      - searxng-valkey
     environment:
       SEARXNG_BASE_URL: "https://sx.dellhplaptop.xyz"
       SEARXNG_SECRET: ${searxng_secret:?}
