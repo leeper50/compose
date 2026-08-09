@@ -39,6 +39,9 @@ services:
     environment:
       SEARXNG_BASE_URL: "https://sx.dellhplaptop.xyz"
       SEARXNG_SECRET: ${searxng_secret:?}
+      SEARXNG_UI_CENTER_ALIGNMENT: "true"
+      SEARXNG_UI_THEME_ARGS.SIMPLE_STYLE: "true"
+      SEARXNG_UI_URL_FORMATTING: "host"
       SEARXNG_VALKEY_URL: valkey://searxng_valkey:6379/0
     image: "ghcr.io/searxng/searxng:${searxng_version:-latest}"
     labels:
