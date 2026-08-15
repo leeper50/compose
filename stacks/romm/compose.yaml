@@ -11,11 +11,11 @@ services:
       - ALL
     container_name: romm
     depends_on:
-      romm-db:
+      romm_db:
         condition: service_healthy
         restart: true
     environment:
-      DB_HOST: romm-db
+      DB_HOST: romm_db
       DB_NAME: romm
       DB_PASSWD: ${db_pass:?}
       DB_PORT: 5432
@@ -57,7 +57,7 @@ services:
       - ${data:-.}/redis:/redis-data # Cached data for background tasks
       - ${data:-.}/saves:/romm/assets # Uploaded saves, states, etc.
       - ${games:-.}/Games:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
-  romm-db:
+  romm_db:
     extends:
       file: ../common.yaml
       service: base
@@ -69,6 +69,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    container_name: romm_db
     environment:
       POSTGRES_DB: romm
       POSTGRES_USER: romm
