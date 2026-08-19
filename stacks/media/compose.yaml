@@ -76,7 +76,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == node-1
+          - node.hostname == node-2
       labels:
         homepage.group: Media Consumption
         homepage.href: https://jf.buncha.men
@@ -140,7 +140,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == node-2
+          - node.hostname == node-1
       labels:
         homepage.group: Arr Stack
         homepage.href: https://se.buncha.men
