@@ -125,42 +125,6 @@ services:
     volumes:
       - kavita:/kavita/config
       - /mnt/media/Books:/books
-  navidrome:
-    environment:
-      ND_ENABLEINSIGHTSCOLLECTOR: ${navi_analytics:-true}
-      ND_ENABLEUSEREDITING: "false"
-      ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
-    image: ghcr.io/navidrome/navidrome:${navidrome_version:-latest}
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == node-3
-      labels:
-        homepage.group: Media Consumption
-        homepage.href: https://nav.buncha.men
-        homepage.icon: sh-navidrome.svg
-        homepage.name: Navidrome
-        kuma.__docker:
-        release_notes: "https://github.com/navidrome/navidrome/releases"
-        traefik.enable: "true"
-        traefik.http.routers.navidrome.entryPoints: "https"
-        traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@swarm"
-        traefik.http.routers.navidrome.priority: 30
-        traefik.http.routers.navidrome.rule: "Host(`nav.buncha.men`)"
-        traefik.http.services.navidrome.loadbalancer.server.port: 4533
-        # App specific auth with basic-auth
-        traefik.http.routers.navidrome-subsonic.entrypoints: "https"
-        traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
-        traefik.http.routers.navidrome-subsonic.priority: 50
-        traefik.http.routers.navidrome-subsonic.rule: Host(`nav.buncha.men`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
-      update_config:
-        order: stop-first
-    networks:
-      proxy: null
-    user: ${uid:-1000}:${gid:-1000}
-    volumes:
-      - navidrome:/data:rw
-      - /mnt/media/Music:/music:ro
   seerr:
     environment:
       LOG_LEVEL: ${log_level:-warn}
@@ -201,5 +165,4 @@ volumes:
   freshrss_extensions:
   jellyfin:
   kavita:
-  navidrome:
   seerr:
