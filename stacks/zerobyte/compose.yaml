@@ -20,7 +20,7 @@ services:
         release_notes: "https://github.com/nicotsx/zerobyte/releases"
         traefik.enable: "true"
         traefik.http.routers.zerobyte.entryPoints: "https"
-        traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@docker"
+        traefik.http.routers.zerobyte.middlewares: "localonly@file,tinyauth@swarm"
         traefik.http.routers.zerobyte.rule: "Host(`z.buncha.men`)"
         traefik.http.services.zerobyte.loadbalancer.server.port: 4096
     networks:

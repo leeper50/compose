@@ -62,7 +62,7 @@ services:
         release_notes: "https://github.com/amir20/dozzle/releases"
         traefik.enable: 'true'
         traefik.http.routers.dozzle.entryPoints: 'https'
-        traefik.http.routers.dozzle.middlewares: 'tinyauth@docker,localonly@file'
+        traefik.http.routers.dozzle.middlewares: 'tinyauth@swarm,localonly@file'
         traefik.http.routers.dozzle.rule: 'Host(`dz.buncha.men`)'
         traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
         traefik.http.services.dozzle.loadbalancer.server.port: 8080

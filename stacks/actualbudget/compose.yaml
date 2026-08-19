@@ -20,7 +20,7 @@ services:
         release_notes: "https://github.com/actualbudget/actual/releases"
         traefik.enable: "true"
         traefik.http.routers.actualbudget.entryPoints: "https"
-        traefik.http.routers.actualbudget.middlewares: "tinyauth@docker,localonly@file"
+        traefik.http.routers.actualbudget.middlewares: "tinyauth@swarm,localonly@file"
         traefik.http.routers.actualbudget.rule: "Host(`ab.buncha.men`)"
         traefik.http.services.actualbudget.loadbalancer.server.port: 5006
     networks:
