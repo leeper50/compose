@@ -9,12 +9,12 @@ services:
       LISTEN: 0.0.0.0:80
       OIDC_CLIENT_ID: ${client_id:?}
       OIDC_CLIENT_SECRET: ${client_secret:?}
-      OIDC_ENABLED: 1
+      OIDC_ENABLED: "1"
       OIDC_PROVIDER_METADATA_URL: https://id.buncha.men/.well-known/openid-configuration
       OIDC_REMOTE_USER_CLAIM: preferred_username
       OIDC_SCOPES: openid email profile
       OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
-      TRUSTED_PROXY: 0
+      TRUSTED_PROXY: "0"
       TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     deploy:
@@ -128,7 +128,7 @@ services:
   navidrome:
     environment:
       ND_ENABLEINSIGHTSCOLLECTOR: ${navi_analytics:-true}
-      ND_ENABLEUSEREDITING: false
+      ND_ENABLEUSEREDITING: "false"
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     image: ghcr.io/navidrome/navidrome:${navidrome_version:-latest}
     deploy:
