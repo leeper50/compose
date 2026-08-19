@@ -33,6 +33,8 @@ services:
         traefik.http.routers.pocketid.entryPoints: "https"
         traefik.http.routers.pocketid.rule: "Host(`id.buncha.men`)"
         traefik.http.services.pocketid.loadbalancer.server.port: 1411
+      update_config:
+        order: stop-first
     networks:
       proxy:
     volumes:
