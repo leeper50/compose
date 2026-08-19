@@ -106,6 +106,10 @@ services:
         kuma.__docker:
         release_notes: "https://github.com/traefik/traefik/releases"
         traefik.enable: "true"
+        traefik.http.middlewares.tinyauth.forwardAuth.address: "http://tinyauth:3000/api/auth/traefik"
+        traefik.http.middlewares.tinyauth.forwardAuth.authResponseHeaders: "remote-user"
+        traefik.http.middlewares.tinyauth.forwardAuth.maxResponseBodySize: 104857600
+        traefik.http.middlewares.tinyauth.forwardAuth.trustForwardHeader: "true"
         traefik.http.routers.traefik.entryPoints: "https"
         traefik.http.routers.traefik.middlewares: "localonly@file"
         traefik.http.routers.traefik.rule: "Host(`tf.buncha.men`)"

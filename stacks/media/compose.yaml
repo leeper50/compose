@@ -144,7 +144,7 @@ services:
         release_notes: "https://github.com/navidrome/navidrome/releases"
         traefik.enable: "true"
         traefik.http.routers.navidrome.entryPoints: "https"
-        traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@file"
+        traefik.http.routers.navidrome.middlewares: "allowedIPs@file, tinyauth@docker"
         traefik.http.routers.navidrome.priority: 30
         traefik.http.routers.navidrome.rule: "Host(`nav.buncha.men`)"
         traefik.http.services.navidrome.loadbalancer.server.port: 4533
@@ -186,7 +186,7 @@ services:
         release_notes: "https://github.com/seerr-team/seerr/releases"
         traefik.enable: "true"
         traefik.http.routers.seerr.entryPoints: "https"
-        traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
+        traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@docker"
         traefik.http.routers.seerr.rule: "Host(`se.buncha.men`)"
         traefik.http.services.seerr.loadbalancer.server.port: 5055
       update_config:
