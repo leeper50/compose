@@ -26,7 +26,12 @@ services:
         traefik.http.routers.vaultwarden-admin.middlewares: "allowedIPs@file,tinyauth@swarm"
         traefik.http.routers.vaultwarden-admin.priority: 50
         traefik.http.routers.vaultwarden-admin.rule: Host(`vw.buncha.men`) && PathPrefix(`/admin`)
+      placement:
+        constraints:
+          - node.hostname == node-3
     networks:
       proxy:
     volumes:
-      - /mnt/docker/vaultwarden:/data
+      - vaultwarden:/data
+volumes:
+  vaultwarden:

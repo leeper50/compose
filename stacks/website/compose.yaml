@@ -18,11 +18,14 @@ services:
         traefik.http.routers.homepage.middlewares: "localonly@file"
         traefik.http.routers.homepage.rule: "Host(`home.buncha.men`)"
         traefik.http.services.homepage.loadbalancer.server.port: 3000
+      placement:
+        constraints:
+          - node.hostname == node-3
     networks:
       proxy:
       socket-proxy:
     volumes:
-      - /mnt/docker/homepage:/app/config:rw
+      - /etc/docker/homepage:/app/config:rw
   mywebsite:
     environment:
       BETTER_AUTH_SECRET: ${auth_secret:?}
@@ -38,8 +41,13 @@ services:
         traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
         traefik.http.routers.mywebsite.rule: "Host(`www.buncha.men`)"
         traefik.http.services.mywebsite.loadbalancer.server.port: 3000
+      placement:
+        constraints:
+          - node.hostname == node-3
     networks:
       proxy:
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/newweb:/app/data
+      - newweb:/app/data
+volumes:
+  newweb:
