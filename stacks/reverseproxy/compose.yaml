@@ -120,7 +120,7 @@ services:
       - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /opt/docker/traefik:/etc/traefik:rw
+      - /etc/docker/traefik:/etc/traefik:rw
       - traefik_logs:/var/log/traefik:rw
 volumes:
   pocketid:
