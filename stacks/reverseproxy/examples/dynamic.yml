@@ -1,14 +1,17 @@
 allowedIPs: &allowedIPs
   sourceRange:
-    - "1.1.1.1/32"
     - "10.0.0.0/8"
-    - "172.16.0.0/12"
     - "192.168.0.0/16"
+    - "172.16.0.0/12"
+    - "fd06:6a55:3bd2:ed3d::/64"
+    - "fda3:db28:76bb:e314::/64"
 localIPs: &localIPs
   sourceRange:
     - "10.0.0.0/8"
-    - "172.16.0.0/12"
     - "192.168.0.0/16"
+    - "172.16.0.0/12"
+    - "fd06:6a55:3bd2:ed3d::/64"
+    - "fda3:db28:76bb:e314::/64"
 http:
   middlewares:
     allowedIPs:
@@ -17,11 +20,9 @@ http:
     localonly:
       ipAllowList:
         <<: *localIPs
-    tinyauth:
-      forwardAuth:
-        address: http://tinyauth:3000/api/auth/traefik
-        authResponseHeaders: remote-user
-        maxResponseBodySize: 104857600
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
 tcp:
   middlewares:
     allowedIPs:

@@ -19,6 +19,9 @@ services:
       timeout: 5s
     image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-2
       labels:
         homepage.group: Access & Security
         homepage.href: https://id.buncha.men
@@ -33,7 +36,7 @@ services:
     networks:
       proxy:
     volumes:
-      - /mnt/docker/pocketid:/app/data
+      - pocketid:/app/data
   socket-proxy:
     environment:
       CONTAINERS: 1
@@ -50,8 +53,6 @@ services:
       VOLUMES: 1
     image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
     deploy:
-      mode: replicated
-      replicas: 1
       placement:
         constraints:
           - node.role == manager
@@ -65,6 +66,7 @@ services:
   tinyauth:
     environment:
       TINYAUTH_APPURL: https://auth.buncha.men
+      TINYAUTH_DATABASE_DRIVER: memory
       TINYAUTH_OAUTH_AUTOREDIRECT: pocketid
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL: https://id.buncha.men/authorize
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID: ${tinyauth_id}
@@ -85,16 +87,12 @@ services:
         traefik.http.services.tinyauth.loadbalancer.server.port: 3000
     networks:
       proxy:
-    volumes:
-      - /mnt/docker/tinyauth:/data
   traefik:
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
     image: traefik:${traefik_version:-v3.7}
     deploy:
-      mode: replicated
-      replicas: 1
       placement:
         constraints:
           - node.role == manager
@@ -118,9 +116,12 @@ services:
       - "80:80/tcp"
       - "443:443/tcp"
       - "443:443/udp"
+      - "7777:7777/tcp"
+      - "25565:25565/tcp"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /mnt/docker/traefik/traefik.yml:/traefik.yml:ro
-      - /mnt/docker/traefik/dynamic.yml:/dynamic.yml:ro
-      - /mnt/docker/traefik/acme.json:/acme.json:rw
-      - /mnt/docker/traefik/logs/traefik:/var/log/traefik:rw
+      - /opt/docker/traefik:/etc/traefik:rw
+      - traefik_logs:/var/log/traefik:rw
+volumes:
+  pocketid:
+  traefik_logs:
