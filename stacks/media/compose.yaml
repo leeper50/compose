@@ -18,6 +18,9 @@ services:
       TZ: ${timezone:-UTC}
     image: freshrss/freshrss:${freshrss_version:-latest}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-2
       labels:
         homepage.group: Personal
         homepage.href: https://rss.buncha.men
@@ -34,12 +37,14 @@ services:
         traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
         traefik.http.routers.freshrss.rule: "Host(`rss.buncha.men`)"
         traefik.http.services.freshrss.loadbalancer.server.port: 80
+      update_config:
+        order: stop-first
     networks:
       freshrss:
       proxy:
     volumes:
-      - /mnt/docker/freshrss/data:/var/www/FreshRSS/data
-      - /mnt/docker/freshrss/extensions:/var/www/FreshRSS/extensions
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
   freshrss_postgres:
     environment:
       POSTGRES_DB: ${db_name:-freshrss}
@@ -47,13 +52,18 @@ services:
       POSTGRES_USER: ${db_user:-freshrss}
     image: postgres:${postgres_version:-16}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-2
       labels:
         kuma.__docker:
         release_notes: "https://www.postgresql.org/docs/release/"
+      update_config:
+        order: stop-first
     networks:
       freshrss:
     volumes:
-      - /mnt/docker/freshrss/db:/var/lib/postgresql/data
+      - freshrss_db:/var/lib/postgresql/data
   jellyfin:
     devices:
       - /dev/dri
@@ -64,6 +74,9 @@ services:
       TZ: ${timezone:-UTC}
     image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-1
       labels:
         homepage.group: Media Consumption
         homepage.href: https://jf.buncha.men
@@ -76,12 +89,12 @@ services:
         traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
         traefik.http.routers.jellyfin.rule: "Host(`jf.buncha.men`)"
         traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+      update_config:
+        order: stop-first
     networks:
       proxy: null
-    ports:
-      - "7359:7359/udp" # Client Discovery
     volumes:
-      - /mnt/docker/jellyfin:/config:rw
+      - jellyfin:/config:rw
       - /mnt/media/TV:/data/tvshows:rw
       - /mnt/media/Movies:/data/movies:rw
       - /mnt/media/Music:/data/music:rw
@@ -90,6 +103,9 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/kareadita/kavita:${kavita_version:-latest}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-3
       labels:
         homepage.group: Media Consumption
         homepage.href: https://kv.buncha.men
@@ -102,10 +118,12 @@ services:
         traefik.http.routers.kavita.middlewares: "allowedIPs@file"
         traefik.http.routers.kavita.rule: "Host(`kv.buncha.men`)"
         traefik.http.services.kavita.loadbalancer.server.port: 5000
+      update_config:
+        order: stop-first
     networks:
       proxy: null
     volumes:
-      - /mnt/docker/kavita:/kavita/config
+      - kavita:/kavita/config
       - /mnt/media/Books:/books
   navidrome:
     environment:
@@ -114,6 +132,9 @@ services:
       ND_REVERSEPROXYWHITELIST: 0.0.0.0/0
     image: ghcr.io/navidrome/navidrome:${navidrome_version:-latest}
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-3
       labels:
         homepage.group: Media Consumption
         homepage.href: https://nav.buncha.men
@@ -132,11 +153,13 @@ services:
         traefik.http.routers.navidrome-subsonic.middlewares: "allowedIPs@file"
         traefik.http.routers.navidrome-subsonic.priority: 50
         traefik.http.routers.navidrome-subsonic.rule: Host(`nav.buncha.men`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
+      update_config:
+        order: stop-first
     networks:
       proxy: null
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/navidrome:/data:rw
+      - navidrome:/data:rw
       - /mnt/media/Music:/music:ro
   seerr:
     environment:
@@ -151,6 +174,9 @@ services:
     image: ghcr.io/seerr-team/seerr:${seerr_version:-latest}
     init: true
     deploy:
+      placement:
+        constraints:
+          - node.hostname == node-2
       labels:
         homepage.group: Arr Stack
         homepage.href: https://se.buncha.men
@@ -163,7 +189,17 @@ services:
         traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@file"
         traefik.http.routers.seerr.rule: "Host(`se.buncha.men`)"
         traefik.http.services.seerr.loadbalancer.server.port: 5055
+      update_config:
+        order: stop-first
     networks:
       proxy: null
     volumes:
-      - /mnt/docker/seerr:/app/config/:rw
+      - seerr:/app/config/:rw
+volumes:
+  freshrss_data:
+  freshrss_db:
+  freshrss_extensions:
+  jellyfin:
+  kavita:
+  navidrome:
+  seerr:
