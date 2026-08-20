@@ -39,8 +39,6 @@ services:
     volumes:
       - /etc/docker/forgejo/app/data:/var/lib/gitea
       - /etc/docker/forgejo/app/conf:/etc/gitea
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
   forgejo_db:
     environment:
       POSTGRES_DB: ${db_name:-forgejo}
