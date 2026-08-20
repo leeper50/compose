@@ -13,7 +13,7 @@ services:
     deploy:
       labels:
         homepage.group: Personal
-        homepage.href: https://ab.buncha.men
+        homepage.href: https://ab.dellhplaptop.xyz
         homepage.icon: sh-actual-budget.svg
         homepage.name: Actual Budget
         kuma.__docker:
@@ -21,7 +21,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.actualbudget.entryPoints: "https"
         traefik.http.routers.actualbudget.middlewares: "tinyauth@swarm,localonly@file"
-        traefik.http.routers.actualbudget.rule: "Host(`ab.buncha.men`)"
+        traefik.http.routers.actualbudget.rule: "Host(`ab.dellhplaptop.xyz`)"
         traefik.http.services.actualbudget.loadbalancer.server.port: 5006
     networks:
       proxy: null

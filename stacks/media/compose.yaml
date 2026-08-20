@@ -10,7 +10,7 @@ services:
       OIDC_CLIENT_ID: ${client_id:?}
       OIDC_CLIENT_SECRET: ${client_secret:?}
       OIDC_ENABLED: "1"
-      OIDC_PROVIDER_METADATA_URL: https://id.buncha.men/.well-known/openid-configuration
+      OIDC_PROVIDER_METADATA_URL: https://id.dellhplaptop.xyz/.well-known/openid-configuration
       OIDC_REMOTE_USER_CLAIM: preferred_username
       OIDC_SCOPES: openid email profile
       OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
@@ -23,7 +23,7 @@ services:
           - node.hostname == node-2
       labels:
         homepage.group: Personal
-        homepage.href: https://rss.buncha.men
+        homepage.href: https://rss.dellhplaptop.xyz
         homepage.icon: sh-freshrss.svg
         homepage.name: Freshrss
         homepage.widget.password: ${freshrss_user_password:-.unset}
@@ -35,7 +35,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.freshrss.entryPoints: "https"
         traefik.http.routers.freshrss.middlewares: "allowedIPs@file"
-        traefik.http.routers.freshrss.rule: "Host(`rss.buncha.men`)"
+        traefik.http.routers.freshrss.rule: "Host(`rss.dellhplaptop.xyz`)"
         traefik.http.services.freshrss.loadbalancer.server.port: 80
       update_config:
         order: stop-first
@@ -68,7 +68,7 @@ services:
     devices:
       - /dev/dri
     environment:
-      JELLYFIN_PublishedServerUrl: jf.buncha.men
+      JELLYFIN_PublishedServerUrl: jf.dellhplaptop.xyz
       PGID: ${gid:-1000}
       PUID: ${uid:-1000}
       TZ: ${timezone:-UTC}
@@ -79,7 +79,7 @@ services:
           - node.hostname == node-2
       labels:
         homepage.group: Media Consumption
-        homepage.href: https://jf.buncha.men
+        homepage.href: https://jf.dellhplaptop.xyz
         homepage.icon: sh-jellyfin.svg
         homepage.name: Jellyfin
         kuma.__docker:
@@ -87,7 +87,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.jellyfin.entryPoints: "https"
         traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
-        traefik.http.routers.jellyfin.rule: "Host(`jf.buncha.men`)"
+        traefik.http.routers.jellyfin.rule: "Host(`jf.dellhplaptop.xyz`)"
         traefik.http.services.jellyfin.loadbalancer.server.port: 8096
       update_config:
         order: stop-first
@@ -108,7 +108,7 @@ services:
           - node.hostname == node-3
       labels:
         homepage.group: Media Consumption
-        homepage.href: https://kv.buncha.men
+        homepage.href: https://kv.dellhplaptop.xyz
         homepage.icon: sh-kavita.svg
         homepage.name: Kavita
         kuma.__docker:
@@ -116,7 +116,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.kavita.entryPoints: "https"
         traefik.http.routers.kavita.middlewares: "allowedIPs@file"
-        traefik.http.routers.kavita.rule: "Host(`kv.buncha.men`)"
+        traefik.http.routers.kavita.rule: "Host(`kv.dellhplaptop.xyz`)"
         traefik.http.services.kavita.loadbalancer.server.port: 5000
       update_config:
         order: stop-first
@@ -143,7 +143,7 @@ services:
           - node.hostname == node-1
       labels:
         homepage.group: Arr Stack
-        homepage.href: https://se.buncha.men
+        homepage.href: https://se.dellhplaptop.xyz
         homepage.icon: sh-seerr.svg
         homepage.name: Seerr
         kuma.__docker:
@@ -151,7 +151,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.seerr.entryPoints: "https"
         traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@swarm"
-        traefik.http.routers.seerr.rule: "Host(`se.buncha.men`)"
+        traefik.http.routers.seerr.rule: "Host(`se.dellhplaptop.xyz`)"
         traefik.http.services.seerr.loadbalancer.server.port: 5055
       update_config:
         order: stop-first

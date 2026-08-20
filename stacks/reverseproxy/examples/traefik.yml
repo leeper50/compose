@@ -54,9 +54,9 @@ entryPoints:
       tls:
         certResolver: cloudflare
         domains:
-          - main: buncha.men
+          - main: dellhplaptop.xyz
             sans:
-              - "*.buncha.men"
+              - "*.dellhplaptop.xyz"
   minecraft:
     address: :25565
   terraria:

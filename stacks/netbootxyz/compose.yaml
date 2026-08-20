@@ -22,7 +22,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.netbootxyz.entryPoints: "https"
         traefik.http.routers.netbootxyz.middlewares: "localonly@file"
-        traefik.http.routers.netbootxyz.rule: "Host(`nb.buncha.men`)"
+        traefik.http.routers.netbootxyz.rule: "Host(`nb.dellhplaptop.xyz`)"
         traefik.http.services.netbootxyz.loadbalancer.server.port: 3000
     networks:
       proxy: null

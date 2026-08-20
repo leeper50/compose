@@ -55,7 +55,7 @@ services:
     deploy:
       labels:
         homepage.group: Monitoring & Metrics
-        homepage.href: https://dz.buncha.men
+        homepage.href: https://dz.dellhplaptop.xyz
         homepage.icon: sh-dozzle.svg
         homepage.name: Dozzle
         kuma.__docker:
@@ -63,7 +63,7 @@ services:
         traefik.enable: 'true'
         traefik.http.routers.dozzle.entryPoints: 'https'
         traefik.http.routers.dozzle.middlewares: 'tinyauth@swarm,localonly@file'
-        traefik.http.routers.dozzle.rule: 'Host(`dz.buncha.men`)'
+        traefik.http.routers.dozzle.rule: 'Host(`dz.dellhplaptop.xyz`)'
         traefik.http.routers.dozzle.tls.certresolver: 'cloudflare'
         traefik.http.services.dozzle.loadbalancer.server.port: 8080
     networks:
@@ -78,7 +78,7 @@ services:
       NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
       NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
-      NTFY_BASE_URL: https://n.buncha.men
+      NTFY_BASE_URL: https://n.dellhplaptop.xyz
       NTFY_BEHIND_PROXY: true
       NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
       NTFY_ENABLE_LOGIN: true
@@ -99,7 +99,7 @@ services:
     deploy:
       labels:
         homepage.group: Monitoring & Metrics
-        homepage.href: https://n.buncha.men
+        homepage.href: https://n.dellhplaptop.xyz
         homepage.icon: sh-ntfy.svg
         homepage.name: Ntfy
         kuma.__docker:
@@ -107,7 +107,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.ntfy.entryPoints: "https"
         traefik.http.routers.ntfy.middlewares: "localonly@file"
-        traefik.http.routers.ntfy.rule: "Host(`n.buncha.men`)"
+        traefik.http.routers.ntfy.rule: "Host(`n.dellhplaptop.xyz`)"
         traefik.http.services.ntfy.loadbalancer.server.port: 80
     networks:
       proxy: null
@@ -119,7 +119,7 @@ services:
     deploy:
       labels:
         homepage.group: Monitoring & Metrics
-        homepage.href: https://sp.buncha.men
+        homepage.href: https://sp.dellhplaptop.xyz
         homepage.icon: sh-librespeed.svg
         homepage.name: MySpeed
         kuma.__docker:
@@ -127,7 +127,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.speedtest.entryPoints: "https"
         traefik.http.routers.speedtest.middlewares: "localonly@file"
-        traefik.http.routers.speedtest.rule: "Host(`sp.buncha.men`)"
+        traefik.http.routers.speedtest.rule: "Host(`sp.dellhplaptop.xyz`)"
         traefik.http.services.speedtest.loadbalancer.server.port: 5216
     networks:
       proxy: null
@@ -138,14 +138,14 @@ services:
     deploy:
       labels:
         homepage.group: Monitoring & Metrics
-        homepage.href: https://up.buncha.men/dashboard
+        homepage.href: https://up.dellhplaptop.xyz/dashboard
         homepage.icon: sh-uptime-kuma.svg
         homepage.name: Uptime Kuma
         release_notes: "https://github.com/louislam/uptime-kuma/releases"
         traefik.enable: "true"
         traefik.http.routers.uptimekuma.entryPoints: "https"
         traefik.http.routers.uptimekuma.middlewares: "localonly@file"
-        traefik.http.routers.uptimekuma.rule: "Host(`up.buncha.men`)"
+        traefik.http.routers.uptimekuma.rule: "Host(`up.dellhplaptop.xyz`)"
         traefik.http.services.uptimekuma.loadbalancer.server.port: 3001
     networks:
       proxy: null

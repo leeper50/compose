@@ -9,18 +9,18 @@ services:
     environment:
       GENERIC_TIMEZONE: ${timezone:-UTC}
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
-      N8N_HOST: n8n.buncha.men
+      N8N_HOST: n8n.dellhplaptop.xyz
       N8N_PORT: 5678
       N8N_PROTOCOL: https
       N8N_PROXY_HOPS: 1
       N8N_RUNNERS_ENABLED: true
       NODE_ENV: production
       TZ: ${timezone:-UTC}
-      WEBHOOK_URL: https://n8n.buncha.men/
+      WEBHOOK_URL: https://n8n.dellhplaptop.xyz/
     deploy:
       labels:
         homepage.group: Automation & Notifications
-        homepage.href: https://n8n.buncha.men
+        homepage.href: https://n8n.dellhplaptop.xyz
         homepage.icon: sh-n8n.svg
         homepage.name: N8N
         kuma.__docker:
@@ -29,14 +29,14 @@ services:
         traefik.http.middlewares.n8n.headers.browserXSSFilter: true
         traefik.http.middlewares.n8n.headers.contentTypeNosniff: true
         traefik.http.middlewares.n8n.headers.forceSTSHeader: true
-        traefik.http.middlewares.n8n.headers.SSLHost: buncha.men
+        traefik.http.middlewares.n8n.headers.SSLHost: dellhplaptop.xyz
         traefik.http.middlewares.n8n.headers.SSLRedirect: true
         traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: true
         traefik.http.middlewares.n8n.headers.STSPreload: true
         traefik.http.middlewares.n8n.headers.STSSeconds: 315360000
         traefik.http.routers.n8n.entryPoints: "https"
         traefik.http.routers.n8n.middlewares: "n8n@docker"
-        traefik.http.routers.n8n.rule: "Host(`n8n.buncha.men`)"
+        traefik.http.routers.n8n.rule: "Host(`n8n.dellhplaptop.xyz`)"
         traefik.http.services.n8n.loadbalancer.server.port: 5678
     networks:
       proxy:

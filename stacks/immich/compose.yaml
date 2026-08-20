@@ -62,7 +62,7 @@ services:
     deploy:
       labels:
         homepage.group: Media Consumption
-        homepage.href: https://im.buncha.men
+        homepage.href: https://im.dellhplaptop.xyz
         homepage.icon: sh-immich.svg
         homepage.name: Immich
         kuma.__docker:
@@ -70,7 +70,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.immich.entryPoints: "https"
         traefik.http.routers.immich.middlewares: "localonly@file"
-        traefik.http.routers.immich.rule: "Host(`im.buncha.men`)"
+        traefik.http.routers.immich.rule: "Host(`im.dellhplaptop.xyz`)"
         traefik.http.services.immich.loadbalancer.server.port: 2283
     networks:
       proxy: null

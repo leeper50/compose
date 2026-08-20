@@ -11,7 +11,7 @@ services:
     deploy:
       labels:
         homepage.group: Utils
-        homepage.href: https://rs.buncha.men
+        homepage.href: https://rs.dellhplaptop.xyz
         homepage.icon: sh-rustfs.svg
         homepage.name: RustFS
         kuma.__docker:
@@ -23,13 +23,13 @@ services:
         traefik.enable: "true"
         traefik.http.routers.rustfs.entryPoints: "https"
         traefik.http.routers.rustfs.middlewares: "localonly@file"
-        traefik.http.routers.rustfs.rule: "Host(`rs.buncha.men`)"
+        traefik.http.routers.rustfs.rule: "Host(`rs.dellhplaptop.xyz`)"
         traefik.http.routers.rustfs.service: "rustfs"
         traefik.http.services.rustfs.loadbalancer.server.port: rustfs:9001
         # S3 entrypoint
         traefik.http.routers.rustfs-s3.entryPoints: "https"
         traefik.http.routers.rustfs-s3.middlewares: "localonly@file"
-        traefik.http.routers.rustfs-s3.rule: "Host(`r3.buncha.men`)"
+        traefik.http.routers.rustfs-s3.rule: "Host(`r3.dellhplaptop.xyz`)"
         traefik.http.routers.rustfs-s3.service: "rustfs-s3"
         traefik.http.services.rustfs-s3.loadbalancer.server.port: 9000
     networks:

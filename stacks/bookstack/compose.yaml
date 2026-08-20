@@ -6,7 +6,7 @@ services:
   bookstack:
     environment:
       APP_KEY: ${app_key:?}
-      APP_URL: https://bs.buncha.men
+      APP_URL: https://bs.dellhplaptop.xyz
       DB_DATABASE: ${db_name:-bookstack}
       DB_HOST: bookstack_db:3306
       DB_PASSWORD: ${db_pass:?}
@@ -15,7 +15,7 @@ services:
     deploy:
       labels:
         homepage.group: Personal
-        homepage.href: https://bs.buncha.men
+        homepage.href: https://bs.dellhplaptop.xyz
         homepage.icon: sh-bookstack.svg
         homepage.name: Bookstack
         kuma.__docker:
@@ -23,7 +23,7 @@ services:
         traefik.enable: "true"
         traefik.http.routers.bookstack.entryPoints: "https"
         traefik.http.routers.bookstack.middlewares: "localonly@file"
-        traefik.http.routers.bookstack.rule: "Host(`bs.buncha.men`)"
+        traefik.http.routers.bookstack.rule: "Host(`bs.dellhplaptop.xyz`)"
         traefik.http.services.bookstack.loadbalancer.server.port: 8080
     networks:
       bookstack: null

@@ -14,7 +14,7 @@ services:
     deploy:
       labels:
         homepage.group: Tools
-        homepage.href: https://hb.buncha.men
+        homepage.href: https://hb.dellhplaptop.xyz
         homepage.icon: sh-handbrake.webp
         homepage.name: Handbrake
         kuma.__docker:
@@ -22,7 +22,7 @@ services:
         traefik.enable: 'true'
         traefik.http.routers.handbrake.entryPoints: 'https'
         traefik.http.routers.handbrake.middlewares: 'localonly@file'
-        traefik.http.routers.handbrake.rule: 'Host(`hb.buncha.men`)'
+        traefik.http.routers.handbrake.rule: 'Host(`hb.dellhplaptop.xyz`)'
         traefik.http.services.handbrake.loadbalancer.server.port: 5800
     networks:
       proxy: null
