@@ -43,8 +43,8 @@ services:
       freshrss:
       proxy:
     volumes:
-      - freshrss_data:/var/www/FreshRSS/data
-      - freshrss_extensions:/var/www/FreshRSS/extensions
+      - /etc/docker/freshrss/data:/var/www/FreshRSS/data
+      - /etc/docker/freshrss/extensions:/var/www/FreshRSS/extensions
   freshrss_postgres:
     environment:
       POSTGRES_DB: ${db_name:-freshrss}
@@ -63,7 +63,7 @@ services:
     networks:
       freshrss:
     volumes:
-      - freshrss_db:/var/lib/postgresql/data
+      - /etc/docker/freshrss/db:/var/lib/postgresql/data
   jellyfin:
     devices:
       - /dev/dri
@@ -94,7 +94,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - jellyfin:/config:rw
+      - /etc/docker/jellyfin:/config:rw
       - /mnt/media/TV:/data/tvshows:rw
       - /mnt/media/Movies:/data/movies:rw
       - /mnt/media/Music:/data/music:rw
@@ -123,7 +123,7 @@ services:
     networks:
       proxy: null
     volumes:
-      - kavita:/kavita/config
+      - /etc/docker/kavita:/kavita/config
       - /mnt/media/Books:/books
   seerr:
     environment:
@@ -158,11 +158,4 @@ services:
     networks:
       proxy: null
     volumes:
-      - seerr:/app/config/:rw
-volumes:
-  freshrss_data:
-  freshrss_db:
-  freshrss_extensions:
-  jellyfin:
-  kavita:
-  seerr:
+      - /etc/docker/seerr:/app/config/:rw
