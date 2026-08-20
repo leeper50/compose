@@ -75,7 +75,7 @@ services:
       mqtt:
     volumes:
       - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
-      - /mnt/docker/zigbee2mqtt:/app/data
+      - /etc/docker/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
   zwave_js_ui:
     environment:
@@ -106,4 +106,4 @@ services:
     tty: true
     volumes:
       - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
-      - /mnt/docker/zwave:/usr/src/app/store
+      - /etc/docker/zwave:/usr/src/app/store
