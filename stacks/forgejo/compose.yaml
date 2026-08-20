@@ -1,8 +1,6 @@
 networks:
   proxy:
     external: true
-  socket-proxy:
-    external: true
 services:
   forgejo:
     environment:
@@ -27,6 +25,11 @@ services:
         traefik.http.routers.forgejo.entryPoints: "https"
         traefik.http.routers.forgejo.rule: "Host(`fj.dellhplaptop.xyz`)"
         traefik.http.services.forgejo.loadbalancer.server.port: 3000
+      placement:
+        constraints:
+          - node.hostname == node-2
+      update_config:
+        order: stop-first
     networks:
       default:
       proxy:
@@ -34,8 +37,8 @@ services:
       - "2222:2222/tcp" # Rootless ssh port
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/forgejo/app/data:/var/lib/gitea
-      - /mnt/docker/forgejo/app/conf:/etc/gitea
+      - /etc/docker/forgejo/app/data:/var/lib/gitea
+      - /etc/docker/forgejo/app/conf:/etc/gitea
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
   forgejo_db:
@@ -48,13 +51,17 @@ services:
       labels:
         kuma.__docker:
         release_notes: "https://www.postgresql.org/docs/release/"
+      placement:
+        constraints:
+          - node.hostname == node-2
+      update_config:
+        order: stop-first
     networks:
       default:
     volumes:
-      - /mnt/docker/forgejo/db:/var/lib/postgresql/data
+      - /etc/docker/forgejo/db:/var/lib/postgresql/data
   forgejo_runner:
     environment:
-      DOCKER_HOST: tcp://socket-proxy:2375
       GITEA_INSTANCE_URL: https://fj.dellhplaptop.xyz/
       GITEA_RUNNER_LABELS:
         "docker:docker://data.forgejo.org/oci/node:20-bullseye,\
@@ -63,13 +70,16 @@ services:
         ubuntu-20.04:docker://docker.gitea.com/runner-images:ubuntu-20.04"
       GITEA_RUNNER_NAME: forgejo_runner
       GITEA_RUNNER_REGISTRATION_TOKEN: ${token}
-    image: gitea/act_runner:${runner_version:-nightly}
+    image: gitea/act_runner:${runner_version:-latest}
     deploy:
       labels:
         kuma.__docker:
         release_notes: "https://gitea.com/gitea/runner/releases"
+      mode: global
     networks:
       default: null
-      socket-proxy: null
     volumes:
-      - /mnt/docker/forgejo/runner:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner:/data
+volumes:
+  runner:
