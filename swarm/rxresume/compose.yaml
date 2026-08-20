@@ -10,18 +10,19 @@ services:
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@rxresume_postgres:5432/${db_name:-rxresume}
       TZ: ${timezone:-Etc/UTC}
     image: ghcr.io/amruthpillai/reactive-resume:${rxresume_version:-v5}
-    labels:
-      homepage.group: Personal
-      homepage.href: https://rx.dellhplaptop.xyz
-      homepage.icon: sh-reactive-resume.svg
-      homepage.name: RxResume
-      kuma.__docker:
-      release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
-      traefik.enable: "true"
-      traefik.http.routers.rxresume.entrypoints: "https"
-      traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@swarm"
-      traefik.http.routers.rxresume.rule: "Host(`rx.dellhplaptop.xyz`)"
-      traefik.http.services.rxresume.loadbalancer.server.port: 3000
+    deploy:
+      labels:
+        homepage.group: Personal
+        homepage.href: https://rx.dellhplaptop.xyz
+        homepage.icon: sh-reactive-resume.svg
+        homepage.name: RxResume
+        kuma.__docker:
+        release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
+        traefik.enable: "true"
+        traefik.http.routers.rxresume.entrypoints: "https"
+        traefik.http.routers.rxresume.middlewares: "allowedIPs@file,tinyauth@swarm"
+        traefik.http.routers.rxresume.rule: "Host(`rx.dellhplaptop.xyz`)"
+        traefik.http.services.rxresume.loadbalancer.server.port: 3000
     networks:
       default: null
       proxy: null
@@ -38,9 +39,10 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       timeout: 5s
     image: postgres:${postgres_version:-16-alpine}
-    labels:
-      kuma.__docker:
-      release_notes: "https://www.postgresql.org/docs/release/"
+    deploy:
+      labels:
+        kuma.__docker:
+        release_notes: "https://www.postgresql.org/docs/release/"
     networks:
       default: null
     volumes:

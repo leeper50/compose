@@ -28,11 +28,11 @@ services:
       OBJECTSTORE_S3_PORT: 443
       OBJECTSTORE_S3_KEY: ${s3_access_key:?}
       OBJECTSTORE_S3_SECRET: ${s3_secret_key:?}
-      OBJECTSTORE_S3_SSL: true
-      OBJECTSTORE_S3_USEPATH_STYLE: true
-      OBJECTSTORE_S3_AUTOCREATE: false
+      OBJECTSTORE_S3_SSL: "true"
+      OBJECTSTORE_S3_USEPATH_STYLE: "true"
+      OBJECTSTORE_S3_AUTOCREATE: "false"
       OBJECTSTORE_S3_SSE_C_KEY: ${s3_enc_key:?}
-      OBJECTSTORE_S3_LEGACYAUTH: false
+      OBJECTSTORE_S3_LEGACYAUTH: "false"
     image: nextcloud:${nextcloud_version:-32-fpm}
     deploy:
       labels:
@@ -103,14 +103,14 @@ services:
         traefik.http.services.nextcloud.loadbalancer.server.port: 80
         # Middlewares
         ## Secure headers
-        traefik.http.middlewares.nextcloud-secure-headers.headers.forceSTSHeader: true
+        traefik.http.middlewares.nextcloud-secure-headers.headers.forceSTSHeader: "true"
         traefik.http.middlewares.nextcloud-secure-headers.headers.hostsProxyHeaders: "X-Forwarded-Host"
         traefik.http.middlewares.nextcloud-secure-headers.headers.referrerPolicy: "same-origin"
-        traefik.http.middlewares.nextcloud-secure-headers.headers.STSIncludeSubdomains: true
-        traefik.http.middlewares.nextcloud-secure-headers.headers.STSPreload: true
+        traefik.http.middlewares.nextcloud-secure-headers.headers.STSIncludeSubdomains: "true"
+        traefik.http.middlewares.nextcloud-secure-headers.headers.STSPreload: "true"
         traefik.http.middlewares.nextcloud-secure-headers.headers.STSSeconds: 315360000
         ## Redirect
-        traefik.http.middlewares.nextcloud-redirect.redirectregex.permanent: true
+        traefik.http.middlewares.nextcloud-redirect.redirectregex.permanent: "true"
         traefik.http.middlewares.nextcloud-redirect.redirectregex.regex: "https://(.*)/.well-known/(card|cal)dav"
         traefik.http.middlewares.nextcloud-redirect.redirectregex.replacement: "https://$$1/remote.php/dav/"
     networks:

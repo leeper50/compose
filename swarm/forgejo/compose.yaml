@@ -9,7 +9,7 @@ services:
       FORGEJO__database__NAME: ${db_name:-forgejo}
       FORGEJO__database__PASSWD: ${db_pass:?}
       FORGEJO__database__USER: ${db_user:-forgejo}
-      FORGEJO__migrations__ALLOW_LOCALNETWORKS: true
+      FORGEJO__migrations__ALLOW_LOCALNETWORKS: "true"
       USER_GID: ${gid:-1000}
       USER_UID: ${uid:-1000}
     image: codeberg.org/forgejo/forgejo:${forgejo_version:-15-rootless}

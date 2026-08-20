@@ -1,0 +1,30 @@
+name: Validate Compose
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Preflight
+        run: |
+          docker --version
+          docker compose version
+          docker stack config --help > /dev/null
+          jq --version
+
+      - name: Validate compose files
+        run: bash tests/validate_compose.sh

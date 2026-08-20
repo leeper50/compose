@@ -7,13 +7,13 @@ networks:
 services:
   gitea:
     environment:
-      GITEA__actions__ENABLED: true
+      GITEA__actions__ENABLED: "true"
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: gitea_db:5432
       GITEA__database__NAME: ${db_name:-gitea}
       GITEA__database__PASSWD: ${db_pass:?}
       GITEA__database__USER: ${db_user:-gitea}
-      GITEA__server__DISABLE_SSH: true
+      GITEA__server__DISABLE_SSH: "true"
       GITEA__server__ROOT_URL: https://git.dellhplaptop.xyz/
     image: docker.gitea.com/gitea:${gitea_version:-1.26-rootless}
     deploy:

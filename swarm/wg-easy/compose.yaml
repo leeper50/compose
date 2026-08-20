@@ -4,7 +4,7 @@ networks:
 services:
   wgeasy:
     environment:
-      INSECURE: false
+      INSECURE: "false"
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     deploy:
       labels:

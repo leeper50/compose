@@ -21,7 +21,6 @@ services:
         traefik.http.routers.syncthing.middlewares: "localonly@file"
         traefik.http.routers.syncthing.rule: "Host(`sync.dellhplaptop.xyz`)"
         traefik.http.services.syncthing.loadbalancer.server.url: "http://${host_ip}:8384"
-    network_mode: host
     volumes:
       - /mnt/docker/syncthing:/config:rw
       - ${syncthingFolder:?}/Syncthing:/data1:rw

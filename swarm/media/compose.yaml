@@ -65,8 +65,6 @@ services:
     volumes:
       - /etc/docker/freshrss/db:/var/lib/postgresql/data
   jellyfin:
-    devices:
-      - /dev/dri
     environment:
       JELLYFIN_PublishedServerUrl: jf.dellhplaptop.xyz
       PGID: ${gid:-1000}

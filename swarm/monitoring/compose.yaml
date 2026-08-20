@@ -79,9 +79,9 @@ services:
       NTFY_AUTH_DEFAULT_ACCESS: deny-all
       NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
       NTFY_BASE_URL: https://n.dellhplaptop.xyz
-      NTFY_BEHIND_PROXY: true
+      NTFY_BEHIND_PROXY: "true"
       NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
-      NTFY_ENABLE_LOGIN: true
+      NTFY_ENABLE_LOGIN: "true"
       NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
       TZ: ${timezone:-UTC}
     healthcheck:

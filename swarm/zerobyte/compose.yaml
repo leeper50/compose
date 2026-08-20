@@ -6,7 +6,7 @@ services:
     environment:
       APP_SECRET: ${app_secret:?}
       BASE_URL: https://z.dellhplaptop.xyz
-      TRUST_PROXY: true
+      TRUST_PROXY: "true"
       TRUSTED_ORIGINS: https://z.dellhplaptop.xyz
       TZ: ${timezone:-UTC}
     image: ghcr.io/nicotsx/zerobyte:${zerobyte_version:-latest}

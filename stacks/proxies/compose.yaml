@@ -1,12 +1,21 @@
+networks:
+  default:
+    driver: bridge
+    enable_ipv6: ${enable_ipv6_bool:-true}
 services:
   gluetun_proxy:
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    container_name: gluetun_proxy
     devices:
       - /dev/net/tun:/dev/net/tun
     environment:
       HTTPPROXY: on
-      SERVER_CITIES: ${cities:-Stockholm}
-      SHADOWSOCKS: on
-      SHADOWSOCKS_PASSWORD: ${shadowsocks_password:-}
+      SERVER_CITIES: ${cities:-}
+      SOCKS5_ENABLED: on
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
@@ -17,28 +26,16 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    image: qmcgaw/gluetun:${gluetun_version:-v3.41}
-    deploy:
-      labels:
-        kuma.__docker:
-        release_notes: "https://github.com/qdm12/gluetun/releases"
+    image: qmcgaw/gluetun:${gluetun_version:-latest}
+    labels:
+      kuma.__docker:
+      release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
-      - "${listen_interface:-0.0.0.0}:8388:8388/tcp"
       - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=${disable_ipv6:-0}
+      - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
-      - /mnt/docker/gluetun-proxy:/gluetun:rw
-  socks5proxy:
-    environment:
-      ALLOWED_IPS: ${allowed_ips}
-      PROXY_PASS: ${proxy_pass:?}
-      PROXY_USER: ${proxy_user:?}
-      REQUIRE_AUTH: ${enable_auth:-true}
-    image: serjs/go-socks5-proxy:${socks5proxy_version:-latest}
-    deploy:
-      labels:
-        kuma.__docker:
-        release_notes: "https://github.com/serjs/socks5-server/releases"
-    network_mode: service:gluetun_proxy
+      - gluetun_proxy:/gluetun:rw
+volumes:
+  gluetun_proxy:

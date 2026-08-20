@@ -38,7 +38,7 @@ services:
       MARIADB_PASSWORD: ${db_pass:?}
       MARIADB_ROOT_PASSWORD: ${root_pass:?}
       MARIADB_USER: ${db_user:-bookstack}
-      MARIADB_AUTO_UPGRADE: true
+      MARIADB_AUTO_UPGRADE: "true"
     deploy:
       labels:
         kuma.__docker:
