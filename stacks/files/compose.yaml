@@ -27,13 +27,18 @@ services:
         traefik.http.routers.copyparty.middlewares: "localonly@file"
         traefik.http.routers.copyparty.rule: "Host(`c.dellhplaptop.xyz`)"
         traefik.http.services.copyparty.loadbalancer.server.port: 3923
+      placement:
+        constraints:
+          - node.hostname == node-2
+      update_config:
+        order: stop-first
     networks:
       proxy:
     stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/copyparty/conf:/cfg
-      - /mnt/docker/copyparty/files:/w
+      - /etc/docker/copyparty/conf:/cfg
+      - /etc/docker/copyparty/files:/w
   privatebin:
     image: privatebin/nginx-fpm-alpine:${privatebin_version:-stable}
     deploy:
@@ -49,15 +54,20 @@ services:
         traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
         traefik.http.routers.privatebin.rule: "Host(`pb.dellhplaptop.xyz`)"
         traefik.http.services.privatebin.loadbalancer.server.port: 8080
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
     networks:
       proxy: null
     read_only: true
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/privatebin/data:/srv/data
-      - /mnt/docker/privatebin/tmp:/tmp
-      - /mnt/docker/privatebin/run:/run
-      - /mnt/docker/privatebin/nginx:/var/lib/nginx/tmp
+      - /etc/docker/privatebin/data:/srv/data
+      - /etc/docker/privatebin/tmp:/tmp
+      - /etc/docker/privatebin/run:/run
+      - /etc/docker/privatebin/nginx:/var/lib/nginx/tmp
   send:
     environment:
       BASE_URL: https://send.dellhplaptop.xyz
@@ -83,21 +93,31 @@ services:
         traefik.http.routers.send.middlewares: "allowedIPs@file"
         traefik.http.routers.send.rule: "Host(`send.dellhplaptop.xyz`)"
         traefik.http.services.send.loadbalancer.server.port: 1443
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
     networks:
       proxy:
       send: null
     volumes:
-      - /mnt/docker/send/app:/uploads
+      - /etc/docker/send/app:/uploads
   send_valkey:
     image: valkey/valkey:${valkey_version:-9}
     deploy:
       labels:
         kuma.__docker:
         release_notes: "https://github.com/valkey-io/valkey/releases"
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
     networks:
       send: null
     volumes:
-      - /mnt/docker/send/valkey:/data
+      - /etc/docker/send/valkey:/data
   slink:
     environment:
       IMAGE_COMPRESSION_QUALITY: 100
@@ -129,10 +149,15 @@ services:
         traefik.http.routers.slink-images.entrypoints: "https"
         traefik.http.routers.slink-images.priority: 50
         traefik.http.routers.slink-images.rule: "Host(`sl.dellhplaptop.xyz`) && PathPrefix(`/image/`)"
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
     networks:
       proxy: null
     user: ${uid:-1000}:${gid:-1000}
     volumes:
-      - /mnt/docker/slink/data:/data
-      - /mnt/docker/slink/db:/app/var/data
-      - /mnt/docker/slink/images:/app/slink/images
+      - /etc/docker/slink/data:/data
+      - /etc/docker/slink/db:/app/var/data
+      - /etc/docker/slink/images:/app/slink/images
