@@ -47,8 +47,6 @@ services:
     volumes:
       - /etc/docker/mqtt:/mosquitto
   zigbee2mqtt:
-    devices:
-      - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
     environment:
       TZ: ${timezone:-UTC}
       ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
@@ -76,11 +74,10 @@ services:
       proxy:
       mqtt:
     volumes:
+      - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
       - /mnt/docker/zigbee2mqtt:/app/data
       - /run/udev:/run/udev:ro
   zwave_js_ui:
-    devices:
-      - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
@@ -108,4 +105,5 @@ services:
     stop_signal: SIGINT
     tty: true
     volumes:
+      - /dev/serial/by-id/${zwave_device:?}:/dev/ttyACM0
       - /mnt/docker/zwave:/usr/src/app/store
