@@ -14,7 +14,7 @@ services:
       - SYS_MODULE
     container_name: wgeasy
     environment:
-      INSECURE: false
+      INSECURE: true
     image: ghcr.io/wg-easy/wg-easy:${wgeasy_version:-15}
     labels:
       homepage.group: Access & Security
@@ -32,6 +32,7 @@ services:
       proxy:
     ports:
       - 51820:51820/udp
+      - 51821:51821/tcp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
