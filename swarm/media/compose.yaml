@@ -45,25 +45,6 @@ services:
     volumes:
       - /etc/docker/freshrss/data:/var/www/FreshRSS/data
       - /etc/docker/freshrss/extensions:/var/www/FreshRSS/extensions
-  freshrss_postgres:
-    environment:
-      POSTGRES_DB: ${db_name:-freshrss}
-      POSTGRES_PASSWORD: ${db_pass:?}
-      POSTGRES_USER: ${db_user:-freshrss}
-    image: postgres:${postgres_version:-16}
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == node-2
-      labels:
-        kuma.__docker:
-        release_notes: "https://www.postgresql.org/docs/release/"
-      update_config:
-        order: stop-first
-    networks:
-      freshrss:
-    volumes:
-      - /etc/docker/freshrss/db:/var/lib/postgresql/data
   jellyfin:
     environment:
       JELLYFIN_PublishedServerUrl: jf.dellhplaptop.xyz
