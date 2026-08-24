@@ -1,0 +1,36 @@
+networks:
+  proxy:
+    external: true
+services:
+  jellyfin:
+    extends:
+      file: ../common.yaml
+      service: base
+    devices:
+      - /dev/dri
+    environment:
+      DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel
+      JELLYFIN_PublishedServerUrl: jf.dellhplaptop.xyz
+      PGID: ${gid:-1000}
+      PUID: ${uid:-1000}
+      TZ: ${timezone:-UTC}
+    image: lscr.io/linuxserver/jellyfin:${jellyfin_version:-latest}
+    labels:
+      homepage.group: Media Consumption
+      homepage.href: https://jf.dellhplaptop.xyz
+      homepage.icon: sh-jellyfin.svg
+      homepage.name: Jellyfin
+      kuma.__docker:
+      release_notes: "https://docs.linuxserver.io/images/docker-jellyfin/#versions"
+      traefik.enable: "true"
+      traefik.http.routers.jellyfin.entryPoints: "https"
+      traefik.http.routers.jellyfin.middlewares: "allowedIPs@file"
+      traefik.http.routers.jellyfin.rule: "Host(`jf.dellhplaptop.xyz`)"
+      traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+    networks:
+      proxy:
+    volumes:
+      - /etc/docker/jellyfin:/config:rw
+      - /mnt/media/TV:/data/tvshows:rw
+      - /mnt/media/Movies:/data/movies:rw
+      - /mnt/media/Music:/data/music:rw
