@@ -97,7 +97,7 @@ services:
         release_notes: "https://github.com/seerr-team/seerr/releases"
         traefik.enable: "true"
         traefik.http.routers.seerr.entryPoints: "https"
-        traefik.http.routers.seerr.middlewares: "allowedIPs@file,tinyauth@swarm"
+        traefik.http.routers.seerr.middlewares: "allowedIPs@file"
         traefik.http.routers.seerr.rule: "Host(`se.dellhplaptop.xyz`)"
         traefik.http.services.seerr.loadbalancer.server.port: 5055
       update_config:
