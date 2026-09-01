@@ -7,6 +7,8 @@ services:
       APP_URL: https://rx.dellhplaptop.xyz
       AUTH_SECRET: ${auth_secret:?}
       DATABASE_URL: postgresql://${db_user:-rxresume}:${db_pass:?}@${db_host:?}:${db_port:-5432}/${db_name:-rxresume}
+      ENCRYPTION_SECRET: ${encryption_secret:-}
+      REDIS_URL: ${redis_url:-}
       TZ: ${timezone:-Etc/UTC}
     image: ghcr.io/amruthpillai/reactive-resume:${rxresume_version:-v5}
     deploy:
