@@ -95,6 +95,9 @@ services:
         kuma.__docker:
         release_notes: "https://github.com/navidrome/navidrome/releases"
         traefik.enable: "true"
+        traefik.http.routers.navidrome-public.entrypoints: "https"
+        traefik.http.routers.navidrome-public.middlewares: allowedIPs@file
+        traefik.http.routers.navidrome-public.rule: Host(`mu.dellhplaptop.xyz`) && (PathPrefix(`/share/`) || PathPrefix(`/rest/`))
         traefik.http.routers.navidrome.entryPoints: "https"
         traefik.http.routers.navidrome.middlewares: "allowedIPs@file,tinyauth@swarm"
         traefik.http.routers.navidrome.rule: "Host(`mu.dellhplaptop.xyz`)"
