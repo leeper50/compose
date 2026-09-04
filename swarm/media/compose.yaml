@@ -77,8 +77,6 @@ services:
       ND_AGENTS: "lastfm,deezer,listenbrainz"
       ND_BASEURL: https://mu.dellhplaptop.xyz
       ND_ENABLEINSIGHTSCOLLECTOR: "${navi_analytics:-false}"
-      ND_ENABLEUSEREDITING: "false"
-      ND_EXTAUTH_TRUSTEDSOURCES: ${trusted_proxy:-172.30.0.0/16}
       ND_LASTFM_APIKEY: ${lastfm_key:-}
       ND_LASTFM_SECRET: ${lastfm_secret:-}
       ND_LOGLEVEL: info
@@ -95,11 +93,8 @@ services:
         kuma.__docker:
         release_notes: "https://github.com/navidrome/navidrome/releases"
         traefik.enable: "true"
-        traefik.http.routers.navidrome-public.entrypoints: "https"
-        traefik.http.routers.navidrome-public.middlewares: allowedIPs@file
-        traefik.http.routers.navidrome-public.rule: Host(`mu.dellhplaptop.xyz`) && PathPrefix(`/rest/`) && !Query(`c`, `NavidromeUI`)
         traefik.http.routers.navidrome.entryPoints: "https"
-        traefik.http.routers.navidrome.middlewares: "allowedIPs@file,tinyauth@swarm"
+        traefik.http.routers.navidrome.middlewares: "allowedIPs@file"
         traefik.http.routers.navidrome.rule: "Host(`mu.dellhplaptop.xyz`)"
         traefik.http.services.navidrome.loadbalancer.server.port: 4533
     networks:
