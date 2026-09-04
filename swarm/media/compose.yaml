@@ -72,6 +72,39 @@ services:
     volumes:
       - /etc/docker/kavita:/kavita/config
       - /mnt/media/Books:/books
+  navidrome:
+    environment:
+      ND_AGENTS: "lastfm,deezer,listenbrainz"
+      ND_BASEURL: https://mu.dellhplaptop.xyz
+      ND_ENABLEINSIGHTSCOLLECTOR: "${navi_analytics:-false}"
+      ND_ENABLEUSEREDITING: "false"
+      ND_EXTAUTH_TRUSTEDSOURCES: ${trusted_proxy:-172.30.0.0/16}
+      ND_LASTFM_APIKEY: ${lastfm_key:-}
+      ND_LASTFM_SECRET: ${lastfm_secret:-}
+      ND_LOGLEVEL: info
+    image: deluan/navidrome:${navidrome_version:-latest}
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == node-2
+      labels:
+        homepage.group: Media Consumption
+        homepage.href: https://mu.dellhplaptop.xyz
+        homepage.icon: sh-navidrome.svg
+        homepage.name: Navidrome
+        kuma.__docker:
+        release_notes: "https://github.com/navidrome/navidrome/releases"
+        traefik.enable: "true"
+        traefik.http.routers.navidrome.entryPoints: "https"
+        traefik.http.routers.navidrome.middlewares: "allowedIPs@file,tinyauth@swarm"
+        traefik.http.routers.navidrome.rule: "Host(`mu.dellhplaptop.xyz`)"
+        traefik.http.services.navidrome.loadbalancer.server.port: 4533
+    networks:
+      proxy:
+    user: 1000:1000
+    volumes:
+      - "/etc/docker/navidrome:/data:rw"
+      - "/mnt/media/Music:/music:rw"
   seerr:
     environment:
       LOG_LEVEL: ${log_level:-warn}

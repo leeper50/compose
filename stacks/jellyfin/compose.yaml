@@ -36,4 +36,3 @@ services:
       - /etc/docker/jellyfin:/config:rw
       - /mnt/media/TV:/data/tvshows:rw
       - /mnt/media/Movies:/data/movies:rw
-      - /mnt/media/Music:/data/music:rw
