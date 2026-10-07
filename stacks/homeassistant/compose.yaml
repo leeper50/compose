@@ -5,6 +5,9 @@ networks:
 services:
   homeassistant:
     container_name: homeassistant
+    depends_on:
+      - zigbee2mqtt
+      - zwave_js_ui
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
       homepage.group: Smart Home
