@@ -142,7 +142,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/docker/traefik:/etc/traefik:rw
-      - traefik_logs:/var/log/traefik:rw
+      - /var/log/traefik:/var/log/traefik:rw
 volumes:
   pocketid:
-  traefik_logs:
