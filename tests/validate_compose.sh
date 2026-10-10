@@ -50,8 +50,10 @@ validate() {
 
 		if ! out=$(docker compose "${args[@]}" config --quiet 2>&1); then
 			problems+=("compose config failed:"$'\n'"$out")
-		elif [[ -n $out ]]; then
-			problems+=("compose warning:"$'\n'"$out")
+		else
+			# compose warns about swarm-only fields, which is expected for swarm stacks
+			[[ $mode == swarm ]] && out=$(grep -vE 'level=warning .*only .*Swarm' <<<"$out")
+			[[ -n $out ]] && problems+=("compose warning:"$'\n'"$out")
 		fi
 
 		if [[ $mode == swarm && -z ${SKIP_SWARM:-} ]]; then
