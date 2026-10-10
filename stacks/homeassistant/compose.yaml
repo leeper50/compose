@@ -6,8 +6,18 @@ services:
   homeassistant:
     container_name: homeassistant
     depends_on:
-      - zigbee2mqtt
-      - zwave_js_ui
+      zigbee2mqtt:
+        condition: service_healthy
+        restart: true
+      zwave_js_ui:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 120s
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8123/manifest.json"]
+      timeout: 10s
     image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
     labels:
       homepage.group: Smart Home
@@ -28,9 +38,14 @@ services:
     volumes:
       - /etc/docker/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
-      # - /run/dbus:/run/dbus:ro # Bluetooth connection
   mqtt:
     command: "mosquitto -c /mosquitto-no-auth.conf"
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "$$SYS/broker/uptime", "-C", "1", "-W", "5", "-i", "healthcheck"]
+      timeout: 10s
     image: eclipse-mosquitto:${mqtt_version:-2}
     labels:
       kuma.__docker:
@@ -43,13 +58,21 @@ services:
   zigbee2mqtt:
     container_name: zigbee2mqtt
     depends_on:
-      - mqtt
+      mqtt:
+        condition: service_healthy
+        restart: true
     devices:
       - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
     environment:
       TZ: ${timezone:-UTC}
       ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
       ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 60s
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
+      timeout: 10s
     image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
     labels:
       homepage.group: Smart Home
@@ -77,6 +100,12 @@ services:
     environment:
       SESSION_SECRET: ${key:?}
       TZ: ${timezone:-UTC}
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 60s
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8091/health"]
+      timeout: 10s
     image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
     labels:
       homepage.group: Smart Home
@@ -92,6 +121,7 @@ services:
       traefik.http.services.zwave.loadbalancer.server.port: 8091
     networks:
       proxy:
+    restart: unless-stopped
     stop_signal: SIGINT
     tty: true
     volumes:
