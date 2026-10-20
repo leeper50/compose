@@ -16,7 +16,7 @@ services:
       OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
       TRUSTED_PROXY: "0"
       TZ: ${timezone:-UTC}
-    image: freshrss/freshrss:${freshrss_version:-latest}
+    image: freshrss/freshrss:1.30.2
     deploy:
       placement:
         constraints:
@@ -30,7 +30,6 @@ services:
         homepage.widget.type: freshrss
         homepage.widget.url: http://freshrss:80
         homepage.widget.username: ${freshrss_user_name:-.unset}
-        kuma.__docker:
         release_notes: "https://github.com/linuxserver/docker-freshrss/releases"
         traefik.enable: "true"
         traefik.http.routers.freshrss.entryPoints: "https"
@@ -48,7 +47,7 @@ services:
   kavita:
     environment:
       TZ: ${timezone:-UTC}
-    image: ghcr.io/kareadita/kavita:${kavita_version:-latest}
+    image: ghcr.io/kareadita/kavita:0.9.1
     deploy:
       placement:
         constraints:
@@ -58,7 +57,6 @@ services:
         homepage.href: https://kv.dellhplaptop.xyz
         homepage.icon: sh-kavita.svg
         homepage.name: Kavita
-        kuma.__docker:
         release_notes: "https://github.com/Kareadita/Kavita/releases"
         traefik.enable: "true"
         traefik.http.routers.kavita.entryPoints: "https"
@@ -80,7 +78,7 @@ services:
       ND_LASTFM_APIKEY: ${lastfm_key:-}
       ND_LASTFM_SECRET: ${lastfm_secret:-}
       ND_LOGLEVEL: info
-    image: deluan/navidrome:${navidrome_version:-latest}
+    image: deluan/navidrome:0.64.2
     deploy:
       placement:
         constraints:
@@ -90,7 +88,6 @@ services:
         homepage.href: https://mu.dellhplaptop.xyz
         homepage.icon: sh-navidrome.svg
         homepage.name: Navidrome
-        kuma.__docker:
         release_notes: "https://github.com/navidrome/navidrome/releases"
         traefik.enable: "true"
         traefik.http.routers.navidrome.entryPoints: "https"
@@ -113,7 +110,7 @@ services:
       start_period: 20s
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
       timeout: 3s
-    image: ghcr.io/seerr-team/seerr:${seerr_version:-latest}
+    image: ghcr.io/seerr-team/seerr:v3.5.0
     init: true
     deploy:
       placement:
@@ -124,7 +121,6 @@ services:
         homepage.href: https://se.dellhplaptop.xyz
         homepage.icon: sh-seerr.svg
         homepage.name: Seerr
-        kuma.__docker:
         release_notes: "https://github.com/seerr-team/seerr/releases"
         traefik.enable: "true"
         traefik.http.routers.seerr.entryPoints: "https"

@@ -17,14 +17,13 @@ services:
       start_period: 10s
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       timeout: 5s
-    image: ghcr.io/pocket-id/pocket-id:${pocketid_version:-v2}
+    image: ghcr.io/pocket-id/pocket-id:v2.18.0
     deploy:
       labels:
         homepage.group: Access & Security
         homepage.href: https://id.dellhplaptop.xyz
         homepage.icon: sh-pocket-id.svg
         homepage.name: PocketID
-        kuma.__docker:
         release_notes: "https://pocket-id.org/changelog"
         traefik.enable: "true"
         traefik.http.routers.pocketid.entryPoints: "https"
@@ -53,13 +52,12 @@ services:
       TASKS: 1
       TZ: ${timezone:-UTC}
       VOLUMES: 1
-    image: ghcr.io/tecnativa/docker-socket-proxy:${socket_proxy_version:-latest}
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0
     deploy:
       placement:
         constraints:
           - node.role == manager
       labels:
-        kuma.__docker:
         release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
     networks:
       socket-proxy:
@@ -78,10 +76,9 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
-    image: ghcr.io/tinyauthapp/tinyauth:${tinyauth_version:-v5}
+    image: ghcr.io/tinyauthapp/tinyauth:v5.2.0
     deploy:
       labels:
-        kuma.__docker:
         release_notes: "https://tinyauth.app/docs/reference/changelog/"
         traefik.enable: "true"
         traefik.http.routers.tinyauth.entryPoints: "https"
@@ -93,7 +90,7 @@ services:
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
-    image: traefik:${traefik_version:-v3.7}
+    image: traefik:v3.7.15
     deploy:
       placement:
         constraints:
@@ -103,7 +100,6 @@ services:
         homepage.href: https://tf.dellhplaptop.xyz
         homepage.icon: sh-traefik.svg
         homepage.name: Traefik
-        kuma.__docker:
         release_notes: "https://github.com/traefik/traefik/releases"
         traefik.enable: "true"
         traefik.http.middlewares.tinyauth.forwardAuth.address: "http://tinyauth:3000/api/auth/traefik"

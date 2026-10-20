@@ -18,13 +18,12 @@ services:
       start_period: 120s
       test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8123/manifest.json"]
       timeout: 10s
-    image: ghcr.io/home-assistant/home-assistant:${homeassistant_version:-stable}
+    image: ghcr.io/home-assistant/home-assistant:2026.10.2
     labels:
       homepage.group: Smart Home
       homepage.href: https://ha.dellhplaptop.xyz
       homepage.icon: sh-home-assistant.svg
       homepage.name: Home Assistant
-      kuma.__docker:
       release_notes: "https://github.com/home-assistant/docker/releases"
       traefik.enable: "true"
       traefik.http.routers.homeassistant.entryPoints: "https"
@@ -46,9 +45,8 @@ services:
       start_period: 10s
       test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "$$SYS/broker/uptime", "-C", "1", "-W", "5", "-i", "healthcheck"]
       timeout: 10s
-    image: eclipse-mosquitto:${mqtt_version:-2}
+    image: eclipse-mosquitto:2.1.2-alpine
     labels:
-      kuma.__docker:
       release_notes: "https://mosquitto.org/blog/categories/releases/"
     networks:
       mqtt:
@@ -73,13 +71,12 @@ services:
       start_period: 60s
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
       timeout: 10s
-    image: ghcr.io/koenkk/zigbee2mqtt:${zigbee2mqtt_version:-2}
+    image: ghcr.io/koenkk/zigbee2mqtt:2.14.2
     labels:
       homepage.group: Smart Home
       homepage.href: https://zb.dellhplaptop.xyz
       homepage.icon: sh-zigbee2mqtt.svg
       homepage.name: Zigbee
-      kuma.__docker:
       release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
       traefik.enable: "true"
       traefik.http.routers.zigbee2mqtt.entryPoints: "https"
@@ -106,13 +103,12 @@ services:
       start_period: 60s
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8091/health"]
       timeout: 10s
-    image: ghcr.io/zwave-js/zwave-js-ui:${zwave_version:-11}
+    image: ghcr.io/zwave-js/zwave-js-ui:11.24.3
     labels:
       homepage.group: Smart Home
       homepage.href: https://zw.dellhplaptop.xyz
       homepage.icon: sh-z-wave-js-ui.svg
       homepage.name: ZWave
-      kuma.__docker:
       release_notes: "https://github.com/zwave-js/zwave-js-ui/releases"
       traefik.enable: "true"
       traefik.http.routers.zwave.entryPoints: "https"

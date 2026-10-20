@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": [
+    "main",
+    "swarm"
+  ],
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "No versioned tags: my own site image, and a registry Renovate can't query",
+      "matchDepNames": [
+        "dellhplaptop/newwebsite"
+      ],
+      "enabled": false
+    }
+  ]
+}

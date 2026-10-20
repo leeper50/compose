@@ -26,9 +26,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    image: qmcgaw/gluetun:${gluetun_version:-latest}
+    image: qmcgaw/gluetun:v3.41.3
     labels:
-      kuma.__docker:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"

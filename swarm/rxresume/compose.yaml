@@ -10,7 +10,7 @@ services:
       ENCRYPTION_SECRET: ${encryption_secret:-}
       REDIS_URL: ${redis_url:-}
       TZ: ${timezone:-Etc/UTC}
-    image: ghcr.io/amruthpillai/reactive-resume:${rxresume_version:-v5}
+    image: ghcr.io/amruthpillai/reactive-resume:v5.3.0
     deploy:
       placement:
         constraints:
@@ -20,7 +20,6 @@ services:
         homepage.href: https://rx.dellhplaptop.xyz
         homepage.icon: sh-reactive-resume.svg
         homepage.name: RxResume
-        kuma.__docker:
         release_notes: "https://github.com/amruthpillai/reactive-resume/releases"
         traefik.enable: "true"
         traefik.http.routers.rxresume.entrypoints: "https"
