@@ -12,7 +12,7 @@ services:
       FORGEJO__migrations__ALLOW_LOCALNETWORKS: "true"
       USER_GID: ${gid:-1000}
       USER_UID: ${uid:-1000}
-    image: codeberg.org/forgejo/forgejo:15.0.10-rootless
+    image: codeberg.org/forgejo/forgejo:17.0.0-rootless
     deploy:
       labels:
         homepage.group: Development
