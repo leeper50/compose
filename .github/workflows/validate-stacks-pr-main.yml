@@ -18,7 +18,7 @@ jobs:
           ref: dev
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Validate Stacks
         run: bash tests/validate_stacks.sh
