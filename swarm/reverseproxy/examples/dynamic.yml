@@ -1,0 +1,33 @@
+allowedIPs: &allowedIPs
+  sourceRange:
+    - "10.0.0.0/8"
+    - "192.168.0.0/16"
+    - "172.16.0.0/12"
+    - "fd06:6a55:3bd2:ed3d::/64"
+    - "fda3:db28:76bb:e314::/64"
+localIPs: &localIPs
+  sourceRange:
+    - "10.0.0.0/8"
+    - "192.168.0.0/16"
+    - "172.16.0.0/12"
+    - "fd06:6a55:3bd2:ed3d::/64"
+    - "fda3:db28:76bb:e314::/64"
+http:
+  middlewares:
+    allowedIPs:
+      ipAllowList:
+        <<: *allowedIPs
+    localonly:
+      ipAllowList:
+        <<: *localIPs
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
+tcp:
+  middlewares:
+    allowedIPs:
+      ipAllowList:
+        <<: *allowedIPs
+    localonly:
+      ipAllowList:
+        <<: *localIPs

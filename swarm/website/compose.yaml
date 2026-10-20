@@ -1,0 +1,50 @@
+networks:
+  proxy:
+    external: true
+  socket-proxy:
+    external: true
+services:
+  homepage:
+    environment:
+      TZ: ${timezone:-UTC}
+      HOMEPAGE_ALLOWED_HOSTS: home.dellhplaptop.xyz
+    image: ghcr.io/gethomepage/homepage:v2.6.0
+    deploy:
+      labels:
+        release_notes: "https://github.com/gethomepage/homepage/releases"
+        traefik.enable: "true"
+        traefik.http.routers.homepage.entryPoints: "https"
+        traefik.http.routers.homepage.middlewares: "localonly@file"
+        traefik.http.routers.homepage.rule: "Host(`home.dellhplaptop.xyz`)"
+        traefik.http.services.homepage.loadbalancer.server.port: 3000
+      placement:
+        constraints:
+          - node.hostname == node-3
+    networks:
+      proxy:
+      socket-proxy:
+    volumes:
+      - /etc/docker/homepage:/app/config:rw
+  mywebsite:
+    environment:
+      BETTER_AUTH_SECRET: ${auth_secret:?}
+      BETTER_AUTH_URL: https://www.dellhplaptop.xyz
+      ORIGIN: https://www.dellhplaptop.xyz
+    image: dellhplaptop/newwebsite:latest
+    deploy:
+      labels:
+        release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
+        traefik.enable: "true"
+        traefik.http.routers.mywebsite.entryPoints: "https"
+        traefik.http.routers.mywebsite.middlewares: "allowedIPs@file"
+        traefik.http.routers.mywebsite.rule: "Host(`www.dellhplaptop.xyz`)"
+        traefik.http.services.mywebsite.loadbalancer.server.port: 3000
+      placement:
+        constraints:
+          - node.hostname == node-3
+    networks:
+      proxy:
+    volumes:
+      - newweb:/app/data
+volumes:
+  newweb:

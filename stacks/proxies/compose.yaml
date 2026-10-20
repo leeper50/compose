@@ -4,9 +4,6 @@ networks:
     enable_ipv6: ${enable_ipv6_bool:-true}
 services:
   gluetun_proxy:
-    extends:
-      file: ../common.yaml
-      service: base
     cap_drop:
       - ALL
     cap_add:
@@ -17,7 +14,7 @@ services:
       - /dev/net/tun:/dev/net/tun
     environment:
       HTTPPROXY: on
-      SERVER_CITIES: ${cities:-Stockholm}
+      SERVER_CITIES: ${cities:-}
       SOCKS5_ENABLED: on
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
@@ -29,14 +26,16 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    image: qmcgaw/gluetun:${gluetun_version:-latest}
+    image: qmcgaw/gluetun:v3.41.3
     labels:
-      kuma.__docker:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
       - "${listen_interface:-0.0.0.0}:1080:1080/tcp"
       - "${listen_interface:-0.0.0.0}:8888:8888/tcp"
+    restart: unless-stopped
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=${disable_ipv6_int:-0}
     volumes:
-      - ${data:-.}/gluetun-proxy:/gluetun:rw
+      - gluetun_proxy:/gluetun:rw
+volumes:
+  gluetun_proxy:

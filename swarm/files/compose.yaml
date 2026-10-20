@@ -1,0 +1,116 @@
+networks:
+  send: null
+  proxy:
+    external: true
+services:
+  copyparty:
+    environment:
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
+    healthcheck:
+      # hide it from logs with "/._" so it matches the default --lf-url filter
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
+    image: copyparty/iv:1.20.26
+    deploy:
+      labels:
+        homepage.group: Files & Sharing
+        homepage.href: https://c.dellhplaptop.xyz
+        homepage.icon: sh-copyparty.svg
+        homepage.name: Copyparty
+        release_notes: "https://github.com/9001/copyparty/releases"
+        traefik.enable: "true"
+        traefik.http.routers.copyparty.entryPoints: "https"
+        traefik.http.routers.copyparty.middlewares: "localonly@file"
+        traefik.http.routers.copyparty.rule: "Host(`c.dellhplaptop.xyz`)"
+        traefik.http.services.copyparty.loadbalancer.server.port: 3923
+      placement:
+        constraints:
+          - node.hostname == node-2
+      update_config:
+        order: stop-first
+    networks:
+      proxy:
+    stop_grace_period: 15s # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - /etc/docker/copyparty/conf:/cfg
+      - /etc/docker/copyparty/files:/w
+  privatebin:
+    image: privatebin/nginx-fpm-alpine:2.1.0
+    deploy:
+      labels:
+        homepage.group: Files & Sharing
+        homepage.href: https://pb.dellhplaptop.xyz
+        homepage.icon: sh-privatebin.svg
+        homepage.name: PrivateBin
+        release_notes: "https://privatebin.info/tag/release.html"
+        traefik.enable: "true"
+        traefik.http.routers.privatebin.entryPoints: "https"
+        traefik.http.routers.privatebin.middlewares: "allowedIPs@file"
+        traefik.http.routers.privatebin.rule: "Host(`pb.dellhplaptop.xyz`)"
+        traefik.http.services.privatebin.loadbalancer.server.port: 8080
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
+    networks:
+      proxy: null
+    read_only: true
+    user: ${uid:-1000}:${gid:-1000}
+    volumes:
+      - /etc/docker/privatebin/data:/srv/data
+      - /etc/docker/privatebin/tmp:/tmp
+      - /etc/docker/privatebin/run:/run
+      - /etc/docker/privatebin/nginx:/var/lib/nginx/tmp
+  send:
+    environment:
+      BASE_URL: https://send.dellhplaptop.xyz
+      DEFAULT_EXPIRE_SECONDS: 3600
+      DOWNLOAD_COUNTS: 1,2,5
+      EXPIRE_TIMES_SECONDS: 3600,86400,604800,2592000,31536000
+      MAX_DOWNLOADS: 5
+      MAX_EXPIRE_SECONDS: 31536000
+      MAX_FILE_SIZE: 10737418240
+      NODE_ENV: production
+      REDIS_HOST: send_valkey
+    image: registry.gitlab.com/timvisee/send:v3.4.27
+    deploy:
+      labels:
+        homepage.group: Files & Sharing
+        homepage.href: https://send.dellhplaptop.xyz
+        homepage.icon: sh-send-visee.svg
+        homepage.name: Send
+        release_notes: "https://gitlab.com/timvisee/send-instances/-/blob/master/README.md"
+        traefik.enable: "true"
+        traefik.http.routers.send.entryPoints: "https"
+        traefik.http.routers.send.middlewares: "allowedIPs@file"
+        traefik.http.routers.send.rule: "Host(`send.dellhplaptop.xyz`)"
+        traefik.http.services.send.loadbalancer.server.port: 1443
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
+    networks:
+      proxy:
+      send: null
+    volumes:
+      - /etc/docker/send/app:/uploads
+  send_valkey:
+    image: valkey/valkey:9.1.2
+    deploy:
+      labels:
+        release_notes: "https://github.com/valkey-io/valkey/releases"
+      placement:
+        constraints:
+          - node.hostname == node-3
+      update_config:
+        order: stop-first
+    networks:
+      send: null
+    volumes:
+      - /etc/docker/send/valkey:/data
