@@ -26,7 +26,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    image: qmcgaw/gluetun:v3.41.3
+    image: qmcgaw/gluetun:pr-3465
     labels:
       release_notes: "https://github.com/qdm12/gluetun/releases"
     ports:
