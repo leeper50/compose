@@ -19,7 +19,7 @@ services:
         traefik.http.services.homepage.loadbalancer.server.port: 3000
       placement:
         constraints:
-          - node.hostname == node-3
+          - node.hostname == node-1
     networks:
       proxy:
       socket-proxy:
@@ -41,7 +41,7 @@ services:
         traefik.http.services.mywebsite.loadbalancer.server.port: 3000
       placement:
         constraints:
-          - node.hostname == node-3
+          - node.hostname == node-1
     networks:
       proxy:
     volumes:
