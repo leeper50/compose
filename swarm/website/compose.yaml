@@ -30,7 +30,7 @@ services:
       BETTER_AUTH_SECRET: ${auth_secret:?}
       BETTER_AUTH_URL: https://www.dellhplaptop.xyz
       ORIGIN: https://www.dellhplaptop.xyz
-    image: fj.dellhplaptop.xyz/wleeper13/newwebsite:dev
+    image: fj.dellhplaptop.xyz/wleeper13/newwebsite:1
     deploy:
       labels:
         release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
