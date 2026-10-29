@@ -18,7 +18,7 @@ services:
       PAPERLESS_URL: https://pl.dellhplaptop.xyz
       USERMAP_GID: ${gid:-1000}
       USERMAP_UID: ${uid:-1000}
-    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.3
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.4
     deploy:
       labels:
         homepage.group: Personal
