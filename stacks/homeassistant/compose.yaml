@@ -18,7 +18,7 @@ services:
       start_period: 120s
       test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8123/manifest.json"]
       timeout: 10s
-    image: ghcr.io/home-assistant/home-assistant:2026.10.2
+    image: ghcr.io/home-assistant/home-assistant:2026.10.4
     labels:
       homepage.group: Smart Home
       homepage.href: https://ha.dellhplaptop.xyz
