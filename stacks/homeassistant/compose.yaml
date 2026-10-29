@@ -103,7 +103,7 @@ services:
       start_period: 60s
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8091/health"]
       timeout: 10s
-    image: ghcr.io/zwave-js/zwave-js-ui:11.24.3
+    image: ghcr.io/zwave-js/zwave-js-ui:11.25.2
     labels:
       homepage.group: Smart Home
       homepage.href: https://zw.dellhplaptop.xyz
