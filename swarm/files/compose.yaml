@@ -101,7 +101,7 @@ services:
     volumes:
       - /etc/docker/send/app:/uploads
   send_valkey:
-    image: valkey/valkey:9.1.2
+    image: valkey/valkey:9.1.3
     deploy:
       labels:
         release_notes: "https://github.com/valkey-io/valkey/releases"
