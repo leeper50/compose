@@ -4,7 +4,7 @@
     "main"
   ],
   "extends": [
-    "config:recommended"
+    "config:best-practices"
   ],
   "packageRules": []
 }
