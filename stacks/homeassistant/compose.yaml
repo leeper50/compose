@@ -18,7 +18,7 @@ services:
       start_period: 120s
       test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8123/manifest.json"]
       timeout: 10s
-    image: ghcr.io/home-assistant/home-assistant:2026.10.4
+    image: ghcr.io/home-assistant/home-assistant:2026.10.4@sha256:23f4dfbb69ce76315dbc4de7915504f1c2dcecd7ca2648113a493a385972e133
     labels:
       homepage.group: Smart Home
       homepage.href: https://ha.dellhplaptop.xyz
@@ -45,7 +45,7 @@ services:
       start_period: 10s
       test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "$$SYS/broker/uptime", "-C", "1", "-W", "5", "-i", "healthcheck"]
       timeout: 10s
-    image: eclipse-mosquitto:2.1.2-alpine
+    image: eclipse-mosquitto:2.1.2-alpine@sha256:860aeb5d63ce509508f6dcfb2bc8a1c1dd2bc60555b562b45ce90e52d8dabb0f
     labels:
       release_notes: "https://mosquitto.org/blog/categories/releases/"
     networks:
@@ -71,7 +71,7 @@ services:
       start_period: 60s
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
       timeout: 10s
-    image: ghcr.io/koenkk/zigbee2mqtt:2.14.3
+    image: ghcr.io/koenkk/zigbee2mqtt:2.14.3@sha256:fb4a6b0f6868ad1cd6a9996479802b2420e599c3463b62bbff8c8cd9a908f43a
     labels:
       homepage.group: Smart Home
       homepage.href: https://zb.dellhplaptop.xyz
@@ -103,7 +103,7 @@ services:
       start_period: 60s
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8091/health"]
       timeout: 10s
-    image: ghcr.io/zwave-js/zwave-js-ui:11.25.2
+    image: ghcr.io/zwave-js/zwave-js-ui:11.25.2@sha256:ac4874a3cbea61c0c60002a8fd8ae05104cc8eb2eae91aa05bd184972aa06853
     labels:
       homepage.group: Smart Home
       homepage.href: https://zw.dellhplaptop.xyz
