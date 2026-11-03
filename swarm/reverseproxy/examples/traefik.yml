@@ -14,7 +14,7 @@ api:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: dellhplaptop@pm.me
+      email: bojenkins@tutanota.com
       storage: /etc/traefik/acme.json
       caServer: https://acme-v02.api.letsencrypt.org/directory
       dnsChallenge:
@@ -22,11 +22,13 @@ certificatesResolvers:
         resolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
+      keyType: EC384
 
 entryPoints:
   http:
     address: :80
     http:
+      aliasHeadersStrategy: keep
       redirections:
         entryPoint:
           to: https
@@ -40,6 +42,21 @@ entryPoints:
       trustedIPs:
         - 172.30.0.0/16
         - fd06:6a55:3bd2:ed3d::/64
+    transport:
+      respondingTimeouts:
+        readTimeout: 600s
+        idleTimeout: 600s
+        writeTimeout: 600s
+    http:
+      aliasHeadersStrategy: keep
+      middlewares:
+        - hsts@file
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: dellhplaptop.xyz
+            sans:
+              - "*.dellhplaptop.xyz"
     proxyProtocol:
       insecure: false
       trustedIPs:
@@ -50,13 +67,8 @@ entryPoints:
         readTimeout: 600s
         idleTimeout: 600s
         writeTimeout: 600s
-    http:
-      tls:
-        certResolver: cloudflare
-        domains:
-          - main: dellhplaptop.xyz
-            sans:
-              - "*.dellhplaptop.xyz"
+  forgejo:
+    address: :2222
   minecraft:
     address: :25565
   terraria:
@@ -70,6 +82,30 @@ providers:
     endpoint: tcp://socket-proxy:2375
     exposedByDefault: false
     network: proxy
+  swarm:
+    endpoint: tcp://socket-proxy:2375
+    exposedByDefault: false
+    network: proxy
   file:
-    filename: /etc/traefik/dynamic.yml
+    directory: /etc/traefik/dynamic
     watch: true
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+      curvePreferences:
+        - X25519
+        - CurveP256
+        - CurveP384
+      sniStrict: true
+      alpnProtocols:
+        - h2
+        - http/1.1

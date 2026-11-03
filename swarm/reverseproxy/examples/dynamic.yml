@@ -17,9 +17,32 @@ http:
     allowedIPs:
       ipAllowList:
         <<: *allowedIPs
+    hsts:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: false
     localonly:
       ipAllowList:
         <<: *localIPs
+    webhooks:
+      ipAllowList:
+        sourceRange:
+          - "10.0.0.0/8"
+          - "192.168.0.0/16"
+          - "172.16.0.0/12"
+          - "fd06:6a55:3bd2:ed3d::/64"
+          - "fda3:db28:76bb:e314::/64"
+          # GitHub webhook senders: `curl -s https://api.github.com/meta | jq .hooks`
+          - "9.234.106.48/28"
+          - "9.234.98.160/28"
+          - "9.234.98.176/28"
+          - "192.30.252.0/22"
+          - "185.199.108.0/22"
+          - "140.82.112.0/20"
+          - "143.55.64.0/20"
+          - "2a0a:a440::/29"
+          - "2606:50c0::/32"
   serversTransports:
     insecureTransport:
       insecureSkipVerify: true
