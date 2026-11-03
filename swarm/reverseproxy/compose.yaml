@@ -17,7 +17,7 @@ services:
       start_period: 10s
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       timeout: 5s
-    image: ghcr.io/pocket-id/pocket-id:v2.19.2
+    image: ghcr.io/pocket-id/pocket-id:v2.19.2@sha256:3ee23895d6a3adb5dd5de801a4fd31fc31b960e6dfbea9b5200e33cf477695eb
     deploy:
       labels:
         homepage.group: Access & Security
@@ -52,7 +52,7 @@ services:
       TASKS: 1
       TZ: ${timezone:-UTC}
       VOLUMES: 1
-    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
     deploy:
       placement:
         constraints:
@@ -76,7 +76,7 @@ services:
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES: openid email profile groups
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL: https://id.dellhplaptop.xyz/api/oidc/token
       TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL: https://id.dellhplaptop.xyz/api/oidc/userinfo
-    image: ghcr.io/tinyauthapp/tinyauth:v5.2.0
+    image: ghcr.io/tinyauthapp/tinyauth:v5.2.0@sha256:220aa235c76393a73fece831d7ba967b8698d3907fd8e3c4c952f699c7b142a5
     deploy:
       labels:
         release_notes: "https://tinyauth.app/docs/reference/changelog/"
@@ -90,7 +90,7 @@ services:
     environment:
       CF_DNS_API_TOKEN: ${cf_dns_api_token:?}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
-    image: traefik:v3.7.17
+    image: traefik:v3.7.17@sha256:68ae5fe5b64ca166704b746a9e8afcd385e36b3f569a5691401bf652d57b3748
     deploy:
       placement:
         constraints:

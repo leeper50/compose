@@ -16,7 +16,7 @@ services:
       OIDC_X_FORWARDED_HEADERS: X-Forwarded-Proto X-Forwarded-Host
       TRUSTED_PROXY: "0"
       TZ: ${timezone:-UTC}
-    image: ghcr.io/freshrss/freshrss:1
+    image: ghcr.io/freshrss/freshrss:1@sha256:af44385229541bee24aa9148d0ff8f3b40e095373c63a2c0f74e09a27d3c59df
     deploy:
       placement:
         constraints:
@@ -47,7 +47,7 @@ services:
   kavita:
     environment:
       TZ: ${timezone:-UTC}
-    image: ghcr.io/kareadita/kavita:0.9.1
+    image: ghcr.io/kareadita/kavita:0.9.1@sha256:31181a32f0dda73cae68721867028a7253d57881b58bea5754cd9e578e75421a
     deploy:
       placement:
         constraints:
@@ -78,7 +78,7 @@ services:
       ND_LASTFM_APIKEY: ${lastfm_key:-}
       ND_LASTFM_SECRET: ${lastfm_secret:-}
       ND_LOGLEVEL: info
-    image: deluan/navidrome:0.64.2
+    image: deluan/navidrome:0.64.2@sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52
     deploy:
       placement:
         constraints:
@@ -110,7 +110,7 @@ services:
       start_period: 20s
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
       timeout: 3s
-    image: ghcr.io/seerr-team/seerr:v3.5.1
+    image: ghcr.io/seerr-team/seerr:v3.5.1@sha256:d8fab675b55ad293ded98fd71efcfd46054cbad9746534ae1cc4794a88c0b3be
     init: true
     deploy:
       placement:

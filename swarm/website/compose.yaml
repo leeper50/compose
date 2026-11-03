@@ -8,7 +8,7 @@ services:
     environment:
       TZ: ${timezone:-UTC}
       HOMEPAGE_ALLOWED_HOSTS: home.dellhplaptop.xyz
-    image: ghcr.io/gethomepage/homepage:v2.7.0
+    image: ghcr.io/gethomepage/homepage:v2.7.0@sha256:19c5c09184458a41b7b5915e71463a39f36cd33540f41bdbed008791b8182d5f
     deploy:
       labels:
         release_notes: "https://github.com/gethomepage/homepage/releases"
@@ -30,7 +30,7 @@ services:
       BETTER_AUTH_SECRET: ${auth_secret:?}
       BETTER_AUTH_URL: https://www.dellhplaptop.xyz
       ORIGIN: https://www.dellhplaptop.xyz
-    image: fj.dellhplaptop.xyz/wleeper13/newwebsite:1
+    image: fj.dellhplaptop.xyz/wleeper13/newwebsite:1@sha256:9b8830589582bead10660163a8c2f7c8651fbbee1d0504b75903499df36201d9
     deploy:
       labels:
         release_notes: "https://fj.dellhplaptop.xyz/wleeper13/NewWebsite/releases"
