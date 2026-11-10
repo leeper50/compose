@@ -14,11 +14,13 @@ services:
       - /dev/net/tun:/dev/net/tun
     environment:
       HTTPPROXY: on
+      OWNED_ONLY: ${owned_only:-no}
       SERVER_CITIES: ${cities:-}
       SOCKS5_ENABLED: on
       TZ: ${timezone:-UTC}
       VPN_SERVICE_PROVIDER: ${provider:?}
       VPN_TYPE: wireguard
+      WIREGUARD_ADDRESSES: ${wireguard_addresses:-}
       WIREGUARD_PRIVATE_KEY: ${wgkey:?}
     healthcheck:
       test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
