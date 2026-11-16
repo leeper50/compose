@@ -29,9 +29,6 @@ services:
         traefik.http.routers.pocketid.entryPoints: "https"
         traefik.http.routers.pocketid.rule: "Host(`id.dellhplaptop.xyz`)"
         traefik.http.services.pocketid.loadbalancer.server.port: 1411
-      placement:
-        constraints:
-          - node.hostname == node-2
       update_config:
         order: stop-first
     networks:
@@ -54,9 +51,6 @@ services:
       VOLUMES: 1
     image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
       labels:
         release_notes: "https://github.com/Tecnativa/docker-socket-proxy/releases"
     networks:
@@ -92,9 +86,6 @@ services:
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS:?}
     image: traefik:v3.7.19@sha256:aa942a00bce033c909bf1f7e861d93761be4b31a035f10d2410d33e38a8f41cf
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
       labels:
         homepage.group: Access & Security
         homepage.href: https://tf.dellhplaptop.xyz

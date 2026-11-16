@@ -18,9 +18,6 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/freshrss/freshrss:1@sha256:af44385229541bee24aa9148d0ff8f3b40e095373c63a2c0f74e09a27d3c59df
     deploy:
-      placement:
-        constraints:
-          - node.hostname == node-2
       labels:
         homepage.group: Personal
         homepage.href: https://rss.dellhplaptop.xyz
@@ -49,9 +46,6 @@ services:
       TZ: ${timezone:-UTC}
     image: ghcr.io/kareadita/kavita:0.9.1@sha256:31181a32f0dda73cae68721867028a7253d57881b58bea5754cd9e578e75421a
     deploy:
-      placement:
-        constraints:
-          - node.hostname == node-3
       labels:
         homepage.group: Media Consumption
         homepage.href: https://kv.dellhplaptop.xyz
@@ -80,9 +74,6 @@ services:
       ND_LOGLEVEL: info
     image: deluan/navidrome:0.64.2@sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52
     deploy:
-      placement:
-        constraints:
-          - node.hostname == node-2
       labels:
         homepage.group: Media Consumption
         homepage.href: https://mu.dellhplaptop.xyz
@@ -114,11 +105,6 @@ services:
     init: true
     deploy:
       placement:
-        constraints:
-          - node.hostname == node-1
-      labels:
-        homepage.group: Arr Stack
-        homepage.href: https://se.dellhplaptop.xyz
         homepage.icon: sh-seerr.svg
         homepage.name: Seerr
         release_notes: "https://github.com/seerr-team/seerr/releases"
