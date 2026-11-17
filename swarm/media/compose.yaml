@@ -63,7 +63,7 @@ services:
       proxy: null
     volumes:
       - /etc/docker/kavita:/kavita/config
-      - /mnt/media/Books:/books
+      - /mnt/data/Media/Books:/books
   navidrome:
     environment:
       ND_AGENTS: "lastfm,deezer,listenbrainz"
@@ -90,7 +90,7 @@ services:
     user: 1000:1000
     volumes:
       - "/etc/docker/navidrome:/data:rw"
-      - "/mnt/media/Music:/music:rw"
+      - "/mnt/data/Media/Music:/music:rw"
   seerr:
     environment:
       LOG_LEVEL: ${log_level:-warn}
