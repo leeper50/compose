@@ -4,14 +4,10 @@
   "extends": ["config:best-practices"],
   "packageRules": [
     {
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": [
-        "digest",
-        "minor",
-        "patch"
-      ],
+      "matchUpdateTypes": ["digest", "minor", "patch"],
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch"
+      "groupSlug": "all-minor-patch",
+      "matchPackageNames": ["*"]
     }
   ]
 }
