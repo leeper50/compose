@@ -1,14 +1,10 @@
 networks:
-  mqtt: null
   proxy:
     external: true
 services:
   homeassistant:
     container_name: homeassistant
     depends_on:
-      zigbee2mqtt:
-        condition: service_healthy
-        restart: true
       zwave_js_ui:
         condition: service_healthy
         restart: true
@@ -32,64 +28,10 @@ services:
       traefik.http.services.homeassistant.loadbalancer.server.port: 8123
     networks:
       proxy: null
-      mqtt: null
     restart: unless-stopped
     volumes:
       - /etc/docker/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
-  mqtt:
-    command: "mosquitto -c /mosquitto-no-auth.conf"
-    healthcheck:
-      interval: 30s
-      retries: 3
-      start_period: 10s
-      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "$$SYS/broker/uptime", "-C", "1", "-W", "5", "-i", "healthcheck"]
-      timeout: 10s
-    image: eclipse-mosquitto:2.1.4-alpine@sha256:fa12172a051310efe5bcb7a6a11b77bd5faacb82cbacd7742aa758bf024fd8e4
-    labels:
-      release_notes: "https://mosquitto.org/blog/categories/releases/"
-    networks:
-      mqtt:
-    restart: unless-stopped
-    volumes:
-      - /etc/docker/mqtt:/mosquitto
-  zigbee2mqtt:
-    container_name: zigbee2mqtt
-    depends_on:
-      mqtt:
-        condition: service_healthy
-        restart: true
-    devices:
-      - /dev/serial/by-id/${zigbee_device:?}:/dev/ttyACM0
-    environment:
-      TZ: ${timezone:-UTC}
-      ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mqtt:1883"
-      ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyACM0
-    healthcheck:
-      interval: 30s
-      retries: 3
-      start_period: 60s
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080"]
-      timeout: 10s
-    image: ghcr.io/koenkk/zigbee2mqtt:2.14.3@sha256:fb4a6b0f6868ad1cd6a9996479802b2420e599c3463b62bbff8c8cd9a908f43a
-    labels:
-      homepage.group: Smart Home
-      homepage.href: https://zb.dellhplaptop.xyz
-      homepage.icon: sh-zigbee2mqtt.svg
-      homepage.name: Zigbee
-      release_notes: "https://github.com/Koenkk/zigbee2mqtt/releases"
-      traefik.enable: "true"
-      traefik.http.routers.zigbee2mqtt.entryPoints: "https"
-      traefik.http.routers.zigbee2mqtt.middlewares: "localonly@file"
-      traefik.http.routers.zigbee2mqtt.rule: "Host(`zb.dellhplaptop.xyz`)"
-      traefik.http.services.zigbee2mqtt.loadbalancer.server.port: 8080
-    networks:
-      proxy:
-      mqtt:
-    restart: unless-stopped
-    volumes:
-      - /etc/docker/zigbee2mqtt:/app/data
-      # - /run/udev:/run/udev:ro
   zwave_js_ui:
     container_name: zwave_js_ui
     devices:
